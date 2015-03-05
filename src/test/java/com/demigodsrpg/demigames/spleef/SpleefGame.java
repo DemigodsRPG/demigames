@@ -1,14 +1,14 @@
 package com.demigodsrpg.demigames.spleef;
 
-import com.demigodsrpg.demigames.Minigame;
+import com.demigodsrpg.demigames.game.Game;
+import com.demigodsrpg.demigames.game.type.GameType;
+import com.demigodsrpg.demigames.game.type.GameTypes;
 import com.demigodsrpg.demigames.stage.Stage;
 import com.demigodsrpg.demigames.stage.StageHandler;
-import com.demigodsrpg.demigames.type.MinigameType;
-import com.demigodsrpg.demigames.type.MinigameTypes;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.PlayerMoveEvent;
 
-public class SpleefGame implements Minigame {
+public class SpleefGame implements Game {
     SpleefSession session;
 
     @StageHandler(stage = Stage.STARTUP)
@@ -62,7 +62,7 @@ public class SpleefGame implements Minigame {
     }
 
     @Override
-    public MinigameType getType() {
-        return MinigameTypes.ARENA;
+    public GameType getType() {
+        return GameTypes.ARENA;
     }
 }

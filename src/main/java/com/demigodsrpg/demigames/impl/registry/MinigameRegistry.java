@@ -1,6 +1,6 @@
 package com.demigodsrpg.demigames.impl.registry;
 
-import com.demigodsrpg.demigames.Minigame;
+import com.demigodsrpg.demigames.game.Game;
 import com.demigodsrpg.demigames.impl.DemigamesPlugin;
 import org.bukkit.Bukkit;
 import org.bukkit.event.HandlerList;
@@ -13,11 +13,11 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
 public class MinigameRegistry {
-    private ConcurrentMap<String, Minigame> MINIGAMES = new ConcurrentHashMap<>();
+    private ConcurrentMap<String, Game> MINIGAMES = new ConcurrentHashMap<>();
 
-    public void register(Minigame minigame) {
-        Bukkit.getPluginManager().registerEvents(minigame, DemigamesPlugin.getInstance());
-        MINIGAMES.put(minigame.getName(), minigame);
+    public void register(Game game) {
+        Bukkit.getPluginManager().registerEvents(game, DemigamesPlugin.getInstance());
+        MINIGAMES.put(game.getName(), game);
     }
 
     public void registerFromJar(JarFile file) {
@@ -37,7 +37,7 @@ public class MinigameRegistry {
             if (!isMinigameClass(clazz)) continue;
 
             try {
-                DemigamesPlugin.getMinigameRegistry().register((Minigame) clazz.newInstance());
+                DemigamesPlugin.getMinigameRegistry().register((Game) clazz.newInstance());
             } catch (Exception oops) {
                 oops.printStackTrace();
             }
@@ -51,7 +51,7 @@ public class MinigameRegistry {
 
     // -- GETTERS -- //
 
-    public Optional<Minigame> getMinigame(String name) {
+    public Optional<Game> getMinigame(String name) {
         // ConcurrentHashMap will throw an NPE instead of returning null
         return Optional.ofNullable(MINIGAMES.getOrDefault(name, null));
     }
@@ -65,6 +65,6 @@ public class MinigameRegistry {
 
 
     private boolean isMinigameClass(Class<?> clazz) {
-        return clazz != null && Minigame.class.isAssignableFrom(clazz);
+        return clazz != null && Game.class.isAssignableFrom(clazz);
     }
 }
