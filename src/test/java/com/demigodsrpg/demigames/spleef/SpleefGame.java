@@ -21,6 +21,11 @@ public class SpleefGame implements Game {
 
     }
 
+    @StageHandler(stage = Stage.ERROR)
+    public void onError(SpleefSession session) {
+
+    }
+
     @StageHandler(stage = Stage.WARMUP)
     public void roundWarmup(SpleefSession session) {
 
@@ -53,7 +58,7 @@ public class SpleefGame implements Game {
 
     @EventHandler
     public void onMove(PlayerMoveEvent event) {
-
+        // TODO
     }
 
     @Override

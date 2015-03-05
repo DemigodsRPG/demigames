@@ -12,7 +12,7 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
-public class MinigameRegistry {
+public class GameRegistry {
     private ConcurrentMap<String, Game> MINIGAMES = new ConcurrentHashMap<>();
 
     public void register(Game game) {
@@ -37,7 +37,7 @@ public class MinigameRegistry {
             if (!isMinigameClass(clazz)) continue;
 
             try {
-                DemigamesPlugin.getMinigameRegistry().register((Game) clazz.newInstance());
+                DemigamesPlugin.getGameRegistry().register((Game) clazz.newInstance());
             } catch (Exception oops) {
                 oops.printStackTrace();
             }

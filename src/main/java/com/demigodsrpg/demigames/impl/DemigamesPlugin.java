@@ -1,6 +1,6 @@
 package com.demigodsrpg.demigames.impl;
 
-import com.demigodsrpg.demigames.impl.registry.MinigameRegistry;
+import com.demigodsrpg.demigames.impl.registry.GameRegistry;
 import com.demigodsrpg.demigames.impl.util.ClassPathHack;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -11,7 +11,7 @@ public class DemigamesPlugin extends JavaPlugin {
     private static DemigamesPlugin INST;
 
     // -- REGISTRIES -- //
-    private static MinigameRegistry MINIGAME_REGISTRY;
+    private static GameRegistry GAME_REGISTRY;
 
     public DemigamesPlugin() {
         super();
@@ -21,7 +21,7 @@ public class DemigamesPlugin extends JavaPlugin {
     @Override
     public void onEnable() {
         // Create the registries
-        MINIGAME_REGISTRY = new MinigameRegistry();
+        GAME_REGISTRY = new GameRegistry();
 
         // Load libraries
         loadLibraries();
@@ -58,7 +58,7 @@ public class DemigamesPlugin extends JavaPlugin {
         for (File file : componentDirectory.listFiles((dir, name) -> name.endsWith(".jar"))) {
             try {
                 JarFile jar = new JarFile(file);
-                MINIGAME_REGISTRY.registerFromJar(jar);
+                GAME_REGISTRY.registerFromJar(jar);
             } catch (Exception oops) {
                 oops.printStackTrace();
             }
@@ -94,7 +94,7 @@ public class DemigamesPlugin extends JavaPlugin {
         return INST;
     }
 
-    public static MinigameRegistry getMinigameRegistry() {
-        return MINIGAME_REGISTRY;
+    public static GameRegistry getGameRegistry() {
+        return GAME_REGISTRY;
     }
 }
