@@ -1,4 +1,4 @@
-package com.demigodsrpg.demigames.minigame.stage;
+package com.demigodsrpg.demigames.session;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -6,7 +6,6 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 @Retention(value = RetentionPolicy.RUNTIME)
-@Target(value = ElementType.METHOD)
-public @interface StageHandler {
-    Stage stage();
+@Target(value = ElementType.CONSTRUCTOR)
+public @interface SessionProvider {
 }

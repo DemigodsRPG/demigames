@@ -1,9 +1,9 @@
 package com.demigodsrpg.demigames.spleef;
 
-import com.demigodsrpg.demigames.minigame.session.Session;
-import com.demigodsrpg.demigames.minigame.session.SessionProvider;
-import com.demigodsrpg.demigames.minigame.stage.Stage;
-import com.demigodsrpg.demigames.model.Profile;
+import com.demigodsrpg.demigames.profile.Profile;
+import com.demigodsrpg.demigames.session.Session;
+import com.demigodsrpg.demigames.session.SessionProvider;
+import com.demigodsrpg.demigames.stage.Stage;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
@@ -11,11 +11,18 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class SpleefSession implements Session {
-    private Stage stage = Stage.STARTUP;
-    private List<Profile> profiles = new ArrayList<>();
+    private final String id;
+    private transient Stage stage = Stage.STARTUP;
+    private transient List<Profile> profiles = new ArrayList<>();
 
     @SessionProvider
-    public SpleefSession() {
+    public SpleefSession(String id) {
+        this.id = id;
+    }
+
+    @Override
+    public String getId() {
+        return id;
     }
 
     @Override

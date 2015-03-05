@@ -1,11 +1,12 @@
 package com.demigodsrpg.demigames.impl.registry;
 
+import com.demigodsrpg.demigames.Minigame;
 import com.demigodsrpg.demigames.impl.DemigamesPlugin;
-import com.demigodsrpg.demigames.minigame.Minigame;
 import org.bukkit.Bukkit;
 import org.bukkit.event.HandlerList;
 
 import java.util.Enumeration;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.jar.JarEntry;
@@ -46,6 +47,13 @@ public class MinigameRegistry {
     public void unregister(String minigame) {
         HandlerList.unregisterAll(MINIGAMES.get(minigame));
         MINIGAMES.remove(minigame);
+    }
+
+    // -- GETTERS -- //
+
+    public Optional<Minigame> getMinigame(String name) {
+        // ConcurrentHashMap will throw an NPE instead of returning null
+        return Optional.ofNullable(MINIGAMES.getOrDefault(name, null));
     }
 
     // -- PRIVATE HELPER METHODS -- //

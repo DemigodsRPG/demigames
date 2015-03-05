@@ -1,4 +1,4 @@
-package com.demigodsrpg.demigames.minigame.type;
+package com.demigodsrpg.demigames.type;
 
 import java.util.Arrays;
 import java.util.Optional;

@@ -1,4 +1,4 @@
-package com.demigodsrpg.demigames.minigame.kit;
+package com.demigodsrpg.demigames.kit;
 
 import org.bukkit.inventory.ItemStack;
 

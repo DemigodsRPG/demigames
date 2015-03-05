@@ -1,6 +1,6 @@
-package com.demigodsrpg.demigames.minigame;
+package com.demigodsrpg.demigames;
 
-import com.demigodsrpg.demigames.minigame.type.MinigameType;
+import com.demigodsrpg.demigames.type.MinigameType;
 import org.bukkit.event.Listener;
 
 public interface Minigame extends Listener {

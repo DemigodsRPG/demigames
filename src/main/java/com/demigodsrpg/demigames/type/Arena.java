@@ -1,4 +1,4 @@
-package com.demigodsrpg.demigames.minigame.type;
+package com.demigodsrpg.demigames.type;
 
 public class Arena implements MinigameType {
     @Override

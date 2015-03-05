@@ -1,4 +1,4 @@
-package com.demigodsrpg.demigames.minigame.stage;
+package com.demigodsrpg.demigames.stage;
 
 public enum Stage {
     STARTUP, WARMUP, BEGIN, PLAY, END, COOLDOWN, RESET, SHUTDOWN, ERROR
