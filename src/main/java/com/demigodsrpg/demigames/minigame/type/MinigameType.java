@@ -1,4 +1,4 @@
-package com.demigodsrpg.demigames.minigame;
+package com.demigodsrpg.demigames.minigame.type;
 
 public interface MinigameType {
     String getName();

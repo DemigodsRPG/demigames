@@ -1,6 +1,4 @@
-package com.demigodsrpg.demigames.minigame;
-
-import com.demigodsrpg.demigames.minigame.type.Arena;
+package com.demigodsrpg.demigames.minigame.type;
 
 import java.util.Arrays;
 import java.util.Optional;

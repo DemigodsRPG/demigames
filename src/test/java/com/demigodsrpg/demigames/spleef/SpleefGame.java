@@ -1,6 +1,10 @@
 package com.demigodsrpg.demigames.spleef;
 
-import com.demigodsrpg.demigames.minigame.*;
+import com.demigodsrpg.demigames.minigame.Minigame;
+import com.demigodsrpg.demigames.minigame.stage.Stage;
+import com.demigodsrpg.demigames.minigame.stage.StageHandler;
+import com.demigodsrpg.demigames.minigame.type.MinigameType;
+import com.demigodsrpg.demigames.minigame.type.MinigameTypes;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.PlayerMoveEvent;
 

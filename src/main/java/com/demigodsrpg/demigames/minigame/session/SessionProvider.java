@@ -1,4 +1,4 @@
-package com.demigodsrpg.demigames.minigame;
+package com.demigodsrpg.demigames.minigame.session;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

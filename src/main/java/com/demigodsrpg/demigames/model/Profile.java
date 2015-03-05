@@ -1,5 +1,6 @@
 package com.demigodsrpg.demigames.model;
 
+import com.demigodsrpg.demigames.minigame.kit.MutableKit;
 import org.bukkit.entity.Player;
 
 import java.util.Optional;
@@ -9,7 +10,7 @@ public class Profile {
     // -- DATA -- //
 
     private final Player player;
-    private transient Optional<Kit> kit;
+    private transient Optional<MutableKit> kit;
 
     // -- CONSTRUCTORS -- //
 
@@ -18,7 +19,7 @@ public class Profile {
         this.kit = Optional.empty();
     }
 
-    public Profile(Player player, Kit kit) {
+    public Profile(Player player, MutableKit kit) {
         this.player = player;
         this.kit = Optional.of(kit);
     }
@@ -29,13 +30,13 @@ public class Profile {
         return player;
     }
 
-    public Optional<Kit> getKit() {
+    public Optional<MutableKit> getKit() {
         return kit;
     }
 
     // -- MUTATORS -- //
 
-    public void setKit(Kit kit) {
+    public void setKit(MutableKit kit) {
         this.kit = Optional.ofNullable(kit);
     }
 }
