@@ -19,8 +19,8 @@
 
     <repositories>
         <repository>
-            <id>CenSoft</id>
-            <url>http://repo.censoredsoftware.com/</url>
+            <id>dg-mg</id>
+            <url>http://repo.ii.dg-mg.club/</url>
         </repository>
         <repository>
             <id>spigot-releases</id>
