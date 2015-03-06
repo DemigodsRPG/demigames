@@ -9,8 +9,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.PlayerMoveEvent;
 
 public class SpleefGame implements Game {
-    SpleefSession session;
-
     @StageHandler(stage = Stage.STARTUP)
     public void serverStart() {
 

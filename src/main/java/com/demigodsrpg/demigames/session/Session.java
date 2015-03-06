@@ -11,8 +11,6 @@ public interface Session {
 
     Stage getStage();
 
-    String getGame();
-
     void addProfile(Profile profile);
 
     void removeProfile(Profile profile);
