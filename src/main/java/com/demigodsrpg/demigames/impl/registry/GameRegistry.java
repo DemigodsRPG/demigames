@@ -101,12 +101,12 @@ public class GameRegistry {
     public void updateStage(Game game, Session session, Stage stage, boolean process) {
         session.setStage(stage);
         if (process) {
-            processSession(game, session, stage);
+            processSession(game, session);
         }
     }
 
-    public void processSession(Game game, Session session, Stage stage) {
-        for (Method handler : getStageHandlers(game, stage)) {
+    public void processSession(Game game, Session session) {
+        for (Method handler : getStageHandlers(game, session.getStage())) {
             try {
                 handler.invoke(game, session);
             } catch (Exception ignored) {
