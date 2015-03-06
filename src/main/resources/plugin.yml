@@ -1,7 +1,7 @@
 name: demigames
-main: com.demigodsrpg.demigames.
+main: com.demigodsrpg.demigames.impl.DemigamesPlugin
 version: ${project.version}
-description: Behind the scenes plugin for handling mini-games.
+description: ${project.description}
 authors: [Asecta, HmmmQuestionMark]
 softdepend: [Chitchat]
 commands:
