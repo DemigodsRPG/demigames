@@ -4,18 +4,20 @@ import com.demigodsrpg.demigames.game.Game;
 import com.demigodsrpg.demigames.impl.DemigamesPlugin;
 import com.demigodsrpg.demigames.session.Session;
 import com.demigodsrpg.demigames.session.SessionGameName;
+import com.demigodsrpg.demigames.stage.Stage;
+import com.demigodsrpg.demigames.stage.StageHandler;
 import org.bukkit.Bukkit;
 import org.bukkit.event.HandlerList;
 
 import java.lang.reflect.Field;
-import java.util.Arrays;
-import java.util.Enumeration;
-import java.util.Map;
-import java.util.Optional;
+import java.lang.reflect.Method;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+import java.util.function.Predicate;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
+import java.util.stream.Collectors;
 
 public class GameRegistry {
     private final ConcurrentMap<String, Game> MINIGAMES = new ConcurrentHashMap<>();
@@ -94,6 +96,24 @@ public class GameRegistry {
         return Optional.empty();
     }
 
+    // -- MUTATORS -- //
+
+    public void updateStage(Game game, Session session, Stage stage, boolean process) {
+        session.setStage(stage);
+        if (process) {
+            processSession(game, session, stage);
+        }
+    }
+
+    public void processSession(Game game, Session session, Stage stage) {
+        for (Method handler : getStageHandlers(game, stage)) {
+            try {
+                handler.invoke(game, session);
+            } catch (Exception ignored) {
+            }
+        }
+    }
+
     // -- PRIVATE HELPER METHODS -- //
 
     private String formatClassPath(String path) {
@@ -122,5 +142,15 @@ public class GameRegistry {
 
     private boolean isSessionClass(Class<?> clazz) {
         return clazz != null && Session.class.isAssignableFrom(clazz);
+    }
+
+    private List<Method> getStageHandlers(Game game, Stage stage) {
+        return Arrays.asList(game.getClass().getDeclaredMethods()).stream().filter(new Predicate<Method>() {
+            @Override
+            public boolean test(Method method) {
+                return method.isAnnotationPresent(StageHandler.class) && stage.equals(method.getAnnotation(StageHandler.class).stage())
+                        && method.getParameters().length == 1 && method.getParameters()[0].getType().isAssignableFrom(Session.class);
+            }
+        }).collect(Collectors.toList());
     }
 }

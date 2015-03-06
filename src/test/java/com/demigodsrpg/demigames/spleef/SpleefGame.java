@@ -10,12 +10,12 @@ import org.bukkit.event.player.PlayerMoveEvent;
 
 public class SpleefGame implements Game {
     @StageHandler(stage = Stage.STARTUP)
-    public void serverStart() {
+    public void serverStart(SpleefSession session) {
 
     }
 
     @StageHandler(stage = Stage.SHUTDOWN)
-    public void serverShutdown() {
+    public void serverShutdown(SpleefSession session) {
 
     }
 

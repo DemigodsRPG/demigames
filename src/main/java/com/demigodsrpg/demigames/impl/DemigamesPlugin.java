@@ -1,6 +1,7 @@
 package com.demigodsrpg.demigames.impl;
 
 import com.demigodsrpg.demigames.impl.registry.GameRegistry;
+import com.demigodsrpg.demigames.impl.registry.SessionRegistry;
 import com.demigodsrpg.demigames.impl.util.ClassPathHack;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -12,6 +13,7 @@ public class DemigamesPlugin extends JavaPlugin {
 
     // -- REGISTRIES -- //
     private static GameRegistry GAME_REGISTRY;
+    private static SessionRegistry SESSION_REGISTRY;
 
     public DemigamesPlugin() {
         super();
@@ -22,6 +24,7 @@ public class DemigamesPlugin extends JavaPlugin {
     public void onEnable() {
         // Create the registries
         GAME_REGISTRY = new GameRegistry();
+        SESSION_REGISTRY = new SessionRegistry();
 
         // Load libraries
         loadLibraries();
@@ -96,5 +99,9 @@ public class DemigamesPlugin extends JavaPlugin {
 
     public static GameRegistry getGameRegistry() {
         return GAME_REGISTRY;
+    }
+
+    public static SessionRegistry getSessionRegistry() {
+        return SESSION_REGISTRY;
     }
 }

@@ -35,6 +35,16 @@ public class SpleefSession implements Session {
     }
 
     @Override
+    public List<Profile> getProfiles() {
+        return profiles;
+    }
+
+    @Override
+    public void setStage(Stage stage) {
+        this.stage = stage;
+    }
+
+    @Override
     public void addProfile(Profile profile) {
         profiles.add(profile);
     }
@@ -47,10 +57,5 @@ public class SpleefSession implements Session {
     @Override
     public void removeProfile(Player player) {
         profiles = profiles.parallelStream().filter(profile -> !profile.getPlayer().equals(player)).collect(Collectors.toList());
-    }
-
-    @Override
-    public List<Profile> getProfiles() {
-        return profiles;
     }
 }
