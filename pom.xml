@@ -98,11 +98,9 @@
                             <goal>shade</goal>
                         </goals>
                         <configuration>
-                            <minimizeJar>true</minimizeJar>
                             <artifactSet>
                                 <includes>
-                                    <!-- <include>com.google.code.gson:gson</include> -->
-                                    <!-- <include>commons-lang:commons-lang</include> -->
+                                    <include>com.demigodsrpg:demigames</include>
                                 </includes>
                             </artifactSet>
                             <relocations>
@@ -111,19 +109,10 @@
                                     <pattern>com.google.common.util.concurrent</pattern>
                                     <shadedPattern>net.minecraft.util.com.google.common.util.concurrent</shadedPattern>
                                 </relocation>
-                                <!-- Spigot doesn't relocate this since 1.8
-                                <relocation>
-                                    <pattern>gnu.trove</pattern>
-                                    <shadedPattern>net.minecraft.util.gnu.trove</shadedPattern>
-                                </relocation> -->
                                 <relocation>
                                     <pattern>com.google.gson</pattern>
                                     <shadedPattern>org.bukkit.craftbukkit.libs.com.google.gson</shadedPattern>
                                 </relocation>
-                                <!--<relocation>
-                                    <pattern>org.apache.commons.lang</pattern>
-                                    <shadedPattern>com.demigodsrpg.${project.name}.org.apache.commons.lang</shadedPattern>
-                                </relocation> -->
                             </relocations>
                         </configuration>
                     </execution>

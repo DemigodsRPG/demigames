@@ -35,11 +35,15 @@ public class DemigamesPlugin extends JavaPlugin {
         // Load the config
         getConfig().options().copyDefaults(true);
         saveConfig();
+
+        // Handle minigame server start methods
+        GAME_REGISTRY.handlePluginStart();
     }
 
     @Override
     public void onDisable() {
-
+        // Handle minigame server stop methods
+        GAME_REGISTRY.handlePluginStop();
     }
 
     // -- HELPER METHODS -- //

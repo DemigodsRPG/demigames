@@ -3,8 +3,7 @@ package com.demigodsrpg.demigames.impl.registry;
 import com.demigodsrpg.demigames.game.Game;
 import com.demigodsrpg.demigames.impl.DemigamesPlugin;
 import com.demigodsrpg.demigames.session.Session;
-import com.demigodsrpg.demigames.session.SessionGameName;
-import com.demigodsrpg.demigames.stage.Stage;
+import com.demigodsrpg.demigames.session.SessionGame;
 import com.demigodsrpg.demigames.stage.StageHandler;
 import org.bukkit.Bukkit;
 import org.bukkit.event.HandlerList;
@@ -55,12 +54,15 @@ public class GameRegistry {
                 Class<? extends Session> sessionClazz = (Class<? extends Session>) clazz;
                 try {
                     Optional<Field> nameField = Arrays.asList(sessionClazz.getDeclaredFields()).stream().filter(field ->
-                            field.isAnnotationPresent(SessionGameName.class)).findFirst();
+                            field.isAnnotationPresent(SessionGame.class)).findFirst();
                     if (nameField.isPresent()) {
                         Field field = nameField.get();
                         field.setAccessible(true);
-                        field.get(null);
-                        SESSION_CLASSES.put(field.get(null).toString(), sessionClazz);
+                        Class<? extends Game> gameType = (Class<? extends Game>) field.get(null);
+                        Optional<Game> game = getMinigame(gameType);
+                        if (game.isPresent()) {
+                            SESSION_CLASSES.put(game.get().getName(), sessionClazz);
+                        }
                     }
                 } catch (Exception oops) {
                     oops.printStackTrace();
@@ -98,7 +100,7 @@ public class GameRegistry {
 
     // -- MUTATORS -- //
 
-    public void updateStage(Game game, Session session, Stage stage, boolean process) {
+    public void updateStage(Game game, Session session, String stage, boolean process) {
         session.setStage(stage);
         if (process) {
             processSession(game, session);
@@ -114,6 +116,16 @@ public class GameRegistry {
         }
     }
 
+    // -- PUBLIC HANDLER METHODS -- //
+
+    public void handlePluginStart() {
+        MINIGAMES.values().forEach(Game::onServerStart);
+    }
+
+    public void handlePluginStop() {
+        MINIGAMES.values().forEach(Game::onServerStop);
+    }
+
     // -- PRIVATE HELPER METHODS -- //
 
     private String formatClassPath(String path) {
@@ -125,10 +137,14 @@ public class GameRegistry {
         return clazz != null && Game.class.isAssignableFrom(clazz);
     }
 
+    private Optional<Game> getMinigame(Class<? extends Game> clazz) {
+        return MINIGAMES.values().stream().filter(game -> game.getClass().equals(clazz)).findFirst();
+    }
+
     private Optional<String> getSessionGameName(Class<? extends Session> clazz) {
         try {
             Optional<Field> nameField = Arrays.asList(clazz.getDeclaredFields()).stream().
-                    filter(field -> Arrays.asList(field.getDeclaredAnnotations()).contains(SessionGameName.class)).findFirst();
+                    filter(field -> Arrays.asList(field.getDeclaredAnnotations()).contains(SessionGame.class)).findFirst();
             if (nameField.isPresent()) {
                 Field field = nameField.get();
                 field.setAccessible(true);
@@ -144,7 +160,7 @@ public class GameRegistry {
         return clazz != null && Session.class.isAssignableFrom(clazz);
     }
 
-    private List<Method> getStageHandlers(Game game, Stage stage) {
+    private List<Method> getStageHandlers(Game game, String stage) {
         return Arrays.asList(game.getClass().getDeclaredMethods()).stream().filter(new Predicate<Method>() {
             @Override
             public boolean test(Method method) {

@@ -7,4 +7,8 @@ public interface Game extends Listener {
     String getName();
 
     GameType getType();
+
+    void onServerStart();
+
+    void onServerStop();
 }

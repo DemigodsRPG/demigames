@@ -3,53 +3,43 @@ package com.demigodsrpg.demigames.spleef;
 import com.demigodsrpg.demigames.game.Game;
 import com.demigodsrpg.demigames.game.type.GameType;
 import com.demigodsrpg.demigames.game.type.GameTypes;
-import com.demigodsrpg.demigames.stage.Stage;
+import com.demigodsrpg.demigames.stage.DefaultStage;
 import com.demigodsrpg.demigames.stage.StageHandler;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.PlayerMoveEvent;
 
 public class SpleefGame implements Game {
-    @StageHandler(stage = Stage.STARTUP)
-    public void serverStart(SpleefSession session) {
-
-    }
-
-    @StageHandler(stage = Stage.SHUTDOWN)
-    public void serverShutdown(SpleefSession session) {
-
-    }
-
-    @StageHandler(stage = Stage.ERROR)
+    @StageHandler(stage = DefaultStage.ERROR)
     public void onError(SpleefSession session) {
 
     }
 
-    @StageHandler(stage = Stage.WARMUP)
+    @StageHandler(stage = DefaultStage.WARMUP)
     public void roundWarmup(SpleefSession session) {
 
     }
 
-    @StageHandler(stage = Stage.BEGIN)
+    @StageHandler(stage = DefaultStage.BEGIN)
     public void roundBegin(SpleefSession session) {
 
     }
 
-    @StageHandler(stage = Stage.PLAY)
+    @StageHandler(stage = DefaultStage.PLAY)
     public void roundPlay(SpleefSession session) {
 
     }
 
-    @StageHandler(stage = Stage.END)
+    @StageHandler(stage = DefaultStage.END)
     public void roundEnd(SpleefSession session) {
 
     }
 
-    @StageHandler(stage = Stage.COOLDOWN)
+    @StageHandler(stage = DefaultStage.COOLDOWN)
     public void roundCooldown(SpleefSession session) {
 
     }
 
-    @StageHandler(stage = Stage.RESET)
+    @StageHandler(stage = DefaultStage.RESET)
     public void roundReset(SpleefSession session) {
 
     }
@@ -67,5 +57,15 @@ public class SpleefGame implements Game {
     @Override
     public GameType getType() {
         return GameTypes.ARENA;
+    }
+
+    @Override
+    public void onServerStart() {
+
+    }
+
+    @Override
+    public void onServerStop() {
+
     }
 }
