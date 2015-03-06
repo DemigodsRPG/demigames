@@ -29,8 +29,11 @@ public class DemigamesPlugin extends JavaPlugin {
         // Load libraries
         loadLibraries();
 
-        // Load the components
-        loadComponents();
+        // Load the components, if there was an error, cancel the plugin from loading
+        if (!loadComponents()) {
+            getServer().getPluginManager().disablePlugin(this);
+            return;
+        }
 
         // Load the config
         getConfig().options().copyDefaults(true);
@@ -48,13 +51,13 @@ public class DemigamesPlugin extends JavaPlugin {
 
     // -- HELPER METHODS -- //
 
-    private void loadComponents() {
+    private boolean loadComponents() {
         // Get the file
         File componentDirectory = new File(getDataFolder().getPath() + "/games/");
 
         // If it exists and isn't a directory, throw an error
         if (componentDirectory.exists() && !componentDirectory.isDirectory()) {
-            // ERROR
+            return false;
         }
         // Otherwise, make the directory
         else if (!componentDirectory.exists()) {
@@ -70,6 +73,8 @@ public class DemigamesPlugin extends JavaPlugin {
                 oops.printStackTrace();
             }
         }
+
+        return true;
     }
 
     private void loadLibraries() {
@@ -78,7 +83,8 @@ public class DemigamesPlugin extends JavaPlugin {
 
         // If it exists and isn't a directory, throw an error
         if (libraryDirectory.exists() && !libraryDirectory.isDirectory()) {
-            // ERROR
+            getLogger().severe("The library directory isn't a directory!");
+            return;
         }
         // Otherwise, make the directory
         else if (!libraryDirectory.exists()) {

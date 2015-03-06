@@ -25,6 +25,7 @@ public class GameRegistry {
     public void register(Game game) {
         Bukkit.getPluginManager().registerEvents(game, DemigamesPlugin.getInstance());
         MINIGAMES.put(game.getName(), game);
+        DemigamesPlugin.getInstance().getLogger().info("The \"" + game.getName() + "\" minigame has been registered.");
     }
 
     public void registerFromJar(JarFile file) {
