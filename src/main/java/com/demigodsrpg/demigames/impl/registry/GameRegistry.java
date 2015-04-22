@@ -42,7 +42,7 @@ import java.util.stream.Collectors;
 
 public class GameRegistry {
     private final ConcurrentMap<String, Game> MINIGAMES = new ConcurrentHashMap<>();
-    private final ConcurrentHashMap<String, Class<? extends Session>> SESSION_CLASSES = new ConcurrentHashMap<>();
+    private final ConcurrentMap<String, Class<? extends Session>> SESSION_CLASSES = new ConcurrentHashMap<>();
 
     public void register(Game game) {
         Bukkit.getPluginManager().registerEvents(game, DemigamesPlugin.getInstance());
