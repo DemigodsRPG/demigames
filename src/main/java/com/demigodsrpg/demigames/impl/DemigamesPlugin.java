@@ -1,8 +1,31 @@
+/*
+ * Copyright (c) 2015 Demigods RPG
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
+
 package com.demigodsrpg.demigames.impl;
 
 import com.demigodsrpg.demigames.impl.registry.GameRegistry;
+import com.demigodsrpg.demigames.impl.registry.ProfileRegistry;
 import com.demigodsrpg.demigames.impl.registry.SessionRegistry;
-import com.demigodsrpg.demigames.impl.util.ClassPathHack;
+import com.demigodsrpg.demigames.impl.util.LibraryHandler;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
@@ -11,8 +34,12 @@ import java.util.jar.JarFile;
 public class DemigamesPlugin extends JavaPlugin {
     private static DemigamesPlugin INST;
 
+    // -- HANDLERS -- //
+    private static LibraryHandler LIBRARIES;
+
     // -- REGISTRIES -- //
     private static GameRegistry GAME_REGISTRY;
+    private static ProfileRegistry PROFILE_REGISTRY;
     private static SessionRegistry SESSION_REGISTRY;
 
     public DemigamesPlugin() {
@@ -22,22 +49,26 @@ public class DemigamesPlugin extends JavaPlugin {
 
     @Override
     public void onEnable() {
-        // Create the registries
-        GAME_REGISTRY = new GameRegistry();
-        SESSION_REGISTRY = new SessionRegistry();
-
-        // Load libraries
-        loadLibraries();
-
-        // Load the components, if there was an error, cancel the plugin from loading
-        if (!loadComponents()) {
-            getServer().getPluginManager().disablePlugin(this);
-            return;
-        }
+        // Create the handlers
+        LIBRARIES = new LibraryHandler(this);
 
         // Load the config
         getConfig().options().copyDefaults(true);
         saveConfig();
+
+        // Load libraries
+        loadLibraries();
+
+        // Create the registries
+        GAME_REGISTRY = new GameRegistry();
+        PROFILE_REGISTRY = new ProfileRegistry();
+        SESSION_REGISTRY = new SessionRegistry();
+
+        // Load the components. If there was an error, cancel the plugin from loading
+        if (!loadComponents()) {
+            getServer().getPluginManager().disablePlugin(this);
+            return;
+        }
 
         // Handle minigame server start methods
         GAME_REGISTRY.handlePluginStart();
@@ -78,33 +109,27 @@ public class DemigamesPlugin extends JavaPlugin {
     }
 
     private void loadLibraries() {
-        // Get the file
-        File libraryDirectory = new File(getDataFolder().getPath() + "/lib/");
+        // Add the redis related libraries
+        LIBRARIES.addMavenLibrary(LibraryHandler.MAVEN_CENTRAL, "org.redisson", "redisson", "1.2.0");
+        LIBRARIES.addMavenLibrary(LibraryHandler.MAVEN_CENTRAL, "org.slf4j", "slf4j-api", "1.7.10");
+        LIBRARIES.addMavenLibrary(LibraryHandler.MAVEN_CENTRAL, "com.esotericsoftware", "kryo", "3.0.0");
+        LIBRARIES.addMavenLibrary(LibraryHandler.MAVEN_CENTRAL, "com.fasterxml.jackson.core", "jackson-core", "2.4.4");
+        LIBRARIES.addMavenLibrary(LibraryHandler.MAVEN_CENTRAL, "com.fasterxml.jackson.core", "jackson-annotations", "2.4.4");
+        LIBRARIES.addMavenLibrary(LibraryHandler.MAVEN_CENTRAL, "com.fasterxml.jackson.core", "jackson-databind", "2.4.4");
 
-        // If it exists and isn't a directory, throw an error
-        if (libraryDirectory.exists() && !libraryDirectory.isDirectory()) {
-            getLogger().severe("The library directory isn't a directory!");
-            return;
-        }
-        // Otherwise, make the directory
-        else if (!libraryDirectory.exists()) {
-            libraryDirectory.mkdirs();
-        }
-
-        // Look for jar files
-        for (File file : libraryDirectory.listFiles((dir, name) -> name.endsWith(".jar"))) {
-            try {
-                ClassPathHack.addFile(file);
-            } catch (Exception oops) {
-                oops.printStackTrace();
-            }
-        }
+        // Censored Lib
+        LIBRARIES.addMavenLibrary("http://repo.ii.dg-mg.club/", "com.censoredsoftware.library", "util", "1.0.2");
+        LIBRARIES.addMavenLibrary("http://repo.ii.dg-mg.club/", "com.censoredsoftware.library", "bukkit-util", "1.0.2");
     }
 
     // -- STATIC GETTERS -- //
 
     public static DemigamesPlugin getInstance() {
         return INST;
+    }
+
+    public static ProfileRegistry getProfileRegistry() {
+        return PROFILE_REGISTRY;
     }
 
     public static GameRegistry getGameRegistry() {

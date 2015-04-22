@@ -1,62 +1,40 @@
+/*
+ * Copyright (c) 2015 Demigods RPG
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
+
 package com.demigodsrpg.demigames.spleef;
 
 import com.demigodsrpg.demigames.game.Game;
-import com.demigodsrpg.demigames.profile.Profile;
 import com.demigodsrpg.demigames.session.Session;
 import com.demigodsrpg.demigames.session.SessionGame;
 import com.demigodsrpg.demigames.session.SessionProvider;
 import com.demigodsrpg.demigames.stage.DefaultStage;
-import org.bukkit.entity.Player;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
-
-public class SpleefSession implements Session {
+public class SpleefSession extends Session {
     @SessionGame
     private static final Class<? extends Game> GAME = SpleefGame.class;
-
-    private final String id;
-    private transient String stage = DefaultStage.WARMUP;
-    private transient List<Profile> profiles = new ArrayList<>();
 
     @SessionProvider
     public SpleefSession(String id) {
         this.id = id;
-    }
-
-    @Override
-    public String getId() {
-        return id;
-    }
-
-    @Override
-    public String getStage() {
-        return stage;
-    }
-
-    @Override
-    public List<Profile> getProfiles() {
-        return profiles;
-    }
-
-    @Override
-    public void setStage(String stage) {
-        this.stage = stage;
-    }
-
-    @Override
-    public void addProfile(Profile profile) {
-        profiles.add(profile);
-    }
-
-    @Override
-    public void removeProfile(Profile profile) {
-        profiles.remove(profile);
-    }
-
-    @Override
-    public void removeProfile(Player player) {
-        profiles = profiles.parallelStream().filter(profile -> !profile.getPlayer().equals(player)).collect(Collectors.toList());
+        this.stage = DefaultStage.WARMUP;
     }
 }

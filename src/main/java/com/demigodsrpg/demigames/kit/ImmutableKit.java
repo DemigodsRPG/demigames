@@ -1,28 +1,43 @@
+/*
+ * Copyright (c) 2015 Demigods RPG
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
+
 package com.demigodsrpg.demigames.kit;
 
 import org.bukkit.inventory.ItemStack;
 
 import java.util.Arrays;
-import java.util.Optional;
 
 public class ImmutableKit implements Kit {
 
     // -- DATA -- //
 
     private final ItemStack[] contents;
-    private final Optional<ItemStack> helmet;
-    private final Optional<ItemStack> chestplate;
-    private final Optional<ItemStack> leggings;
-    private final Optional<ItemStack> boots;
+    private final ItemStack[] armor;
 
     // -- PRIVATE CONSTRUCTOR -- //
 
-    private ImmutableKit(ItemStack[] contents, Optional<ItemStack> helmet, Optional<ItemStack> chestplate, Optional<ItemStack> leggings, Optional<ItemStack> boots) {
+    private ImmutableKit(ItemStack[] contents, ItemStack[] armor) {
         this.contents = contents;
-        this.helmet = helmet;
-        this.chestplate = chestplate;
-        this.leggings = leggings;
-        this.boots = boots;
+        this.armor = armor;
     }
 
     // -- GETTERS -- //
@@ -33,28 +48,13 @@ public class ImmutableKit implements Kit {
     }
 
     @Override
-    public Optional<ItemStack> getHelmet() {
-        return helmet;
-    }
-
-    @Override
-    public Optional<ItemStack> getChestplate() {
-        return chestplate;
-    }
-
-    @Override
-    public Optional<ItemStack> getLeggings() {
-        return leggings;
-    }
-
-    @Override
-    public Optional<ItemStack> getBoots() {
-        return boots;
+    public ItemStack[] getArmor() {
+        return Arrays.copyOf(armor, armor.length);
     }
 
     // -- STATIC CONSTRUCTOR METHOD -- //
 
     public static ImmutableKit of(Kit kit) {
-        return new ImmutableKit(kit.getContents(), kit.getHelmet(), kit.getChestplate(), kit.getLeggings(), kit.getBoots());
+        return new ImmutableKit(kit.getContents(), kit.getArmor());
     }
 }

@@ -1,52 +1,66 @@
+/*
+ * Copyright (c) 2015 Demigods RPG
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
+
 package com.demigodsrpg.demigames.kit;
 
+import com.censoredsoftware.library.bukkitutil.ItemUtil;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.Map;
-import java.util.Optional;
+import java.io.Serializable;
 
-public class MutableKit implements Kit {
+public class MutableKit implements Kit, Serializable {
+    private static final long serialVersionUID = 1L;
 
     // -- DATA -- //
 
-    private Map<Integer, ItemStack> contents;
-    private Optional<ItemStack> helmet;
-    private Optional<ItemStack> chestplate;
-    private Optional<ItemStack> leggings;
-    private Optional<ItemStack> boots;
+    private String contents;
+    private String armor;
 
     // -- CONSTRUCTOR -- //
 
-    public MutableKit(Map<Integer, ItemStack> contents, ItemStack helmet, ItemStack chestplate, ItemStack leggings, ItemStack boots) {
-        this.contents = contents;
-        this.helmet = Optional.ofNullable(helmet);
-        this.chestplate = Optional.ofNullable(chestplate);
-        this.leggings = Optional.ofNullable(leggings);
-        this.boots = Optional.ofNullable(boots);
+    public MutableKit() {
+    }
+
+    public MutableKit(ItemStack[] contents, ItemStack[] armor) {
+        this.contents = ItemUtil.serializeItemStacks(contents);
+        this.armor = ItemUtil.serializeItemStacks(armor);
     }
 
     @Override
     public ItemStack[] getContents() {
-        return new ItemStack[0]; // TODO
+        return ItemUtil.deserializeItemStacks(contents);
     }
 
     @Override
-    public Optional<ItemStack> getHelmet() {
-        return helmet;
+    public ItemStack[] getArmor() {
+        return ItemUtil.deserializeItemStacks(armor);
     }
 
-    @Override
-    public Optional<ItemStack> getChestplate() {
-        return chestplate;
-    }
+    // -- STATIC CONSTRUCTOR METHOD -- //
 
-    @Override
-    public Optional<ItemStack> getLeggings() {
-        return leggings;
-    }
-
-    @Override
-    public Optional<ItemStack> getBoots() {
-        return boots;
+    public static MutableKit of(Kit kit) {
+        if (kit instanceof MutableKit) {
+            return (MutableKit) kit;
+        }
+        return new MutableKit(kit.getContents(), kit.getArmor());
     }
 }
