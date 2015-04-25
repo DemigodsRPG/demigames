@@ -35,7 +35,7 @@ import java.util.UUID;
 public class Profile implements Serializable {
     // -- DATA -- //
 
-    private transient Player player;
+    private transient Optional<Player> player;
     private String mojangUniqueId;
     private MutableKit kit;
     private String currentSessionId;
@@ -43,17 +43,18 @@ public class Profile implements Serializable {
     // -- CONSTRUCTORS -- //
 
     public Profile() {
+        this.player = Optional.empty();
     }
 
     public Profile(Player player) {
-        this.player = player;
+        this.player = Optional.of(player);
         this.mojangUniqueId = player.getUniqueId().toString();
         this.kit = null;
         this.currentSessionId = null;
     }
 
     public Profile(Player player, Kit kit) {
-        this.player = player;
+        this.player = Optional.of(player);
         this.mojangUniqueId = player.getUniqueId().toString();
         this.kit = MutableKit.of(kit);
         this.currentSessionId = null;
@@ -61,11 +62,11 @@ public class Profile implements Serializable {
 
     // -- GETTERS -- //
 
-    public Player getPlayer() {
-        if (player == null) {
+    public Optional<Player> getPlayer() {
+        if (!player.isPresent()) {
             OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(UUID.fromString(mojangUniqueId));
             if (offlinePlayer.isOnline()) {
-                player = offlinePlayer.getPlayer();
+                player = Optional.of(offlinePlayer.getPlayer());
             }
         }
         return player;
