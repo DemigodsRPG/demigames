@@ -20,14 +20,20 @@
  * SOFTWARE.
  */
 
-package com.demigodsrpg.demigames.impl.registry;
+package com.demigodsrpg.demigames.impl;
 
-import com.demigodsrpg.demigames.profile.Profile;
+import org.bukkit.configuration.Configuration;
 
-import java.util.concurrent.ConcurrentMap;
+public class Setting {
+    // -- FINAL -- //
+    public static final String REDIS_SERVER_ID = getConfig().getString("redis.server_id", "minecraft");
+    public static final String REDIS_CHANNEL = getConfig().getString("redis.channel", "default");
+    public static final String REDIS_CONNECTION = getConfig().getString("redis.connection", "127.0.0.1:6379");
 
-public class ProfileRegistry extends AbstractRegistry<String, Profile> {
-    public ProfileRegistry(ConcurrentMap<String, Profile> dataMap) {
-        super(dataMap);
+    // -- MUTABLE -- //
+    public static boolean USE_REDIS = getConfig().getBoolean("redis.use", true);
+
+    private static Configuration getConfig() {
+        return DemigamesPlugin.getInstance().getConfig();
     }
 }

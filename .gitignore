@@ -1,0 +1,24 @@
+### JetBrains template
+*.iml
+
+## Directory-based project format:
+.idea/
+
+### Java template
+*.class
+
+# Package Files #
+*.jar
+
+### Maven template
+target/
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+release.properties
+dependency-reduced-pom.xml
+buildNumber.properties
+.mvn/timing.properties
+
+

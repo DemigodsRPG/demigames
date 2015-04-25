@@ -29,25 +29,21 @@ import com.demigodsrpg.demigames.session.SessionProvider;
 
 import java.lang.reflect.Constructor;
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.stream.Collectors;
 
 
-public class SessionRegistry {
-    private final ConcurrentMap<String, Session> SESSIONS = new ConcurrentHashMap<>();
+public class SessionRegistry extends AbstractRegistry<String, Session> {
 
-    public void register(Session session) {
-        SESSIONS.put(session.getId(), session);
+    // -- CONSTRUCTOR -- //
+
+    public SessionRegistry(ConcurrentMap<String, Session> dataMap) {
+        super(dataMap);
     }
 
     // -- GETTERS -- //
 
-    public Optional<Session> getSession(String id) {
-        return Optional.ofNullable(SESSIONS.getOrDefault(id, null));
-    }
-
-    public Optional<Session> getNewSession(Game game) {
+    public Optional<Session> newSession(Game game) {
         if (DemigamesPlugin.getGameRegistry().getSessionType(game).isPresent()) {
             Class<? extends Session> sessionType = DemigamesPlugin.getGameRegistry().getSessionType(game).get();
             Optional<Constructor<?>> constructor = Arrays.asList(sessionType.getDeclaredConstructors()).stream().filter(this::isSessionProvider).findFirst();
@@ -62,9 +58,9 @@ public class SessionRegistry {
         return Optional.empty();
     }
 
-    public List<Session> getSessions(Game game) {
+    public List<Session> fromGame(Game game) {
         if (game != null) {
-            return SESSIONS.values().parallelStream().filter(session -> {
+            return REGISTERED_DATA.values().parallelStream().filter(session -> {
                 Optional<Game> foundGame = DemigamesPlugin.getGameRegistry().getSessionGame(session);
                 return foundGame.isPresent() && foundGame.get().equals(game);
             }).collect(Collectors.toList());

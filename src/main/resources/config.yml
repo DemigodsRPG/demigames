@@ -1,1 +1,5 @@
-# TODO
+redis:
+  use: true
+  server_id: 'minecraft'
+  channel: 'default'
+  connection: '127.0.0.1:6379'

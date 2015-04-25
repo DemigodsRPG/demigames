@@ -35,7 +35,6 @@ import java.lang.reflect.Method;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
-import java.util.function.Predicate;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.stream.Collectors;
@@ -184,12 +183,7 @@ public class GameRegistry {
     }
 
     private List<Method> getStageHandlers(Game game, String stage) {
-        return Arrays.asList(game.getClass().getDeclaredMethods()).stream().filter(new Predicate<Method>() {
-            @Override
-            public boolean test(Method method) {
-                return method.isAnnotationPresent(StageHandler.class) && stage.equals(method.getAnnotation(StageHandler.class).stage())
-                        && method.getParameters().length == 1 && method.getParameters()[0].getType().isAssignableFrom(Session.class);
-            }
-        }).collect(Collectors.toList());
+        return Arrays.asList(game.getClass().getDeclaredMethods()).stream().filter(method -> method.isAnnotationPresent(StageHandler.class) && stage.equals(method.getAnnotation(StageHandler.class).stage())
+                && method.getParameters().length == 1 && method.getParameters()[0].getType().isAssignableFrom(Session.class)).collect(Collectors.toList());
     }
 }

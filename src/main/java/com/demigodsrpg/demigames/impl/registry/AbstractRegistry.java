@@ -22,12 +22,18 @@
 
 package com.demigodsrpg.demigames.impl.registry;
 
-import com.demigodsrpg.demigames.profile.Profile;
-
+import java.io.Serializable;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentMap;
 
-public class ProfileRegistry extends AbstractRegistry<String, Profile> {
-    public ProfileRegistry(ConcurrentMap<String, Profile> dataMap) {
-        super(dataMap);
+public abstract class AbstractRegistry<K extends Serializable, V extends Serializable> {
+    protected ConcurrentMap<K, V> REGISTERED_DATA;
+
+    public AbstractRegistry(ConcurrentMap<K, V> dataMap) {
+        REGISTERED_DATA = dataMap;
+    }
+
+    public Optional<V> fromKey(K key) {
+        return Optional.ofNullable(REGISTERED_DATA.getOrDefault(key, null));
     }
 }
