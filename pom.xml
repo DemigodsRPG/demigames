@@ -37,6 +37,13 @@
             <version>${spigot.version}</version>
         </dependency>
 
+        <!-- ApacheCommons -->
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-io</artifactId>
+            <version>1.3.2</version>
+        </dependency>
+
         <!-- Chitchat -->
         <dependency>
             <groupId>com.demigodsrpg</groupId>

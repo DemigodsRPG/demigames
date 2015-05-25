@@ -76,6 +76,11 @@ public class SpleefGame implements Game {
     }
 
     @Override
+    public String getDirectory() {
+        return "spleef";
+    }
+
+    @Override
     public void onServerStart() {
 
     }

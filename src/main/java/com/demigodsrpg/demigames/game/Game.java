@@ -27,6 +27,8 @@ import org.bukkit.event.Listener;
 public interface Game extends Listener {
     String getName();
 
+    String getDirectory();
+
     void onServerStart();
 
     void onServerStop();

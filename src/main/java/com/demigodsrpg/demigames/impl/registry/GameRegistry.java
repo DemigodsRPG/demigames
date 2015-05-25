@@ -26,9 +26,12 @@ import com.demigodsrpg.demigames.game.Game;
 import com.demigodsrpg.demigames.impl.DemigamesPlugin;
 import com.demigodsrpg.demigames.session.Session;
 import com.demigodsrpg.demigames.stage.StageHandler;
+import org.apache.commons.io.FileUtils;
 import org.bukkit.Bukkit;
+import org.bukkit.WorldCreator;
 import org.bukkit.event.HandlerList;
 
+import java.io.File;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Enumeration;
@@ -69,7 +72,6 @@ public class GameRegistry {
                 } catch (Exception oops) {
                     oops.printStackTrace();
                 }
-                continue;
             }
         }
     }
@@ -119,6 +121,24 @@ public class GameRegistry {
     private String formatClassPath(String path) {
         if (path.length() < 6) return path;
         return path.substring(0, path.length() - 6).replaceAll("/", ".");
+    }
+
+    private void setupWorld(Game game) {
+        // Unregister old worlds
+        if (Bukkit.getWorld(game.getDirectory()) != null) {
+            Bukkit.unloadWorld(game.getDirectory(), false);
+        }
+
+        // Delete old world directory and copy from file
+        File file = new File(DemigamesPlugin.getInstance().getDataFolder().getPath() + "/worlds/" + game.getDirectory() + "/");
+        try {
+            FileUtils.deleteDirectory(new File("worlds/" + game.getDirectory()));
+            FileUtils.copyDirectory(file, new File("worlds/" + game.getDirectory()), true);
+        } catch (Exception ignored) {
+        }
+
+        // Load new world
+        new WorldCreator(game.getDirectory()).createWorld();
     }
 
     private boolean isMinigameClass(Class<?> clazz) {
