@@ -26,6 +26,7 @@ import com.demigodsrpg.demigames.game.Game;
 import com.demigodsrpg.demigames.impl.DemigamesPlugin;
 import com.demigodsrpg.demigames.impl.registry.ProfileRegistry;
 import com.demigodsrpg.demigames.profile.Profile;
+import com.demigodsrpg.demigames.stage.DefaultStage;
 import org.bukkit.entity.Player;
 
 import java.io.Serializable;
@@ -34,17 +35,27 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-public abstract class Session implements Serializable {
+public class Session implements Serializable {
 
     // -- DATA -- //
 
+    protected transient Optional<Game> game;
     protected List<String> profiles = new ArrayList<>();
     protected String id;
     protected String stage;
 
     // -- CONSTRUCTOR -- //
 
-    public Session() {
+    public Session(String id, Game game) {
+        this.id = id;
+        this.game = Optional.of(game);
+        this.stage = DefaultStage.WARMUP;
+    }
+
+    public Session(String id, Game game, String stage) {
+        this.id = id;
+        this.game = Optional.of(game);
+        this.stage = stage;
     }
 
     // -- GETTERS -- //
@@ -63,7 +74,7 @@ public abstract class Session implements Serializable {
     }
 
     public Optional<Game> getGame() {
-        return DemigamesPlugin.getGameRegistry().getSessionGame(this);
+        return game;
     }
 
     // -- MUTATORS -- //

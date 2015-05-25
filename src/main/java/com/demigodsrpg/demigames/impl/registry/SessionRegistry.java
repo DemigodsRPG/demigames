@@ -23,12 +23,12 @@
 package com.demigodsrpg.demigames.impl.registry;
 
 import com.demigodsrpg.demigames.game.Game;
-import com.demigodsrpg.demigames.impl.DemigamesPlugin;
 import com.demigodsrpg.demigames.session.Session;
-import com.demigodsrpg.demigames.session.SessionProvider;
 
-import java.lang.reflect.Constructor;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentMap;
 import java.util.stream.Collectors;
 
@@ -43,38 +43,25 @@ public class SessionRegistry extends AbstractRegistry<String, Session> {
 
     // -- GETTERS -- //
 
-    public Optional<Session> newSession(Game game) {
-        if (DemigamesPlugin.getGameRegistry().getSessionType(game).isPresent()) {
-            Class<? extends Session> sessionType = DemigamesPlugin.getGameRegistry().getSessionType(game).get();
-            Optional<Constructor<?>> constructor = Arrays.asList(sessionType.getDeclaredConstructors()).stream().filter(this::isSessionProvider).findFirst();
-            if (constructor.isPresent()) {
-                try {
-                    return Optional.of((Session) constructor.get().newInstance(UUID.randomUUID().toString()));
-                } catch (Exception ignored) {
-                }
-            }
-        }
+    public Session newSession(Game game) {
+        String keyId = UUID.randomUUID().toString();
+        Session newSession = new Session(keyId, game);
+        return REGISTERED_DATA.put(keyId, newSession);
+    }
 
-        return Optional.empty();
+    public Session newSession(Game game, String stage) {
+        String keyId = UUID.randomUUID().toString();
+        Session newSession = new Session(keyId, game, stage);
+        return REGISTERED_DATA.put(keyId, newSession);
     }
 
     public List<Session> fromGame(Game game) {
         if (game != null) {
             return REGISTERED_DATA.values().parallelStream().filter(session -> {
-                Optional<Game> foundGame = DemigamesPlugin.getGameRegistry().getSessionGame(session);
+                Optional<Game> foundGame = session.getGame();
                 return foundGame.isPresent() && foundGame.get().equals(game);
             }).collect(Collectors.toList());
         }
         return new ArrayList<>();
-    }
-
-    // -- PRIVATE HELPER METHODS -- //
-
-    private boolean isSessionProvider(Constructor provider) {
-        return provider != null && provider.isAnnotationPresent(SessionProvider.class) && isValidProvider(provider);
-    }
-
-    private boolean isValidProvider(Constructor provider) {
-        return provider.getParameters().length == 1 && provider.getParameters()[0].getType().equals(String.class);
     }
 }

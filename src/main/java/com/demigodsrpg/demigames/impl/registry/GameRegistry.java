@@ -25,14 +25,15 @@ package com.demigodsrpg.demigames.impl.registry;
 import com.demigodsrpg.demigames.game.Game;
 import com.demigodsrpg.demigames.impl.DemigamesPlugin;
 import com.demigodsrpg.demigames.session.Session;
-import com.demigodsrpg.demigames.session.SessionGame;
 import com.demigodsrpg.demigames.stage.StageHandler;
 import org.bukkit.Bukkit;
 import org.bukkit.event.HandlerList;
 
-import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Enumeration;
+import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.jar.JarEntry;
@@ -41,7 +42,6 @@ import java.util.stream.Collectors;
 
 public class GameRegistry {
     private final ConcurrentMap<String, Game> MINIGAMES = new ConcurrentHashMap<>();
-    private final ConcurrentMap<String, Class<? extends Session>> SESSION_CLASSES = new ConcurrentHashMap<>();
 
     public void register(Game game) {
         Bukkit.getPluginManager().registerEvents(game, DemigamesPlugin.getInstance());
@@ -71,25 +71,6 @@ public class GameRegistry {
                 }
                 continue;
             }
-
-            if (isSessionClass(clazz)) {
-                Class<? extends Session> sessionClazz = (Class<? extends Session>) clazz;
-                try {
-                    Optional<Field> nameField = Arrays.asList(sessionClazz.getDeclaredFields()).stream().filter(field ->
-                            field.isAnnotationPresent(SessionGame.class)).findFirst();
-                    if (nameField.isPresent()) {
-                        Field field = nameField.get();
-                        field.setAccessible(true);
-                        Class<? extends Game> gameType = (Class<? extends Game>) field.get(null);
-                        Optional<Game> game = getMinigame(gameType);
-                        if (game.isPresent()) {
-                            SESSION_CLASSES.put(game.get().getName(), sessionClazz);
-                        }
-                    }
-                } catch (Exception oops) {
-                    oops.printStackTrace();
-                }
-            }
         }
     }
 
@@ -103,21 +84,6 @@ public class GameRegistry {
     public Optional<Game> getMinigame(String name) {
         // ConcurrentHashMap will throw an NPE instead of returning null
         return Optional.ofNullable(MINIGAMES.getOrDefault(name, null));
-    }
-
-    public Optional<Class<? extends Session>> getSessionType(Game game) {
-        return SESSION_CLASSES.values().stream().filter(type -> getSessionGameName(type).isPresent() &&
-                getSessionGameName(type).get().equals(game.getName())).findAny();
-    }
-
-    public Optional<Game> getSessionGame(Session session) {
-        Class<? extends Session> type = session.getClass();
-        Optional<Map.Entry<String, Class<? extends Session>>> found = SESSION_CLASSES.entrySet().stream().
-                filter(entry -> entry.getValue().equals(type)).findFirst();
-        if (found.isPresent()) {
-            return getMinigame(found.get().getKey());
-        }
-        return Optional.empty();
     }
 
     // -- MUTATORS -- //
@@ -161,25 +127,6 @@ public class GameRegistry {
 
     private Optional<Game> getMinigame(Class<? extends Game> clazz) {
         return MINIGAMES.values().stream().filter(game -> game.getClass().equals(clazz)).findFirst();
-    }
-
-    private Optional<String> getSessionGameName(Class<? extends Session> clazz) {
-        try {
-            Optional<Field> nameField = Arrays.asList(clazz.getDeclaredFields()).stream().
-                    filter(field -> Arrays.asList(field.getDeclaredAnnotations()).contains(SessionGame.class)).findFirst();
-            if (nameField.isPresent()) {
-                Field field = nameField.get();
-                field.setAccessible(true);
-                return Optional.ofNullable(field.get(null).toString());
-            }
-        } catch (Exception ignored) {
-        }
-
-        return Optional.empty();
-    }
-
-    private boolean isSessionClass(Class<?> clazz) {
-        return clazz != null && Session.class.isAssignableFrom(clazz);
     }
 
     private List<Method> getStageHandlers(Game game, String stage) {

@@ -23,6 +23,7 @@
 package com.demigodsrpg.demigames.spleef;
 
 import com.demigodsrpg.demigames.game.Game;
+import com.demigodsrpg.demigames.session.Session;
 import com.demigodsrpg.demigames.stage.DefaultStage;
 import com.demigodsrpg.demigames.stage.StageHandler;
 import org.bukkit.event.EventHandler;
@@ -30,37 +31,37 @@ import org.bukkit.event.player.PlayerMoveEvent;
 
 public class SpleefGame implements Game {
     @StageHandler(stage = DefaultStage.ERROR)
-    public void onError(SpleefSession session) {
+    public void onError(Session session) {
 
     }
 
     @StageHandler(stage = DefaultStage.WARMUP)
-    public void roundWarmup(SpleefSession session) {
+    public void roundWarmup(Session session) {
 
     }
 
     @StageHandler(stage = DefaultStage.BEGIN)
-    public void roundBegin(SpleefSession session) {
+    public void roundBegin(Session session) {
 
     }
 
     @StageHandler(stage = DefaultStage.PLAY)
-    public void roundPlay(SpleefSession session) {
+    public void roundPlay(Session session) {
 
     }
 
     @StageHandler(stage = DefaultStage.END)
-    public void roundEnd(SpleefSession session) {
+    public void roundEnd(Session session) {
 
     }
 
     @StageHandler(stage = DefaultStage.COOLDOWN)
-    public void roundCooldown(SpleefSession session) {
+    public void roundCooldown(Session session) {
 
     }
 
     @StageHandler(stage = DefaultStage.RESET)
-    public void roundReset(SpleefSession session) {
+    public void roundReset(Session session) {
 
     }
 
