@@ -59,7 +59,7 @@ public abstract class Session implements Serializable {
 
     public List<Profile> getProfiles() {
         ProfileRegistry registry = DemigamesPlugin.getProfileRegistry();
-        return profiles.stream().map(registry::fromKey).collect(Collectors.toList());
+        return profiles.stream().map(registry::fromKey).filter(Optional::isPresent).map(Optional::get).collect(Collectors.toList());
     }
 
     public Optional<Game> getGame() {

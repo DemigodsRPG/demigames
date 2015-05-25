@@ -23,8 +23,6 @@
 package com.demigodsrpg.demigames.spleef;
 
 import com.demigodsrpg.demigames.game.Game;
-import com.demigodsrpg.demigames.game.type.GameType;
-import com.demigodsrpg.demigames.game.type.GameTypes;
 import com.demigodsrpg.demigames.stage.DefaultStage;
 import com.demigodsrpg.demigames.stage.StageHandler;
 import org.bukkit.event.EventHandler;
@@ -74,11 +72,6 @@ public class SpleefGame implements Game {
     @Override
     public String getName() {
         return "Spleef";
-    }
-
-    @Override
-    public GameType getType() {
-        return GameTypes.ARENA;
     }
 
     @Override
