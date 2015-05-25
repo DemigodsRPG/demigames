@@ -41,7 +41,7 @@
         <dependency>
             <groupId>com.demigodsrpg</groupId>
             <artifactId>chitchat</artifactId>
-            <version>1.0.0-SNAPSHOT</version>
+            <version>1.2.0</version>
         </dependency>
 
         <!-- Apache Lang -->
