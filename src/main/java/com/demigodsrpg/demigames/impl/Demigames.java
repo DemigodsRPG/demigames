@@ -34,11 +34,12 @@ import java.io.File;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.jar.JarFile;
 
-public class DemigamesPlugin extends JavaPlugin {
-    private static DemigamesPlugin INST;
+public class Demigames extends JavaPlugin {
+    private static Demigames INST;
 
     // -- HANDLERS -- //
     private static LibraryHandler LIBRARIES;
+    private static TitleUtil TITLE_UTIL;
     private Redisson REDIS;
 
     // -- REGISTRIES -- //
@@ -52,6 +53,13 @@ public class DemigamesPlugin extends JavaPlugin {
 
         // Create the handlers
         LIBRARIES = new LibraryHandler(this);
+
+        // Setup title util
+        try {
+            TITLE_UTIL = new TitleUtil();
+        } catch (Exception oops) {
+            oops.printStackTrace();
+        }
 
         // Load the config
         getConfig().options().copyDefaults(true);
@@ -149,8 +157,12 @@ public class DemigamesPlugin extends JavaPlugin {
 
     // -- STATIC GETTERS -- //
 
-    public static DemigamesPlugin getInstance() {
+    public static Demigames getInstance() {
         return INST;
+    }
+
+    public static TitleUtil getTitleUtil() {
+        return TITLE_UTIL;
     }
 
     public static ProfileRegistry getProfileRegistry() {

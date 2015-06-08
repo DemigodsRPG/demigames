@@ -34,6 +34,6 @@ public class Setting {
     public static boolean USE_REDIS = getConfig().getBoolean("redis.use", true);
 
     private static Configuration getConfig() {
-        return DemigamesPlugin.getInstance().getConfig();
+        return Demigames.getInstance().getConfig();
     }
 }

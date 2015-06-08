@@ -29,7 +29,9 @@ public interface Game extends Listener {
 
     String getDirectory();
 
-    void onServerStart();
+    default void onServerStart() {
+    }
 
-    void onServerStop();
+    default void onServerStop() {
+    }
 }

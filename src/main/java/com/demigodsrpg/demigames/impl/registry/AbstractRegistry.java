@@ -36,4 +36,10 @@ public abstract class AbstractRegistry<K extends Serializable, V extends Seriali
     public Optional<V> fromKey(K key) {
         return Optional.ofNullable(REGISTERED_DATA.getOrDefault(key, null));
     }
+
+    public void removeIfPresent(K key) {
+        if (REGISTERED_DATA.containsKey(key)) {
+            REGISTERED_DATA.remove(key);
+        }
+    }
 }

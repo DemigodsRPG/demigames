@@ -22,10 +22,12 @@
 
 package com.demigodsrpg.demigames.impl.registry;
 
+import com.censoredsoftware.library.util.RandomUtil;
 import com.demigodsrpg.demigames.game.Game;
-import com.demigodsrpg.demigames.impl.DemigamesPlugin;
+import com.demigodsrpg.demigames.impl.Demigames;
 import com.demigodsrpg.demigames.session.Session;
 import com.demigodsrpg.demigames.stage.StageHandler;
+import com.google.common.collect.Lists;
 import org.apache.commons.io.FileUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.WorldCreator;
@@ -47,9 +49,9 @@ public class GameRegistry {
     private final ConcurrentMap<String, Game> MINIGAMES = new ConcurrentHashMap<>();
 
     public void register(Game game) {
-        Bukkit.getPluginManager().registerEvents(game, DemigamesPlugin.getInstance());
+        Bukkit.getPluginManager().registerEvents(game, Demigames.getInstance());
         MINIGAMES.put(game.getName(), game);
-        DemigamesPlugin.getInstance().getLogger().info("The \"" + game.getName() + "\" minigame has been registered.");
+        Demigames.getInstance().getLogger().info("The \"" + game.getName() + "\" minigame has been registered.");
     }
 
     public void registerFromJar(JarFile file) {
@@ -88,6 +90,14 @@ public class GameRegistry {
         return Optional.ofNullable(MINIGAMES.getOrDefault(name, null));
     }
 
+    public Optional<Game> randomGame() {
+        if (!MINIGAMES.isEmpty()) {
+            int index = RandomUtil.generateIntRange(0, MINIGAMES.size() - 1);
+            return Optional.of(Lists.newArrayList(MINIGAMES.values()).get(index));
+        }
+        return Optional.empty();
+    }
+
     // -- MUTATORS -- //
 
     public void updateStage(Game game, Session session, String stage, boolean process) {
@@ -116,21 +126,14 @@ public class GameRegistry {
         MINIGAMES.values().forEach(Game::onServerStop);
     }
 
-    // -- PRIVATE HELPER METHODS -- //
-
-    private String formatClassPath(String path) {
-        if (path.length() < 6) return path;
-        return path.substring(0, path.length() - 6).replaceAll("/", ".");
-    }
-
-    private void setupWorld(Game game) {
+    public void setupWorld(Game game) {
         // Unregister old worlds
         if (Bukkit.getWorld(game.getDirectory()) != null) {
             Bukkit.unloadWorld(game.getDirectory(), false);
         }
 
         // Delete old world directory and copy from file
-        File file = new File(DemigamesPlugin.getInstance().getDataFolder().getPath() + "/worlds/" + game.getDirectory() + "/");
+        File file = new File(Demigames.getInstance().getDataFolder().getPath() + "/worlds/" + game.getDirectory() + "/");
         try {
             FileUtils.deleteDirectory(new File("worlds/" + game.getDirectory()));
             FileUtils.copyDirectory(file, new File("worlds/" + game.getDirectory()), true);
@@ -139,6 +142,20 @@ public class GameRegistry {
 
         // Load new world
         new WorldCreator(game.getDirectory()).createWorld();
+    }
+
+    public void unloadWorld(Game game) {
+        // Unregister old worlds
+        if (Bukkit.getWorld(game.getDirectory()) != null) {
+            Bukkit.unloadWorld(game.getDirectory(), false);
+        }
+    }
+
+    // -- PRIVATE HELPER METHODS -- //
+
+    private String formatClassPath(String path) {
+        if (path.length() < 6) return path;
+        return path.substring(0, path.length() - 6).replaceAll("/", ".");
     }
 
     private boolean isMinigameClass(Class<?> clazz) {

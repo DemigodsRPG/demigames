@@ -1,5 +1,5 @@
 name: demigames
-main: com.demigodsrpg.demigames.impl.DemigamesPlugin
+main: com.demigodsrpg.demigames.impl.Demigames
 version: ${project.version}
 description: ${project.description}
 authors: [Asecta, HmmmQuestionMark]

@@ -23,7 +23,7 @@
 package com.demigodsrpg.demigames.session;
 
 import com.demigodsrpg.demigames.game.Game;
-import com.demigodsrpg.demigames.impl.DemigamesPlugin;
+import com.demigodsrpg.demigames.impl.Demigames;
 import com.demigodsrpg.demigames.impl.registry.ProfileRegistry;
 import com.demigodsrpg.demigames.profile.Profile;
 import com.demigodsrpg.demigames.stage.DefaultStage;
@@ -49,7 +49,7 @@ public class Session implements Serializable {
     public Session(String id, Game game) {
         this.id = id;
         this.game = Optional.of(game);
-        this.stage = DefaultStage.WARMUP;
+        this.stage = DefaultStage.SETUP;
     }
 
     public Session(String id, Game game, String stage) {
@@ -69,7 +69,7 @@ public class Session implements Serializable {
     }
 
     public List<Profile> getProfiles() {
-        ProfileRegistry registry = DemigamesPlugin.getProfileRegistry();
+        ProfileRegistry registry = Demigames.getProfileRegistry();
         return profiles.stream().map(registry::fromKey).filter(Optional::isPresent).map(Optional::get).collect(Collectors.toList());
     }
 
@@ -97,9 +97,21 @@ public class Session implements Serializable {
 
     public void updateStage(String stage, boolean process) {
         if (getGame().isPresent()) {
-            DemigamesPlugin.getGameRegistry().updateStage(getGame().get(), this, stage, process);
+            Demigames.getGameRegistry().updateStage(getGame().get(), this, stage, process);
         } else {
             throw new NullPointerException("A session is missing its respective game!");
         }
+    }
+
+    public void endSession(boolean nextGame) {
+        Demigames.getSessionRegistry().removeIfPresent(id);
+        if (nextGame) {
+            Optional<Game> opGame = Demigames.getGameRegistry().randomGame();
+            if (opGame.isPresent()) {
+                Demigames.getSessionRegistry().newSession(opGame.get()).updateStage(DefaultStage.SETUP, true);
+                return;
+            }
+        }
+        // TODO SHUTDOWN/RESTART
     }
 }

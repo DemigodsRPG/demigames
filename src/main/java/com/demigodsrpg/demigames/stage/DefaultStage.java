@@ -29,6 +29,7 @@ public class DefaultStage {
     public static final String END = "end";
     public static final String COOLDOWN = "cooldown";
     public static final String RESET = "reset";
+    public static final String SETUP = "setup";
     public static final String ERROR = "error";
 
     private DefaultStage() {
