@@ -50,9 +50,9 @@ public interface Game extends Listener {
 
     void onTie(Player player);
 
-    void playerJoins(Player player);
+    void onPlayerJoin(Player player);
 
-    void playerQuits(Player player);
+    void onPlayerQuit(Player player);
 
     default void onServerStart() {
     }

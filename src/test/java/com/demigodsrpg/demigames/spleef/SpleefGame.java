@@ -216,12 +216,12 @@ public class SpleefGame implements Game {
     // -- PLAYER JOIN/QUIT -- //
 
     @Override
-    public void playerJoins(Player player) {
+    public void onPlayerJoin(Player player) {
 
     }
 
     @Override
-    public void playerQuits(Player player) {
+    public void onPlayerQuit(Player player) {
 
     }
 
