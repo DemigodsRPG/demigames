@@ -24,10 +24,8 @@ package com.demigodsrpg.demigames.impl.registry;
 
 import com.demigodsrpg.demigames.profile.Profile;
 
-import java.util.concurrent.ConcurrentMap;
-
 public class ProfileRegistry extends AbstractRegistry<String, Profile> {
-    public ProfileRegistry(ConcurrentMap<String, Profile> dataMap) {
-        super(dataMap);
+    public ProfileRegistry() {
+        super("profile", Profile.class);
     }
 }

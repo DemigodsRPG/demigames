@@ -25,13 +25,7 @@ package com.demigodsrpg.demigames.impl;
 import org.bukkit.configuration.Configuration;
 
 public class Setting {
-    // -- FINAL -- //
-    public static final String REDIS_SERVER_ID = getConfig().getString("redis.server_id", "minecraft");
-    public static final String REDIS_CHANNEL = getConfig().getString("redis.channel", "default");
-    public static final String REDIS_CONNECTION = getConfig().getString("redis.connection", "127.0.0.1:6379");
-
-    // -- MUTABLE -- //
-    public static boolean USE_REDIS = getConfig().getBoolean("redis.use", true);
+    public static final String MODE = getConfig().getString("mode", "party");
 
     private static Configuration getConfig() {
         return Demigames.getInstance().getConfig();

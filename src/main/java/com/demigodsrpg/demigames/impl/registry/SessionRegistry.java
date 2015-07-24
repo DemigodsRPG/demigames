@@ -35,7 +35,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.concurrent.ConcurrentMap;
 import java.util.stream.Collectors;
 
 
@@ -43,8 +42,8 @@ public class SessionRegistry extends AbstractRegistry<String, Session> {
 
     // -- CONSTRUCTOR -- //
 
-    public SessionRegistry(ConcurrentMap<String, Session> dataMap) {
-        super(dataMap);
+    public SessionRegistry() {
+        super("session", Session.class);
     }
 
     // -- GETTERS -- //
@@ -52,18 +51,18 @@ public class SessionRegistry extends AbstractRegistry<String, Session> {
     public Session newSession(Game game) {
         String keyId = UUID.randomUUID().toString();
         Session newSession = new Session(keyId, game);
-        return REGISTERED_DATA.put(keyId, newSession);
+        return put(keyId, newSession);
     }
 
     public Session newSession(Game game, String stage) {
         String keyId = UUID.randomUUID().toString();
         Session newSession = new Session(keyId, game, stage);
-        return REGISTERED_DATA.put(keyId, newSession);
+        return put(keyId, newSession);
     }
 
     public List<Session> fromGame(Game game) {
         if (game != null) {
-            return REGISTERED_DATA.values().parallelStream().filter(session -> {
+            return REGISTERED_DATA.asMap().values().parallelStream().filter(session -> {
                 Optional<Game> foundGame = session.getGame();
                 return foundGame.isPresent() && foundGame.get().equals(game);
             }).collect(Collectors.toList());

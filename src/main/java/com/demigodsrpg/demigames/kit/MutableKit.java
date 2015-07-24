@@ -32,6 +32,7 @@ public class MutableKit implements Kit, Serializable {
 
     // -- DATA -- //
 
+    private String name;
     private String contents;
     private String armor;
 
@@ -40,9 +41,15 @@ public class MutableKit implements Kit, Serializable {
     public MutableKit() {
     }
 
-    public MutableKit(ItemStack[] contents, ItemStack[] armor) {
+    public MutableKit(String name, ItemStack[] contents, ItemStack[] armor) {
+        this.name = name;
         this.contents = ItemUtil.serializeItemStacks(contents);
         this.armor = ItemUtil.serializeItemStacks(armor);
+    }
+
+    @Override
+    public String getName() {
+        return name;
     }
 
     @Override
@@ -61,6 +68,6 @@ public class MutableKit implements Kit, Serializable {
         if (kit instanceof MutableKit) {
             return (MutableKit) kit;
         }
-        return new MutableKit(kit.getContents(), kit.getArmor());
+        return new MutableKit(kit.getName(), kit.getContents(), kit.getArmor());
     }
 }

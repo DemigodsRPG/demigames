@@ -30,17 +30,24 @@ public class ImmutableKit implements Kit {
 
     // -- DATA -- //
 
+    private final String name;
     private final ItemStack[] contents;
     private final ItemStack[] armor;
 
     // -- PRIVATE CONSTRUCTOR -- //
 
-    private ImmutableKit(ItemStack[] contents, ItemStack[] armor) {
+    private ImmutableKit(String name, ItemStack[] contents, ItemStack[] armor) {
+        this.name = name;
         this.contents = contents;
         this.armor = armor;
     }
 
     // -- GETTERS -- //
+
+    @Override
+    public String getName() {
+        return name;
+    }
 
     @Override
     public ItemStack[] getContents() {
@@ -55,6 +62,6 @@ public class ImmutableKit implements Kit {
     // -- STATIC CONSTRUCTOR METHOD -- //
 
     public static ImmutableKit of(Kit kit) {
-        return new ImmutableKit(kit.getContents(), kit.getArmor());
+        return new ImmutableKit(kit.getName(), kit.getContents(), kit.getArmor());
     }
 }

@@ -20,48 +20,36 @@
  * SOFTWARE.
  */
 
-package com.demigodsrpg.demigames.game;
+package com.demigodsrpg.demigames.game.mixin;
 
+import com.demigodsrpg.demigames.impl.Demigames;
 import com.demigodsrpg.demigames.session.Session;
-import org.bukkit.entity.Player;
-import org.bukkit.event.Listener;
+import com.demigodsrpg.demigames.stage.DefaultStage;
+import com.demigodsrpg.demigames.stage.StageHandler;
+import org.bukkit.World;
 
-public interface Game extends Listener {
-    String getName();
+import java.util.Optional;
 
-    String getDirectory();
-
-    boolean canPlace();
-
-    boolean canBreak();
-
-    boolean canDrop();
-
-    boolean canLateJoin();
-
-    boolean hasSpectateChat();
-
-    int getMinimumPlayers();
-
-    int getNumberOfTeams();
-
-    int getTotalRounds();
-
-    void onWin(Player player);
-
-    void onLose(Player player);
-
-    void onTie(Player player);
-
-    void onPlayerJoin(Player player);
-
-    void onPlayerQuit(Player player);
-
+public interface NoTeamSetupMixin {
     void setupLocations(Session session);
 
-    default void onServerStart() {
-    }
+    @StageHandler(stage = DefaultStage.SETUP)
+    default void roundSetup(Session session) {
+        // Setup the world
+        Optional<World> opWorld = Demigames.getSessionRegistry().setupWorld(session);
 
-    default void onServerStop() {
+        if (opWorld.isPresent()) {
+            // Setup the locations
+            setupLocations(session);
+
+            // Iterate the round
+            session.setCurrentRound(session.getCurrentRound() + 1);
+
+            // Update the stage
+            session.updateStage(DefaultStage.WARMUP, true);
+        } else {
+            // Update the stage
+            session.updateStage(DefaultStage.ERROR, true);
+        }
     }
 }

@@ -23,18 +23,19 @@
 package com.demigodsrpg.demigames.spleef;
 
 import com.demigodsrpg.demigames.game.Game;
+import com.demigodsrpg.demigames.game.mixin.LobbyWarmupMixin;
+import com.demigodsrpg.demigames.game.mixin.NoTeamSetupMixin;
 import com.demigodsrpg.demigames.impl.Demigames;
 import com.demigodsrpg.demigames.session.Session;
 import com.demigodsrpg.demigames.stage.DefaultStage;
 import com.demigodsrpg.demigames.stage.StageHandler;
-import org.bukkit.*;
+import org.bukkit.Location;
+import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.PlayerMoveEvent;
 
-import java.util.Optional;
-
-public class SpleefGame implements Game {
+public class SpleefGame implements Game, LobbyWarmupMixin, NoTeamSetupMixin {
     // -- SETTINGS -- //
 
     @Override
@@ -49,6 +50,11 @@ public class SpleefGame implements Game {
 
     @Override
     public boolean canDrop() {
+        return false;
+    }
+
+    @Override
+    public boolean canLateJoin() {
         return false;
     }
 
@@ -76,7 +82,8 @@ public class SpleefGame implements Game {
 
     private Location warmupSpawn;
 
-    private void setupLocations(Session session) {
+    @Override
+    public void setupLocations(Session session) {
         // Get the world
         World world = session.getWorld().get();
 
@@ -91,51 +98,6 @@ public class SpleefGame implements Game {
     @StageHandler(stage = DefaultStage.ERROR)
     public void onError(Session session) {
 
-    }
-
-    @StageHandler(stage = DefaultStage.SETUP)
-    public void roundSetup(Session session) {
-        // Setup the world
-        Optional<World> opWorld = Demigames.getSessionRegistry().setupWorld(session);
-
-        if (opWorld.isPresent()) {
-            // Setup the locations
-            setupLocations(session);
-
-            // Iterate the round
-            session.setCurrentRound(session.getCurrentRound() + 1);
-
-            // Update the stage
-            session.updateStage(DefaultStage.WARMUP, true);
-        } else {
-            // Update the stage
-            session.updateStage(DefaultStage.ERROR, true);
-        }
-    }
-
-    @StageHandler(stage = DefaultStage.WARMUP)
-    public void roundWarmup(Session session) {
-        for (Player player : session.getPlayers()) {
-            player.teleport(warmupSpawn);
-        }
-
-        for (int i = 0; i <= 8; i++) {
-            final int k = i;
-            Bukkit.getScheduler().scheduleSyncDelayedTask(Demigames.getInstance(), () -> {
-                Demigames.getTitleUtil().broadcastTitle(session, 2, 16, 2, ChatColor.GOLD + "Spleef!", "In " + k + " seconds!");
-                if (k == 8) {
-                    // Update the stage
-                    session.updateStage(DefaultStage.BEGIN, true);
-                    session.getPlayers().forEach(player -> {
-                        player.playSound(player.getLocation(), Sound.NOTE_PIANO, 1f, 1f);
-                    });
-                } else {
-                    session.getPlayers().forEach(player -> {
-                        player.playSound(player.getLocation(), Sound.NOTE_PIANO, 0.5f, 0.5f);
-                    });
-                }
-            }, i * 20);
-        }
     }
 
     @StageHandler(stage = DefaultStage.BEGIN)
@@ -185,6 +147,11 @@ public class SpleefGame implements Game {
     }
 
     // -- META DATA -- //
+
+    @Override
+    public Location getWarmupSpawn() {
+        return warmupSpawn;
+    }
 
     @Override
     public String getName() {

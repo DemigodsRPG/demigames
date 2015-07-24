@@ -27,6 +27,8 @@ import org.bukkit.inventory.ItemStack;
 import java.util.Optional;
 
 public interface Kit {
+    String getName();
+
     ItemStack[] getContents();
 
     ItemStack[] getArmor();
