@@ -28,14 +28,49 @@ import com.demigodsrpg.demigames.session.Session;
 import com.demigodsrpg.demigames.stage.DefaultStage;
 import com.demigodsrpg.demigames.stage.StageHandler;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.Sound;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.PlayerMoveEvent;
 
 public class SpleefGame implements Game {
     // -- SETTINGS -- //
 
-    private int TOTAL_ROUNDS = 3;
-    private int ROUND = 0;
+    @Override
+    public boolean canPlace() {
+        return false;
+    }
+
+    @Override
+    public boolean canBreak() {
+        return true;
+    }
+
+    @Override
+    public boolean canDrop() {
+        return false;
+    }
+
+    @Override
+    public boolean hasSpectateChat() {
+        return false;
+    }
+
+    @Override
+    public int getMinimumPlayers() {
+        return 3;
+    }
+
+    @Override
+    public int getNumberOfTeams() {
+        return 0;
+    }
+
+    @Override
+    public int getTotalRounds() {
+        return 3;
+    }
 
     // -- STAGES -- //
 
@@ -50,7 +85,7 @@ public class SpleefGame implements Game {
         Demigames.getGameRegistry().setupWorld(this);
 
         // Iterate the round
-        ROUND++;
+        session.setCurrentRound(session.getCurrentRound() + 1);
 
         // Update the stage
         session.updateStage(DefaultStage.WARMUP, true);
@@ -61,12 +96,18 @@ public class SpleefGame implements Game {
         for (int i = 0; i <= 8; i++) {
             final int k = i;
             Bukkit.getScheduler().scheduleSyncDelayedTask(Demigames.getInstance(), () -> {
-                Demigames.getTitleUtil().broadcastTitle(); // TODO Send to everyone
+                Demigames.getTitleUtil().broadcastTitle(session, 2, 16, 2, ChatColor.GOLD + "Spleef!", "In " + k + " seconds!");
                 if (k == 8) {
                     // Update the stage
                     session.updateStage(DefaultStage.BEGIN, true);
+                    session.getPlayers().forEach(player -> {
+                        player.playSound(player.getLocation(), Sound.NOTE_PIANO, 1f, 1f);
+                    });
+                } else {
+                    session.getPlayers().forEach(player -> {
+                        player.playSound(player.getLocation(), Sound.NOTE_PIANO, 0.5f, 0.5f);
+                    });
                 }
-
             }, i * 20);
         }
     }
@@ -96,7 +137,7 @@ public class SpleefGame implements Game {
     public void roundCooldown(Session session) {
 
         // Update the stage
-        if (ROUND == TOTAL_ROUNDS) {
+        if (session.getCurrentRound() == getTotalRounds()) {
             session.endSession(true);
         } else {
             session.updateStage(DefaultStage.RESET, true);
@@ -127,6 +168,23 @@ public class SpleefGame implements Game {
     @Override
     public String getDirectory() {
         return "spleef";
+    }
+
+    // -- WIN/LOSE/TIE CONDITIONS -- //
+
+    @Override
+    public void onWin(Player player) {
+
+    }
+
+    @Override
+    public void onLose(Player player) {
+
+    }
+
+    @Override
+    public void onTie(Player player) {
+
     }
 
     // -- START & STOP -- //

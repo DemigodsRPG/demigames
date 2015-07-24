@@ -22,12 +22,33 @@
 
 package com.demigodsrpg.demigames.game;
 
+import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 
 public interface Game extends Listener {
     String getName();
 
     String getDirectory();
+
+    boolean canPlace();
+
+    boolean canBreak();
+
+    boolean canDrop();
+
+    boolean hasSpectateChat();
+
+    int getMinimumPlayers();
+
+    int getNumberOfTeams();
+
+    int getTotalRounds();
+
+    void onWin(Player player);
+
+    void onLose(Player player);
+
+    void onTie(Player player);
 
     default void onServerStart() {
     }

@@ -43,6 +43,7 @@ public class Session implements Serializable {
     protected List<String> profiles = new ArrayList<>();
     protected String id;
     protected String stage;
+    protected int currentRound;
 
     // -- CONSTRUCTOR -- //
 
@@ -68,9 +69,19 @@ public class Session implements Serializable {
         return stage;
     }
 
+    public int getCurrentRound() {
+        return currentRound;
+    }
+
     public List<Profile> getProfiles() {
         ProfileRegistry registry = Demigames.getProfileRegistry();
         return profiles.stream().map(registry::fromKey).filter(Optional::isPresent).map(Optional::get).collect(Collectors.toList());
+    }
+
+    @Deprecated
+    public List<Player> getPlayers() {
+        return getProfiles().stream().filter(profile -> profile.getPlayer().isPresent()).
+                map(profile1 -> profile1.getPlayer().get()).collect(Collectors.toList());
     }
 
     public Optional<Game> getGame() {
@@ -101,6 +112,10 @@ public class Session implements Serializable {
         } else {
             throw new NullPointerException("A session is missing its respective game!");
         }
+    }
+
+    public void setCurrentRound(int currentRound) {
+        this.currentRound = currentRound;
     }
 
     public void endSession(boolean nextGame) {

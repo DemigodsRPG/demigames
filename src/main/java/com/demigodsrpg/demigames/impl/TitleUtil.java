@@ -22,6 +22,8 @@
 
 package com.demigodsrpg.demigames.impl;
 
+import com.demigodsrpg.demigames.profile.Profile;
+import com.demigodsrpg.demigames.session.Session;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -93,6 +95,24 @@ public class TitleUtil {
      */
     public void broadcastTitle(int fadeInTicks, int stayTicks, int fadeOutTicks, String title, String subtitle) {
         Bukkit.getOnlinePlayers().forEach(player -> sendTitle(player, fadeInTicks, stayTicks, fadeOutTicks, title, subtitle));
+    }
+
+    /**
+     * Send a title message to all players in a session.
+     *
+     * @param session      The session being broadcast to.
+     * @param fadeInTicks  The ticks the message takes to fade in.
+     * @param stayTicks    The ticks the message stays on screen (sans fades).
+     * @param fadeOutTicks The ticks the message takes to fade out.
+     * @param title        The title text.
+     * @param subtitle     The subtitle text.
+     */
+    public void broadcastTitle(Session session, int fadeInTicks, int stayTicks, int fadeOutTicks, String title, String subtitle) {
+        session.getProfiles().stream().map(Profile::getPlayer).forEach(player -> {
+            if (player.isPresent()) {
+                sendTitle(player.get(), fadeInTicks, stayTicks, fadeOutTicks, title, subtitle);
+            }
+        });
     }
 
     /**
