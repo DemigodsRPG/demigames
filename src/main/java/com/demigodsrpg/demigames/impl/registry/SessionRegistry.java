@@ -23,8 +23,14 @@
 package com.demigodsrpg.demigames.impl.registry;
 
 import com.demigodsrpg.demigames.game.Game;
+import com.demigodsrpg.demigames.impl.Demigames;
 import com.demigodsrpg.demigames.session.Session;
+import org.apache.commons.io.FileUtils;
+import org.bukkit.Bukkit;
+import org.bukkit.World;
+import org.bukkit.WorldCreator;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -63,5 +69,33 @@ public class SessionRegistry extends AbstractRegistry<String, Session> {
             }).collect(Collectors.toList());
         }
         return new ArrayList<>();
+    }
+
+    public Optional<World> setupWorld(Session session) {
+        if (!session.getGame().isPresent()) {
+            Game game = session.getGame().get();
+
+            // Delete old world directory and copy from file
+            File file = new File(Demigames.getInstance().getDataFolder().getPath() + "/worlds/" + game.getDirectory() + "/");
+            try {
+                FileUtils.copyDirectory(file, new File("worlds/" + game.getDirectory()), true);
+            } catch (Exception ignored) {
+            }
+
+            // Load new world
+            return Optional.ofNullable(new WorldCreator(game.getDirectory()).createWorld());
+        }
+        return Optional.empty();
+    }
+
+    public void unloadWorld(Session session) {
+        // Unregister old worlds
+        if (Bukkit.getWorld(session.getId()) != null) {
+            Bukkit.unloadWorld(session.getId(), false);
+        }
+        try {
+            FileUtils.deleteDirectory(new File("worlds/" + session.getId()));
+        } catch (Exception ignored) {
+        }
     }
 }

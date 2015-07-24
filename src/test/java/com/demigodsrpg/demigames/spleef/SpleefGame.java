@@ -27,12 +27,12 @@ import com.demigodsrpg.demigames.impl.Demigames;
 import com.demigodsrpg.demigames.session.Session;
 import com.demigodsrpg.demigames.stage.DefaultStage;
 import com.demigodsrpg.demigames.stage.StageHandler;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Sound;
+import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.PlayerMoveEvent;
+
+import java.util.Optional;
 
 public class SpleefGame implements Game {
     // -- SETTINGS -- //
@@ -72,6 +72,20 @@ public class SpleefGame implements Game {
         return 3;
     }
 
+    // -- LOCATIONS -- //
+
+    private Location warmupSpawn;
+
+    private void setupLocations(Session session) {
+        // Get the world
+        World world = session.getWorld().get();
+
+        // TODO Config for locations
+
+        // Get the warmup spawn
+        warmupSpawn = world.getSpawnLocation();
+    }
+
     // -- STAGES -- //
 
     @StageHandler(stage = DefaultStage.ERROR)
@@ -82,17 +96,29 @@ public class SpleefGame implements Game {
     @StageHandler(stage = DefaultStage.SETUP)
     public void roundSetup(Session session) {
         // Setup the world
-        Demigames.getGameRegistry().setupWorld(this);
+        Optional<World> opWorld = Demigames.getSessionRegistry().setupWorld(session);
 
-        // Iterate the round
-        session.setCurrentRound(session.getCurrentRound() + 1);
+        if (opWorld.isPresent()) {
+            // Setup the locations
+            setupLocations(session);
 
-        // Update the stage
-        session.updateStage(DefaultStage.WARMUP, true);
+            // Iterate the round
+            session.setCurrentRound(session.getCurrentRound() + 1);
+
+            // Update the stage
+            session.updateStage(DefaultStage.WARMUP, true);
+        } else {
+            // Update the stage
+            session.updateStage(DefaultStage.ERROR, true);
+        }
     }
 
     @StageHandler(stage = DefaultStage.WARMUP)
     public void roundWarmup(Session session) {
+        for (Player player : session.getPlayers()) {
+            player.teleport(warmupSpawn);
+        }
+
         for (int i = 0; i <= 8; i++) {
             final int k = i;
             Bukkit.getScheduler().scheduleSyncDelayedTask(Demigames.getInstance(), () -> {
@@ -187,6 +213,18 @@ public class SpleefGame implements Game {
 
     }
 
+    // -- PLAYER JOIN/QUIT -- //
+
+    @Override
+    public void playerJoins(Player player) {
+
+    }
+
+    @Override
+    public void playerQuits(Player player) {
+
+    }
+
     // -- START & STOP -- //
 
     @Override
@@ -196,6 +234,8 @@ public class SpleefGame implements Game {
 
     @Override
     public void onServerStop() {
-        Demigames.getGameRegistry().unloadWorld(this);
+        for (Session session : Demigames.getSessionRegistry().fromGame(this)) {
+            session.endSession(false);
+        }
     }
 }

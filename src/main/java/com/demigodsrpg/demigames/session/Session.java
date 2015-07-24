@@ -25,8 +25,11 @@ package com.demigodsrpg.demigames.session;
 import com.demigodsrpg.demigames.game.Game;
 import com.demigodsrpg.demigames.impl.Demigames;
 import com.demigodsrpg.demigames.impl.registry.ProfileRegistry;
+import com.demigodsrpg.demigames.impl.registry.SessionRegistry;
 import com.demigodsrpg.demigames.profile.Profile;
 import com.demigodsrpg.demigames.stage.DefaultStage;
+import org.bukkit.Bukkit;
+import org.bukkit.World;
 import org.bukkit.entity.Player;
 
 import java.io.Serializable;
@@ -88,10 +91,18 @@ public class Session implements Serializable {
         return game;
     }
 
+    public Optional<World> getWorld() {
+        return Optional.ofNullable(Bukkit.getWorld(id));
+    }
+
     // -- MUTATORS -- //
 
     public void addProfile(Profile profile) {
         profiles.add(profile.getMojangUniqueId());
+    }
+
+    public void addProfiles(List<Profile> profiles) {
+        this.profiles.addAll(profiles.stream().map(Profile::getMojangUniqueId).collect(Collectors.toList()));
     }
 
     public void removeProfile(Profile profile) {
@@ -119,14 +130,18 @@ public class Session implements Serializable {
     }
 
     public void endSession(boolean nextGame) {
-        Demigames.getSessionRegistry().removeIfPresent(id);
+        SessionRegistry registry = Demigames.getSessionRegistry();
+        registry.removeIfPresent(id);
+
         if (nextGame) {
             Optional<Game> opGame = Demigames.getGameRegistry().randomGame();
             if (opGame.isPresent()) {
-                Demigames.getSessionRegistry().newSession(opGame.get()).updateStage(DefaultStage.SETUP, true);
-                return;
+                Session newSession = registry.newSession(opGame.get());
+                newSession.profiles.addAll(profiles);
+                newSession.updateStage(DefaultStage.SETUP, true);
             }
         }
-        // TODO SHUTDOWN/RESTART
+
+        registry.unloadWorld(this);
     }
 }
