@@ -74,7 +74,7 @@ public abstract class AbstractRegistry<K extends Serializable, V extends Seriali
     }
 
     public void removeFile(K key) {
-        File file = new File(FOLDER.getPath() + key.toString() + ".json");
+        File file = new File(FOLDER.getPath() + "/" + key.toString() + ".json");
         if (file.exists()) {
             file.delete();
         }
@@ -82,7 +82,7 @@ public abstract class AbstractRegistry<K extends Serializable, V extends Seriali
 
     public void saveToFile(K key) {
         if (REGISTERED_DATA.asMap().containsKey(key)) {
-            File file = new File(FOLDER.getPath() + key.toString() + ".json");
+            File file = new File(FOLDER.getPath() + "/" + key.toString() + ".json");
             if (!(file.exists())) {
                 createFile(file);
             }
@@ -101,7 +101,7 @@ public abstract class AbstractRegistry<K extends Serializable, V extends Seriali
     public void loadFromFile(K key) {
         Gson gson = new GsonBuilder().create();
         try {
-            File file = new File(FOLDER.getPath() + key.toString() + ".json");
+            File file = new File(FOLDER.getPath() + "/" + key.toString() + ".json");
             if (file.exists()) {
                 FileInputStream inputStream = new FileInputStream(file);
                 InputStreamReader reader = new InputStreamReader(inputStream);

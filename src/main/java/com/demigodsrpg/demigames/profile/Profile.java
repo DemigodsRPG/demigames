@@ -22,6 +22,7 @@
 
 package com.demigodsrpg.demigames.profile;
 
+import com.demigodsrpg.demigames.impl.Demigames;
 import com.demigodsrpg.demigames.kit.Kit;
 import com.demigodsrpg.demigames.kit.MutableKit;
 import org.bukkit.Bukkit;
@@ -44,6 +45,7 @@ public class Profile implements Serializable {
 
     public Profile() {
         this.player = Optional.empty();
+        Demigames.getProfileRegistry().put(mojangUniqueId, this);
     }
 
     public Profile(Player player) {
@@ -51,6 +53,7 @@ public class Profile implements Serializable {
         this.mojangUniqueId = player.getUniqueId().toString();
         this.kit = null;
         this.currentSessionId = null;
+        Demigames.getProfileRegistry().put(mojangUniqueId, this);
     }
 
     public Profile(Player player, Kit kit) {
@@ -58,6 +61,7 @@ public class Profile implements Serializable {
         this.mojangUniqueId = player.getUniqueId().toString();
         this.kit = MutableKit.of(kit);
         this.currentSessionId = null;
+        Demigames.getProfileRegistry().put(mojangUniqueId, this);
     }
 
     // -- GETTERS -- //
@@ -88,9 +92,11 @@ public class Profile implements Serializable {
 
     public void setKit(Kit kit) {
         this.kit = MutableKit.of(kit);
+        Demigames.getProfileRegistry().put(mojangUniqueId, this);
     }
 
     public void setCurrentSessionId(String sessionId) {
         this.currentSessionId = sessionId;
+        Demigames.getProfileRegistry().put(mojangUniqueId, this);
     }
 }

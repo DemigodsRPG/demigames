@@ -24,11 +24,13 @@ package com.demigodsrpg.demigames.impl.registry;
 
 import com.demigodsrpg.demigames.game.Game;
 import com.demigodsrpg.demigames.impl.Demigames;
+import com.demigodsrpg.demigames.profile.Profile;
 import com.demigodsrpg.demigames.session.Session;
 import org.apache.commons.io.FileUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.WorldCreator;
+import org.bukkit.entity.Player;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -70,14 +72,27 @@ public class SessionRegistry extends AbstractRegistry<String, Session> {
         return new ArrayList<>();
     }
 
+    public Optional<Session> getSession(Player player) {
+        Optional<Profile> opProfile = Demigames.getProfileRegistry().fromKey(player.getUniqueId().toString());
+        if (opProfile.isPresent()) {
+            Optional<String> opId = opProfile.get().getCurrentSessionId();
+            if (opId.isPresent()) {
+                return fromKey(opId.get());
+            }
+        }
+        return Optional.empty();
+    }
+
+    // -- WORLD STUFF -- //
+
     public Optional<World> setupWorld(Session session) {
         if (session.getGame().isPresent()) {
             Game game = session.getGame().get();
 
-            // Delete old world directory and copy from file
+            // Copy world from file
             File file = new File(Demigames.getInstance().getDataFolder().getPath() + "/worlds/" + game.getDirectory() + "/");
             try {
-                FileUtils.copyDirectory(file, new File("worlds/" + session.getId()), true);
+                FileUtils.copyDirectory(file, new File(session.getId()), true);
             } catch (Exception oops) {
                 oops.printStackTrace();
             }
@@ -93,9 +108,18 @@ public class SessionRegistry extends AbstractRegistry<String, Session> {
         if (Bukkit.getWorld(session.getId()) != null) {
             Bukkit.unloadWorld(session.getId(), false);
         }
-        try {
-            FileUtils.deleteDirectory(new File("worlds/" + session.getId()));
-        } catch (Exception ignored) {
-        }
+
+        // Delete the old world
+        Bukkit.getScheduler().scheduleSyncDelayedTask(Demigames.getInstance(), () -> {
+            try {
+                FileUtils.deleteDirectory(new File(session.getId()));
+            } catch (Exception oops) {
+                oops.printStackTrace();
+            }
+        }, 60);
+    }
+
+    public void unloadAllWorlds() {
+        REGISTERED_DATA.asMap().values().forEach(this::unloadWorld);
     }
 }

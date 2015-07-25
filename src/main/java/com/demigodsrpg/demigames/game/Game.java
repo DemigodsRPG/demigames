@@ -22,9 +22,12 @@
 
 package com.demigodsrpg.demigames.game;
 
+import com.demigodsrpg.demigames.impl.Demigames;
 import com.demigodsrpg.demigames.session.Session;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
+
+import java.util.Optional;
 
 public interface Game extends Listener {
     String getName();
@@ -63,5 +66,15 @@ public interface Game extends Listener {
     }
 
     default void onServerStop() {
+    }
+
+    default Optional<Session> checkPlayer(Player player) {
+        Optional<Session> opSession = Demigames.getSessionRegistry().getSession(player);
+        if (opSession.isPresent() && opSession.get().getGame().isPresent()) {
+            if (opSession.get().getGame().get().equals(this)) {
+                return opSession;
+            }
+        }
+        return Optional.empty();
     }
 }

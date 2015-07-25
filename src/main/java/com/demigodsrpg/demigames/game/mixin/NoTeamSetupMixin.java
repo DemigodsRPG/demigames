@@ -22,6 +22,7 @@
 
 package com.demigodsrpg.demigames.game.mixin;
 
+import com.demigodsrpg.demigames.game.Game;
 import com.demigodsrpg.demigames.impl.Demigames;
 import com.demigodsrpg.demigames.session.Session;
 import com.demigodsrpg.demigames.stage.DefaultStage;
@@ -30,9 +31,7 @@ import org.bukkit.World;
 
 import java.util.Optional;
 
-public interface NoTeamSetupMixin {
-    void setupLocations(Session session);
-
+public interface NoTeamSetupMixin extends Game {
     @StageHandler(stage = DefaultStage.SETUP)
     default void roundSetup(Session session) {
         // Setup the world

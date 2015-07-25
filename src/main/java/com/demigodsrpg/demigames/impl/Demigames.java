@@ -87,6 +87,9 @@ public class Demigames extends JavaPlugin {
     public void onDisable() {
         // Handle minigame server stop methods
         GAME_REGISTRY.handlePluginStop();
+
+        // Unload all sessions
+        SESSION_REGISTRY.unloadAllWorlds();
     }
 
     // -- HELPER METHODS -- //

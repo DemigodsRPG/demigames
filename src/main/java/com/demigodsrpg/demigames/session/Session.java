@@ -24,6 +24,7 @@ package com.demigodsrpg.demigames.session;
 
 import com.demigodsrpg.demigames.game.Game;
 import com.demigodsrpg.demigames.impl.Demigames;
+import com.demigodsrpg.demigames.impl.Setting;
 import com.demigodsrpg.demigames.impl.registry.ProfileRegistry;
 import com.demigodsrpg.demigames.impl.registry.SessionRegistry;
 import com.demigodsrpg.demigames.profile.Profile;
@@ -33,9 +34,7 @@ import org.bukkit.World;
 import org.bukkit.entity.Player;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class Session implements Serializable {
@@ -44,6 +43,7 @@ public class Session implements Serializable {
 
     protected transient Optional<Game> game;
     protected List<String> profiles = new ArrayList<>();
+    protected Map<String, Object> data;
     protected String id;
     protected String stage;
     protected int currentRound;
@@ -54,12 +54,14 @@ public class Session implements Serializable {
         this.id = id;
         this.game = Optional.of(game);
         this.stage = DefaultStage.SETUP;
+        this.data = new HashMap<>();
     }
 
     public Session(String id, Game game, String stage) {
         this.id = id;
         this.game = Optional.of(game);
         this.stage = stage;
+        this.data = new HashMap<>();
     }
 
     // -- GETTERS -- //
@@ -83,8 +85,8 @@ public class Session implements Serializable {
 
     @Deprecated
     public List<Player> getPlayers() {
-        return getProfiles().stream().filter(profile -> profile.getPlayer().isPresent()).
-                map(profile1 -> profile1.getPlayer().get()).collect(Collectors.toList());
+        return getProfiles().stream().filter(profile -> profile.getPlayer().isPresent()).map(profile ->
+                profile.getPlayer().get()).collect(Collectors.toList());
     }
 
     public Optional<Game> getGame() {
@@ -95,14 +97,20 @@ public class Session implements Serializable {
         return Optional.ofNullable(Bukkit.getWorld(id));
     }
 
+    public Map<String, Object> getData() {
+        return data;
+    }
+
     // -- MUTATORS -- //
 
     public void addProfile(Profile profile) {
+        profile.setCurrentSessionId(id);
         profiles.add(profile.getMojangUniqueId());
         Demigames.getSessionRegistry().put(id, this);
     }
 
     public void addProfiles(List<Profile> profiles) {
+        profiles.forEach(profile -> profile.setCurrentSessionId(id));
         this.profiles.addAll(profiles.stream().map(Profile::getMojangUniqueId).collect(Collectors.toList()));
         Demigames.getSessionRegistry().put(id, this);
     }
@@ -140,7 +148,8 @@ public class Session implements Serializable {
         SessionRegistry registry = Demigames.getSessionRegistry();
         registry.removeIfPresent(id);
 
-        if (nextGame) {
+        // Party mode
+        if ("party".equals(Setting.MODE) && nextGame) {
             Optional<Game> opGame = Demigames.getGameRegistry().randomGame();
             if (opGame.isPresent()) {
                 Session newSession = registry.newSession(opGame.get());
@@ -148,7 +157,14 @@ public class Session implements Serializable {
                 newSession.updateStage(DefaultStage.SETUP, true);
             }
         }
+        // Lobby mode, or empty party
+        else {
+            getPlayers().forEach(player -> player.teleport(Bukkit.getWorlds().get(0).getSpawnLocation())); // TODO
+        }
 
-        registry.unloadWorld(this);
+        // Unload the world
+        Bukkit.getScheduler().scheduleAsyncDelayedTask(Demigames.getInstance(), () -> {
+            registry.unloadWorld(this);
+        }, 60);
     }
 }

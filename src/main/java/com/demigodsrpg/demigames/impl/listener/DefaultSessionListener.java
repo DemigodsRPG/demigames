@@ -38,7 +38,7 @@ import java.util.Optional;
 public class DefaultSessionListener implements Listener {
     @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerJoin(PlayerJoinEvent event) {
-        Optional<Game> opGame = Demigames.getGameRegistry().getMinigame("Spleef");
+        Optional<Game> opGame = Demigames.getGameRegistry().randomGame();
         if (opGame.isPresent()) {
             Session session = Demigames.getSessionRegistry().newSession(opGame.get());
             session.addProfile(new Profile(event.getPlayer()));
