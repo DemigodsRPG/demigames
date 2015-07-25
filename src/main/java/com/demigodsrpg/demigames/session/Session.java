@@ -99,22 +99,27 @@ public class Session implements Serializable {
 
     public void addProfile(Profile profile) {
         profiles.add(profile.getMojangUniqueId());
+        Demigames.getSessionRegistry().put(id, this);
     }
 
     public void addProfiles(List<Profile> profiles) {
         this.profiles.addAll(profiles.stream().map(Profile::getMojangUniqueId).collect(Collectors.toList()));
+        Demigames.getSessionRegistry().put(id, this);
     }
 
     public void removeProfile(Profile profile) {
         profiles.remove(profile.getMojangUniqueId());
+        Demigames.getSessionRegistry().put(id, this);
     }
 
     public void removeProfile(Player player) {
         profiles = profiles.parallelStream().filter(profile -> !profile.equals(player.getUniqueId().toString())).collect(Collectors.toList());
+        Demigames.getSessionRegistry().put(id, this);
     }
 
     public void setStage(String stage) {
         this.stage = stage;
+        Demigames.getSessionRegistry().put(id, this);
     }
 
     public void updateStage(String stage, boolean process) {
@@ -123,10 +128,12 @@ public class Session implements Serializable {
         } else {
             throw new NullPointerException("A session is missing its respective game!");
         }
+        Demigames.getSessionRegistry().put(id, this);
     }
 
     public void setCurrentRound(int currentRound) {
         this.currentRound = currentRound;
+        Demigames.getSessionRegistry().put(id, this);
     }
 
     public void endSession(boolean nextGame) {

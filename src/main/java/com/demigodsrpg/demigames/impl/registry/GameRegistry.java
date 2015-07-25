@@ -25,13 +25,17 @@ package com.demigodsrpg.demigames.impl.registry;
 import com.censoredsoftware.library.util.RandomUtil;
 import com.demigodsrpg.demigames.game.Game;
 import com.demigodsrpg.demigames.impl.Demigames;
+import com.demigodsrpg.demigames.impl.util.ClassPathHack;
 import com.demigodsrpg.demigames.session.Session;
 import com.demigodsrpg.demigames.stage.StageHandler;
 import com.google.common.collect.Lists;
 import org.bukkit.Bukkit;
 import org.bukkit.event.HandlerList;
 
+import java.io.File;
+import java.io.IOException;
 import java.lang.reflect.Method;
+import java.net.URLClassLoader;
 import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.List;
@@ -51,8 +55,10 @@ public class GameRegistry {
         Demigames.getInstance().getLogger().info("The \"" + game.getName() + "\" minigame has been registered.");
     }
 
-    public void registerFromJar(JarFile file) {
-        for (Enumeration<JarEntry> en = file.entries(); en.hasMoreElements(); ) {
+    public void registerFromJar(File file) throws IOException {
+        ClassPathHack.addFile(file, (URLClassLoader) Demigames.class.getClassLoader());
+        JarFile jar = new JarFile(file);
+        for (Enumeration<JarEntry> en = jar.entries(); en.hasMoreElements(); ) {
             JarEntry next = en.nextElement();
 
             // Make sure it's a class
@@ -139,7 +145,8 @@ public class GameRegistry {
     }
 
     private List<Method> getStageHandlers(Game game, String stage) {
-        return Arrays.asList(game.getClass().getDeclaredMethods()).stream().filter(method -> method.isAnnotationPresent(StageHandler.class) && stage.equals(method.getAnnotation(StageHandler.class).stage())
-                && method.getParameters().length == 1 && method.getParameters()[0].getType().isAssignableFrom(Session.class)).collect(Collectors.toList());
+        return Arrays.asList(game.getClass().getMethods()).stream().filter(method -> method.isAnnotationPresent(StageHandler.class)
+                && stage.equals(method.getAnnotation(StageHandler.class).stage()) && method.getParameters().length == 1
+                && method.getParameters()[0].getType().isAssignableFrom(Session.class)).collect(Collectors.toList());
     }
 }

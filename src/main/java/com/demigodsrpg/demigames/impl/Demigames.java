@@ -22,6 +22,7 @@
 
 package com.demigodsrpg.demigames.impl;
 
+import com.demigodsrpg.demigames.impl.listener.DefaultSessionListener;
 import com.demigodsrpg.demigames.impl.registry.GameRegistry;
 import com.demigodsrpg.demigames.impl.registry.ProfileRegistry;
 import com.demigodsrpg.demigames.impl.registry.SessionRegistry;
@@ -29,7 +30,6 @@ import com.demigodsrpg.demigames.impl.util.LibraryHandler;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
-import java.util.jar.JarFile;
 
 public class Demigames extends JavaPlugin {
     private static Demigames INST;
@@ -70,6 +70,9 @@ public class Demigames extends JavaPlugin {
         PROFILE_REGISTRY = new ProfileRegistry();
         SESSION_REGISTRY = new SessionRegistry();
 
+        // Handle listeners
+        getServer().getPluginManager().registerEvents(new DefaultSessionListener(), this);
+
         // Load the components. If there was an error, cancel the plugin from loading
         if (!loadComponents()) {
             getServer().getPluginManager().disablePlugin(this);
@@ -104,8 +107,7 @@ public class Demigames extends JavaPlugin {
         // Look for jar files
         for (File file : componentDirectory.listFiles((dir, name) -> name.endsWith(".jar"))) {
             try {
-                JarFile jar = new JarFile(file);
-                GAME_REGISTRY.registerFromJar(jar);
+                GAME_REGISTRY.registerFromJar(file);
             } catch (Exception oops) {
                 oops.printStackTrace();
             }

@@ -22,7 +22,28 @@
 
 package com.demigodsrpg.demigames.impl.listener;
 
+import com.demigodsrpg.demigames.game.Game;
+import com.demigodsrpg.demigames.impl.Demigames;
+import com.demigodsrpg.demigames.profile.Profile;
+import com.demigodsrpg.demigames.session.Session;
+import com.demigodsrpg.demigames.stage.DefaultStage;
+import org.bukkit.Bukkit;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerJoinEvent;
+
+import java.util.Optional;
 
 public class DefaultSessionListener implements Listener {
+    @EventHandler(priority = EventPriority.MONITOR)
+    public void onPlayerJoin(PlayerJoinEvent event) {
+        Optional<Game> opGame = Demigames.getGameRegistry().getMinigame("Spleef");
+        if (opGame.isPresent()) {
+            Session session = Demigames.getSessionRegistry().newSession(opGame.get());
+            session.addProfile(new Profile(event.getPlayer()));
+            Bukkit.getScheduler().scheduleSyncDelayedTask(Demigames.getInstance(), () ->
+                    session.updateStage(DefaultStage.SETUP, true), 60);
+        }
+    }
 }

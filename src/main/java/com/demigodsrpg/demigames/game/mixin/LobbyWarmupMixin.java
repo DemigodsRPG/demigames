@@ -43,6 +43,9 @@ public interface LobbyWarmupMixin {
             player.teleport(getWarmupSpawn());
         }
 
+        // Iterate the round
+        session.setCurrentRound(session.getCurrentRound() + 1);
+
         for (int i = 0; i <= 8; i++) {
             final int k = i;
             Bukkit.getScheduler().scheduleSyncDelayedTask(Demigames.getInstance(), () -> {

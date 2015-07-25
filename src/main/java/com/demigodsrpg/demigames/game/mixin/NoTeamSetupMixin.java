@@ -42,9 +42,6 @@ public interface NoTeamSetupMixin {
             // Setup the locations
             setupLocations(session);
 
-            // Iterate the round
-            session.setCurrentRound(session.getCurrentRound() + 1);
-
             // Update the stage
             session.updateStage(DefaultStage.WARMUP, true);
         } else {

@@ -71,18 +71,19 @@ public class SessionRegistry extends AbstractRegistry<String, Session> {
     }
 
     public Optional<World> setupWorld(Session session) {
-        if (!session.getGame().isPresent()) {
+        if (session.getGame().isPresent()) {
             Game game = session.getGame().get();
 
             // Delete old world directory and copy from file
             File file = new File(Demigames.getInstance().getDataFolder().getPath() + "/worlds/" + game.getDirectory() + "/");
             try {
-                FileUtils.copyDirectory(file, new File("worlds/" + game.getDirectory()), true);
-            } catch (Exception ignored) {
+                FileUtils.copyDirectory(file, new File("worlds/" + session.getId()), true);
+            } catch (Exception oops) {
+                oops.printStackTrace();
             }
 
             // Load new world
-            return Optional.ofNullable(new WorldCreator(game.getDirectory()).createWorld());
+            return Optional.ofNullable(new WorldCreator(session.getId()).createWorld());
         }
         return Optional.empty();
     }
