@@ -2,7 +2,7 @@ name: demigames
 main: com.demigodsrpg.demigames.impl.Demigames
 version: ${project.version}
 description: ${project.description}
-authors: [Asecta, HmmmQuestionMark]
+authors: [Asecta, HmmmQuestionMark, janie177]
 softdepend: [Chitchat]
 commands:
   ## Everyday Commands
