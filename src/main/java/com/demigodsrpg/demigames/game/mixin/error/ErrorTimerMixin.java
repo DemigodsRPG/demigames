@@ -33,7 +33,7 @@ import org.bukkit.Sound;
 
 public interface ErrorTimerMixin extends Game {
     @StageHandler(stage = DefaultStage.ERROR)
-    default void roundWarmup(Session session) {
+    default void roundError(Session session) {
         for (int i = 0; i <= 5; i++) {
             final int k = i;
             Bukkit.getScheduler().scheduleSyncDelayedTask(Demigames.getInstance(), () -> {
