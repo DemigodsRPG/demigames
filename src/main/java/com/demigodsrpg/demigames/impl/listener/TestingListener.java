@@ -23,7 +23,6 @@
 package com.demigodsrpg.demigames.impl.listener;
 
 import com.demigodsrpg.demigames.game.Game;
-import com.demigodsrpg.demigames.game.mixin.WarmupLobbyMixin;
 import com.demigodsrpg.demigames.impl.Demigames;
 import com.demigodsrpg.demigames.profile.Profile;
 import com.demigodsrpg.demigames.session.Session;
@@ -34,7 +33,6 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 
-import java.util.List;
 import java.util.Optional;
 
 public class TestingListener implements Listener {
@@ -43,16 +41,10 @@ public class TestingListener implements Listener {
         Optional<Game> opGame = Demigames.getGameRegistry().getMinigame("Spleef");
         if (opGame.isPresent()) {
             Profile profile = Demigames.getProfileRegistry().fromPlayer(event.getPlayer());
-            List<Session> sessions = Demigames.getSessionRegistry().fromGame(opGame.get());
-            if (sessions.isEmpty()) {
-                Session session = Demigames.getSessionRegistry().newSession(opGame.get());
-                session.addProfile(profile);
-                Bukkit.getScheduler().scheduleSyncDelayedTask(Demigames.getInstance(), () ->
-                        session.updateStage(DefaultStage.SETUP, true), 60);
-            } else {
-                sessions.get(0).addProfile(profile);
-                event.getPlayer().teleport(((WarmupLobbyMixin) opGame.get()).getWarmupSpawn());
-            }
+            Session session = Demigames.getSessionRegistry().newSession(opGame.get());
+            session.addProfile(profile);
+            Bukkit.getScheduler().scheduleSyncDelayedTask(Demigames.getInstance(), () ->
+                    session.updateStage(DefaultStage.SETUP, true), 60);
         }
     }
 }
