@@ -89,6 +89,7 @@ public class SessionRegistry extends AbstractRegistry<String, Session> {
         if (session.getGame().isPresent()) {
             Game game = session.getGame().get();
 
+            System.out.println("setup world" + session.getId());
             // Copy world from file
             File file = new File(Demigames.getInstance().getDataFolder().getPath() + "/worlds/" + game.getDirectory() + "/");
             try {
@@ -98,13 +99,21 @@ public class SessionRegistry extends AbstractRegistry<String, Session> {
             }
 
             // Load new world
-            return Optional.ofNullable(new WorldCreator(session.getId()).createWorld());
+            Optional<World> world = Optional.ofNullable(new WorldCreator(session.getId()).createWorld());
+            if (world.isPresent()) {
+                world.get().setAutoSave(false);
+            }
+
+            return world;
         }
         return Optional.empty();
     }
 
     public void unloadWorld(Session session) {
         // Unregister old worlds
+
+        System.out.println("Unloading world" + session.getId());
+
         if (Bukkit.getWorld(session.getId()) != null) {
             Bukkit.unloadWorld(session.getId(), false);
         }

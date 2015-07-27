@@ -109,12 +109,15 @@ public class MutableKit implements Kit, Serializable {
     // -- PRIVATE HELPER METHODS -- //
 
     private Map<String, Object> fixEffect(Map<String, Object> map) {
-        int effect = (int) (double) map.get("effect");
-        int duration = (int) (double) map.get("duration");
-        int amplifier = (int) (double) map.get("amplifier");
-        map.put("effect", effect);
-        map.put("duration", duration);
-        map.put("amplifier", amplifier);
+        try {
+            int effect = (int) (double) map.get("effect");
+            int duration = (int) (double) map.get("duration");
+            int amplifier = (int) (double) map.get("amplifier");
+            map.put("effect", effect);
+            map.put("duration", duration);
+            map.put("amplifier", amplifier);
+        } catch (Exception ignored) {
+        }
         return map;
     }
 }

@@ -50,11 +50,11 @@ public interface Game extends Listener {
 
     int getTotalRounds();
 
-    void onWin(Player player);
+    void onWin(Session session, Player player);
 
-    void onLose(Player player);
+    void onLose(Session session, Player player);
 
-    void onTie(Player player);
+    void onTie(Session session, Player player);
 
     void onPlayerJoin(Player player);
 
