@@ -26,9 +26,14 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 
 public class EmptyKit implements Kit {
+    public static final EmptyKit EMPTY_KIT = new EmptyKit();
+
+    private EmptyKit() {
+    }
+
     @Override
     public String getName() {
-        return "Emoty";
+        return "Empty";
     }
 
     @Override
