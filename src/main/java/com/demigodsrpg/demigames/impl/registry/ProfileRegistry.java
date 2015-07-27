@@ -23,9 +23,22 @@
 package com.demigodsrpg.demigames.impl.registry;
 
 import com.demigodsrpg.demigames.profile.Profile;
+import org.bukkit.entity.Player;
+
+import java.util.Optional;
 
 public class ProfileRegistry extends AbstractRegistry<String, Profile> {
     public ProfileRegistry() {
         super("profile", Profile.class, false);
+    }
+
+    public Profile fromPlayer(Player player) {
+        Optional<Profile> opProfile = fromKey(player.getUniqueId().toString());
+        if (opProfile.isPresent()) {
+            return opProfile.get();
+        }
+        Profile profile = new Profile(player);
+        put(player.getUniqueId().toString(), profile);
+        return profile;
     }
 }
