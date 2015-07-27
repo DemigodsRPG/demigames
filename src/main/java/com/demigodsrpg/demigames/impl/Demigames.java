@@ -24,7 +24,7 @@ package com.demigodsrpg.demigames.impl;
 
 import com.demigodsrpg.demigames.impl.command.ApplyKitCommand;
 import com.demigodsrpg.demigames.impl.command.CreateKitCommand;
-import com.demigodsrpg.demigames.impl.listener.DefaultSessionListener;
+import com.demigodsrpg.demigames.impl.listener.TestingListener;
 import com.demigodsrpg.demigames.impl.registry.GameRegistry;
 import com.demigodsrpg.demigames.impl.registry.KitRegistry;
 import com.demigodsrpg.demigames.impl.registry.ProfileRegistry;
@@ -75,7 +75,7 @@ public class Demigames extends JavaPlugin {
         SESSION_REGISTRY = new SessionRegistry();
 
         // Handle listeners
-        getServer().getPluginManager().registerEvents(new DefaultSessionListener(), this);
+        getServer().getPluginManager().registerEvents(new TestingListener(), this);
 
         // Register commands
         getCommand("createkit").setExecutor(new CreateKitCommand());

@@ -26,6 +26,6 @@ import com.demigodsrpg.demigames.kit.MutableKit;
 
 public class KitRegistry extends AbstractRegistry<String, MutableKit> {
     public KitRegistry() {
-        super("kit", MutableKit.class);
+        super("kit", MutableKit.class, true);
     }
 }

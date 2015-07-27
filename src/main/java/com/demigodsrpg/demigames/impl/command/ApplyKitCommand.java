@@ -40,17 +40,20 @@ public class ApplyKitCommand extends BaseCommand {
         if (sender instanceof ConsoleCommandSender) {
             return CommandResult.PLAYER_ONLY;
         }
-        if (args.length == 1) {
-            String name = args[0];
-            Optional<MutableKit> kit = Demigames.getKitRegistry().fromKey(name);
-            if (kit.isPresent()) {
-                kit.get().apply((Player) sender);
-                sender.sendMessage(ChatColor.YELLOW + "Kit " + name + " applied!");
-                return CommandResult.SUCCESS;
+        if (sender.hasPermission("demigames.admin")) {
+            if (args.length == 1) {
+                String name = args[0];
+                Optional<MutableKit> kit = Demigames.getKitRegistry().fromKey(name);
+                if (kit.isPresent()) {
+                    kit.get().apply((Player) sender);
+                    sender.sendMessage(ChatColor.YELLOW + "Kit " + name + " applied!");
+                    return CommandResult.SUCCESS;
+                }
+                sender.sendMessage(ChatColor.RED + "No such kit exists.");
+                return CommandResult.QUIET_ERROR;
             }
-            sender.sendMessage(ChatColor.RED + "No such kit exists.");
-            return CommandResult.QUIET_ERROR;
+            return CommandResult.INVALID_SYNTAX;
         }
-        return CommandResult.INVALID_SYNTAX;
+        return CommandResult.NO_PERMISSIONS;
     }
 }

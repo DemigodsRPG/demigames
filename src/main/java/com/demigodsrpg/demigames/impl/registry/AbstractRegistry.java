@@ -37,11 +37,13 @@ public abstract class AbstractRegistry<K extends Serializable, V extends Seriali
     protected final Cache<K, V> REGISTERED_DATA;
     private final File FOLDER;
     private final Class<V> V_TYPE;
+    private final boolean PRETTY;
 
-    public AbstractRegistry(String folder, Class<V> vType) {
+    public AbstractRegistry(String folder, Class<V> vType, boolean pretty) {
         FOLDER = new File(Demigames.getInstance().getDataFolder().getPath() + "/" + folder + "/");
         V_TYPE = vType;
         REGISTERED_DATA = CacheBuilder.newBuilder().concurrencyLevel(4).expireAfterAccess(3, TimeUnit.MINUTES).build();
+        PRETTY = pretty;
     }
 
     public Optional<V> fromKey(K key) {
@@ -86,7 +88,7 @@ public abstract class AbstractRegistry<K extends Serializable, V extends Seriali
             if (!(file.exists())) {
                 createFile(file);
             }
-            Gson gson = new GsonBuilder().create();
+            Gson gson = PRETTY ? new GsonBuilder().setPrettyPrinting().create() : new GsonBuilder().create();
             String json = gson.toJson(REGISTERED_DATA.asMap().get(key));
             try {
                 PrintWriter writer = new PrintWriter(file);

@@ -26,6 +26,6 @@ import com.demigodsrpg.demigames.profile.Profile;
 
 public class ProfileRegistry extends AbstractRegistry<String, Profile> {
     public ProfileRegistry() {
-        super("profile", Profile.class);
+        super("profile", Profile.class, false);
     }
 }

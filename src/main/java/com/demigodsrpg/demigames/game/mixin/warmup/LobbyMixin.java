@@ -51,14 +51,14 @@ public interface LobbyMixin extends Game {
                 if (k == 10) {
                     // Update the stage
                     session.getPlayers().forEach(player -> {
-                        Demigames.getTitleUtil().broadcastTitle(session, 0, 18, 2, "GO!", "In " + "Have fun!");
-                        player.playSound(player.getLocation(), Sound.CAT_PURR, 1f, 1f);
+                        Demigames.getTitleUtil().broadcastTitle(session, 0, 18, 2, ChatColor.GREEN + "GO!", "Have fun!");
+                        player.playSound(player.getLocation(), Sound.NOTE_PIANO, 1f, 1f);
                     });
                     session.updateStage(DefaultStage.BEGIN, true);
                 } else {
                     Demigames.getTitleUtil().broadcastTitle(session, 2, 30, 0, ChatColor.GOLD + getName() + "!", "In " + (10 - k) + " seconds!");
                     session.getPlayers().forEach(player -> {
-                        player.playSound(player.getLocation(), Sound.CAT_PURR, 1f, 0.5f);
+                        player.playSound(player.getLocation(), Sound.NOTE_PIANO, 1f, 0.5f);
                     });
                 }
             }, i * 20);

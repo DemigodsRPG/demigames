@@ -45,7 +45,7 @@ public class SessionRegistry extends AbstractRegistry<String, Session> {
     // -- CONSTRUCTOR -- //
 
     public SessionRegistry() {
-        super("session", Session.class);
+        super("session", Session.class, false);
     }
 
     // -- GETTERS -- //

@@ -37,13 +37,16 @@ public class CreateKitCommand extends BaseCommand {
         if (sender instanceof ConsoleCommandSender) {
             return CommandResult.PLAYER_ONLY;
         }
-        if (args.length == 1) {
-            String name = args[0];
-            MutableKit kit = MutableKit.of(name, (Player) sender);
-            kit.register();
-            sender.sendMessage(ChatColor.YELLOW + "Kit " + name + " has been created!");
-            return CommandResult.SUCCESS;
+        if (sender.hasPermission("demigames.admin")) {
+            if (args.length == 1) {
+                String name = args[0];
+                MutableKit kit = MutableKit.of(name, (Player) sender);
+                kit.register();
+                sender.sendMessage(ChatColor.YELLOW + "Kit " + name + " has been created!");
+                return CommandResult.SUCCESS;
+            }
+            return CommandResult.INVALID_SYNTAX;
         }
-        return CommandResult.INVALID_SYNTAX;
+        return CommandResult.NO_PERMISSIONS;
     }
 }
