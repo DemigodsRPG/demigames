@@ -83,8 +83,8 @@ public class Profile implements Serializable {
         return mojangUniqueId;
     }
 
-    public String getLastKnownName() {
-        return lastKnownName;
+    public Optional<String> getLastKnownName() {
+        return Optional.ofNullable(lastKnownName);
     }
 
     public Optional<Kit> getKit() {
