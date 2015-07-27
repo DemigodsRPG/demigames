@@ -40,6 +40,7 @@ public class Profile implements Serializable {
 
     private Kit kit;
     private String mojangUniqueId;
+    private String lastKnownName;
     private String currentSessionId;
 
     // -- CONSTRUCTORS -- //
@@ -51,6 +52,7 @@ public class Profile implements Serializable {
     public Profile(Player player) {
         this.player = Optional.of(player);
         this.mojangUniqueId = player.getUniqueId().toString();
+        this.lastKnownName = player.getName();
         this.kit = null;
         this.currentSessionId = null;
         Demigames.getProfileRegistry().put(mojangUniqueId, this);
@@ -59,6 +61,7 @@ public class Profile implements Serializable {
     public Profile(Player player, Kit kit) {
         this.player = Optional.of(player);
         this.mojangUniqueId = player.getUniqueId().toString();
+        this.lastKnownName = player.getName();
         this.kit = MutableKit.of(kit);
         this.currentSessionId = null;
         Demigames.getProfileRegistry().put(mojangUniqueId, this);
@@ -78,6 +81,10 @@ public class Profile implements Serializable {
 
     public String getMojangUniqueId() {
         return mojangUniqueId;
+    }
+
+    public String getLastKnownName() {
+        return lastKnownName;
     }
 
     public Optional<Kit> getKit() {
