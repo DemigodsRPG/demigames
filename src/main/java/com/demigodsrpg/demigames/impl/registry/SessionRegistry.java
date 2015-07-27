@@ -89,7 +89,6 @@ public class SessionRegistry extends AbstractRegistry<String, Session> {
         if (session.getGame().isPresent()) {
             Game game = session.getGame().get();
 
-            System.out.println("setup world" + session.getId());
             // Copy world from file
             File file = new File(Demigames.getInstance().getDataFolder().getPath() + "/worlds/" + game.getDirectory() + "/");
             try {
@@ -111,9 +110,6 @@ public class SessionRegistry extends AbstractRegistry<String, Session> {
 
     public void unloadWorld(Session session) {
         // Unregister old worlds
-
-        System.out.println("Unloading world" + session.getId());
-
         if (Bukkit.getWorld(session.getId()) != null) {
             Bukkit.unloadWorld(session.getId(), false);
         }
