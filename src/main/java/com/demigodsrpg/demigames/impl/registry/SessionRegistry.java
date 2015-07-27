@@ -115,13 +115,11 @@ public class SessionRegistry extends AbstractRegistry<String, Session> {
         }
 
         // Delete the old world
-        Bukkit.getScheduler().scheduleSyncDelayedTask(Demigames.getInstance(), () -> {
-            try {
-                FileUtils.deleteDirectory(new File(session.getId()));
-            } catch (Exception oops) {
-                oops.printStackTrace();
-            }
-        }, 60);
+        try {
+            FileUtils.deleteDirectory(new File(session.getId()));
+        } catch (Exception oops) {
+            oops.printStackTrace();
+        }
     }
 
     public void unloadAllWorlds() {

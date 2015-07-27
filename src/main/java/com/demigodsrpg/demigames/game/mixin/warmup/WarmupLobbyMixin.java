@@ -38,6 +38,8 @@ public interface WarmupLobbyMixin extends Game {
 
     @StageHandler(stage = DefaultStage.WARMUP)
     default void roundWarmup(Session session) {
+        Bukkit.broadcastMessage("TEST");
+
         for (Player player : session.getPlayers()) {
             player.teleport(getWarmupSpawn());
         }

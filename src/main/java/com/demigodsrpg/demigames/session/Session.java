@@ -163,8 +163,6 @@ public class Session implements Serializable {
         }
 
         // Unload the world
-        Bukkit.getScheduler().scheduleAsyncDelayedTask(Demigames.getInstance(), () -> {
-            registry.unloadWorld(this);
-        }, 60);
+        registry.unloadWorld(this);
     }
 }
