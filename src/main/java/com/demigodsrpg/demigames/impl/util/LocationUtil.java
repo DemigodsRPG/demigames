@@ -22,18 +22,22 @@
 
 package com.demigodsrpg.demigames.impl.util;
 
+import com.demigodsrpg.demigames.session.Session;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 
 public class LocationUtil {
-    public static String stringFromLocation(Location location) {
-        return location.getWorld().getName() + ";" + location.getX() + ";" + location.getY() + ";" + location.getZ() + ";" + location.getYaw() + ";" + location.getPitch();
+    public static String stringFromLocation(Location location, boolean blockLocation) {
+        if (blockLocation) {
+            return location.getBlockX() + ".0" + ";" + location.getBlockY() + ".0" + ";" + location.getBlockZ() + ".0" + ";" + location.getYaw() + ";" + location.getPitch();
+        }
+        return location.getX() + ";" + location.getY() + ";" + location.getZ() + ";" + location.getYaw() + ";" + location.getPitch();
     }
 
-    public static Location locationFromString(String location) {
+    public static Location locationFromString(Session session, String location) {
         String[] part = location.split(";");
-        if (Bukkit.getWorld(part[0]) != null) {
-            return new Location(Bukkit.getWorld(part[0]), Double.parseDouble(part[1]), Double.parseDouble(part[2]), Double.parseDouble(part[3]), Float.parseFloat(part[4]), Float.parseFloat(part[4]));
+        if (Bukkit.getWorld(session.getId()) != null) {
+            return new Location(Bukkit.getWorld(session.getId()), Double.parseDouble(part[0]), Double.parseDouble(part[1]), Double.parseDouble(part[2]), Float.parseFloat(part[3]), Float.parseFloat(part[4]));
         }
         return null;
     }
