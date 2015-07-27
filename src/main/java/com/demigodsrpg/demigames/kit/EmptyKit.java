@@ -22,6 +22,7 @@
 
 package com.demigodsrpg.demigames.kit;
 
+import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 
@@ -41,7 +42,7 @@ public class EmptyKit implements Kit {
 
     @Override
     public ItemStack[] getArmor() {
-        return new ItemStack[0];
+        return new ItemStack[]{new ItemStack(Material.AIR), new ItemStack(Material.AIR), new ItemStack(Material.AIR), new ItemStack(Material.AIR)};
     }
 
     @Override

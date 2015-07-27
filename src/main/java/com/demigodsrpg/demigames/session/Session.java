@@ -27,6 +27,7 @@ import com.demigodsrpg.demigames.impl.Demigames;
 import com.demigodsrpg.demigames.impl.Setting;
 import com.demigodsrpg.demigames.impl.registry.ProfileRegistry;
 import com.demigodsrpg.demigames.impl.registry.SessionRegistry;
+import com.demigodsrpg.demigames.kit.Kit;
 import com.demigodsrpg.demigames.profile.Profile;
 import com.demigodsrpg.demigames.stage.DefaultStage;
 import org.bukkit.Bukkit;
@@ -147,6 +148,9 @@ public class Session implements Serializable {
     public void endSession(boolean nextGame) {
         SessionRegistry registry = Demigames.getSessionRegistry();
         registry.removeIfPresent(id);
+
+        // Empty their kits
+        getPlayers().forEach(Kit.EMPTY::apply);
 
         // Party mode
         if ("party".equals(Setting.MODE) && nextGame) {
