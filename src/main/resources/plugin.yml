@@ -9,9 +9,11 @@ commands:
   demigames:
     usage: /demigames
   createkit:
-    usage: /createkit <kit>
+    usage: /createkit <name>
   applykit:
-    usage: /applykit <kit>
+    usage: /applykit <name>
+  createlocation:
+    usage: /createlocation <name>
 permisions:
   demigames.admin:
     default: op

@@ -24,28 +24,44 @@ package com.demigodsrpg.demigames.impl.command;
 
 import com.censoredsoftware.library.command.type.BaseCommand;
 import com.censoredsoftware.library.command.type.CommandResult;
-import com.demigodsrpg.demigames.kit.MutableKit;
+import com.demigodsrpg.demigames.game.Game;
+import com.demigodsrpg.demigames.impl.Demigames;
+import com.demigodsrpg.demigames.impl.util.LocationUtil;
+import com.demigodsrpg.demigames.session.Session;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 
-public class CreateKitCommand extends BaseCommand {
+import java.util.Optional;
+
+public class CreateLocationCommand extends BaseCommand {
     @Override
     protected CommandResult onCommand(CommandSender sender, Command command, String[] args) {
         if (sender instanceof ConsoleCommandSender) {
             return CommandResult.PLAYER_ONLY;
         }
         if (sender.hasPermission("demigames.admin")) {
-            if (args.length == 1) {
-                String name = args[0];
-                MutableKit kit = MutableKit.of(name, (Player) sender);
-                kit.register();
-                sender.sendMessage(ChatColor.YELLOW + "Kit " + name + " has been created!");
-                return CommandResult.SUCCESS;
+            Player player = (Player) sender;
+            Optional<Session> session = Demigames.getSessionRegistry().getSession(player);
+            if (session.isPresent()) {
+                if (args.length == 1) {
+                    String name = args[0];
+                    Optional<Game> game = session.get().getGame();
+                    if (game.isPresent()) {
+                        game.get().getConfig().set(name, LocationUtil.stringFromLocation(player.getLocation(), true));
+                        sender.sendMessage(ChatColor.YELLOW + "Location " + name + " has been created!");
+                        return CommandResult.SUCCESS;
+                    } else {
+                        return CommandResult.ERROR;
+                    }
+                }
+                return CommandResult.INVALID_SYNTAX;
+            } else {
+                sender.sendMessage(ChatColor.RED + "You are currently not in any mini-game session.");
+                return CommandResult.QUIET_ERROR;
             }
-            return CommandResult.INVALID_SYNTAX;
         }
         return CommandResult.NO_PERMISSIONS;
     }

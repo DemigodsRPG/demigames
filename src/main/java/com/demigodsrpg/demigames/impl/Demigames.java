@@ -24,6 +24,7 @@ package com.demigodsrpg.demigames.impl;
 
 import com.demigodsrpg.demigames.impl.command.ApplyKitCommand;
 import com.demigodsrpg.demigames.impl.command.CreateKitCommand;
+import com.demigodsrpg.demigames.impl.command.CreateLocationCommand;
 import com.demigodsrpg.demigames.impl.listener.TestingListener;
 import com.demigodsrpg.demigames.impl.registry.GameRegistry;
 import com.demigodsrpg.demigames.impl.registry.KitRegistry;
@@ -80,6 +81,7 @@ public class Demigames extends JavaPlugin {
         // Register commands
         getCommand("createkit").setExecutor(new CreateKitCommand());
         getCommand("applykit").setExecutor(new ApplyKitCommand());
+        getCommand("createlocation").setExecutor(new CreateLocationCommand());
 
         // Load the components. If there was an error, cancel the plugin from loading
         if (!loadComponents()) {
