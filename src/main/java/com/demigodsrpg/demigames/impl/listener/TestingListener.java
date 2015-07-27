@@ -23,7 +23,7 @@
 package com.demigodsrpg.demigames.impl.listener;
 
 import com.demigodsrpg.demigames.game.Game;
-import com.demigodsrpg.demigames.game.mixin.warmup.LobbyMixin;
+import com.demigodsrpg.demigames.game.mixin.warmup.WarmupLobbyMixin;
 import com.demigodsrpg.demigames.impl.Demigames;
 import com.demigodsrpg.demigames.profile.Profile;
 import com.demigodsrpg.demigames.session.Session;
@@ -50,7 +50,7 @@ public class TestingListener implements Listener {
                         session.updateStage(DefaultStage.SETUP, true), 60);
             } else {
                 sessions.get(0).addProfile(new Profile(event.getPlayer()));
-                event.getPlayer().teleport(((LobbyMixin) opGame.get()).getWarmupSpawn());
+                event.getPlayer().teleport(((WarmupLobbyMixin) opGame.get()).getWarmupSpawn());
             }
         }
     }

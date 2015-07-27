@@ -70,7 +70,11 @@ public interface Game extends Listener {
     }
 
     default ConfigurationSection getConfig() {
-        return Demigames.getInstance().getConfig().getConfigurationSection(getName());
+        ConfigurationSection parent = Demigames.getInstance().getConfig();
+        if (parent.getKeys(false).contains(getName())) {
+            return parent.getConfigurationSection(getName());
+        }
+        return parent.createSection(getName());
     }
 
     default Optional<Session> checkPlayer(Player player) {

@@ -20,7 +20,7 @@
  * SOFTWARE.
  */
 
-package com.demigodsrpg.demigames.game.mixin.warmup;
+package com.demigodsrpg.demigames.game.mixin.error;
 
 import com.demigodsrpg.demigames.game.Game;
 import com.demigodsrpg.demigames.impl.Demigames;
@@ -29,34 +29,22 @@ import com.demigodsrpg.demigames.stage.DefaultStage;
 import com.demigodsrpg.demigames.stage.StageHandler;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.Location;
 import org.bukkit.Sound;
-import org.bukkit.entity.Player;
 
-public interface LobbyMixin extends Game {
-    Location getWarmupSpawn();
-
-    @StageHandler(stage = DefaultStage.WARMUP)
+public interface ErrorTimerMixin extends Game {
+    @StageHandler(stage = DefaultStage.ERROR)
     default void roundWarmup(Session session) {
-        for (Player player : session.getPlayers()) {
-            player.teleport(getWarmupSpawn());
-        }
-
-        // Iterate the round
-        session.setCurrentRound(session.getCurrentRound() + 1);
-
-        for (int i = 0; i <= 10; i++) {
+        for (int i = 0; i <= 5; i++) {
             final int k = i;
             Bukkit.getScheduler().scheduleSyncDelayedTask(Demigames.getInstance(), () -> {
                 if (k == 10) {
                     // Update the stage
                     session.getPlayers().forEach(player -> {
-                        Demigames.getTitleUtil().broadcastTitle(session, 0, 18, 2, ChatColor.GREEN + "GO!", "Have fun!");
                         player.playSound(player.getLocation(), Sound.NOTE_PIANO, 1f, 1f);
                     });
-                    session.updateStage(DefaultStage.BEGIN, true);
+                    session.endSession(false);
                 } else {
-                    Demigames.getTitleUtil().broadcastTitle(session, 2, 30, 0, ChatColor.GOLD + getName() + "!", "In " + (10 - k) + " seconds!");
+                    Demigames.getTitleUtil().broadcastTitle(session, 2, 30, 0, ChatColor.RED + "ERROR!", "Ending in " + (5 - k) + " seconds.");
                     session.getPlayers().forEach(player -> {
                         player.playSound(player.getLocation(), Sound.NOTE_PIANO, 1f, 0.5f);
                     });

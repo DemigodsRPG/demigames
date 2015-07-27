@@ -31,7 +31,7 @@ import org.bukkit.World;
 
 import java.util.Optional;
 
-public interface NoTeamsMixin extends Game {
+public interface SetupNoTeamsMixin extends Game {
     @StageHandler(stage = DefaultStage.SETUP)
     default void roundSetup(Session session) {
         // Setup the world

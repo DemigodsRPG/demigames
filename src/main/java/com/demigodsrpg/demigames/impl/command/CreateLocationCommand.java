@@ -32,6 +32,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 
 import java.util.Optional;
@@ -50,7 +51,8 @@ public class CreateLocationCommand extends BaseCommand {
                     String name = args[0];
                     Optional<Game> game = session.get().getGame();
                     if (game.isPresent()) {
-                        game.get().getConfig().set(name, LocationUtil.stringFromLocation(player.getLocation(), true));
+                        ConfigurationSection config = game.get().getConfig();
+                        config.set(name, LocationUtil.stringFromLocation(player.getLocation(), true));
                         sender.sendMessage(ChatColor.YELLOW + "Location " + name + " has been created!");
                         return CommandResult.SUCCESS;
                     } else {
