@@ -20,39 +20,17 @@
  * SOFTWARE.
  */
 
-package com.demigodsrpg.demigames.kit;
+package com.demigodsrpg.demigames.perk;
 
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.potion.PotionEffect;
+import com.demigodsrpg.demigames.profile.Profile;
+import org.bukkit.event.Listener;
 
-import java.util.Optional;
-
-public interface Kit {
+public interface Perk extends Listener {
     String getName();
 
-    ItemStack[] getContents();
-
-    ItemStack[] getArmor();
-
-    PotionEffect[] getPotionEffects();
-
-    default Optional<ItemStack> getItemStack(int index) {
-        return Optional.ofNullable(getContents()[index]);
+    default void onSync(Profile profile) {
     }
 
-    default Optional<ItemStack> getHelmet() {
-        return Optional.ofNullable(getArmor()[3]);
-    }
-
-    default Optional<ItemStack> getChestplate() {
-        return Optional.ofNullable(getArmor()[2]);
-    }
-
-    default Optional<ItemStack> getLeggings() {
-        return Optional.ofNullable(getArmor()[1]);
-    }
-
-    default Optional<ItemStack> getBoots() {
-        return Optional.ofNullable(getArmor()[0]);
+    default void onAsync(Profile profile) {
     }
 }

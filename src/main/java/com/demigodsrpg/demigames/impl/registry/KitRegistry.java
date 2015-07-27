@@ -20,39 +20,12 @@
  * SOFTWARE.
  */
 
-package com.demigodsrpg.demigames.kit;
+package com.demigodsrpg.demigames.impl.registry;
 
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.potion.PotionEffect;
+import com.demigodsrpg.demigames.kit.MutableKit;
 
-import java.util.Optional;
-
-public interface Kit {
-    String getName();
-
-    ItemStack[] getContents();
-
-    ItemStack[] getArmor();
-
-    PotionEffect[] getPotionEffects();
-
-    default Optional<ItemStack> getItemStack(int index) {
-        return Optional.ofNullable(getContents()[index]);
-    }
-
-    default Optional<ItemStack> getHelmet() {
-        return Optional.ofNullable(getArmor()[3]);
-    }
-
-    default Optional<ItemStack> getChestplate() {
-        return Optional.ofNullable(getArmor()[2]);
-    }
-
-    default Optional<ItemStack> getLeggings() {
-        return Optional.ofNullable(getArmor()[1]);
-    }
-
-    default Optional<ItemStack> getBoots() {
-        return Optional.ofNullable(getArmor()[0]);
+public class KitRegistry extends AbstractRegistry<String, MutableKit> {
+    public KitRegistry() {
+        super("kit", MutableKit.class);
     }
 }

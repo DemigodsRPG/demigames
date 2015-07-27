@@ -23,6 +23,7 @@
 package com.demigodsrpg.demigames.kit;
 
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.potion.PotionEffect;
 
 import java.util.Arrays;
 
@@ -33,13 +34,15 @@ public class ImmutableKit implements Kit {
     private final String name;
     private final ItemStack[] contents;
     private final ItemStack[] armor;
+    private final PotionEffect[] effects;
 
     // -- PRIVATE CONSTRUCTOR -- //
 
-    private ImmutableKit(String name, ItemStack[] contents, ItemStack[] armor) {
+    private ImmutableKit(String name, ItemStack[] contents, ItemStack[] armor, PotionEffect[] effects) {
         this.name = name;
         this.contents = contents;
         this.armor = armor;
+        this.effects = effects;
     }
 
     // -- GETTERS -- //
@@ -59,9 +62,14 @@ public class ImmutableKit implements Kit {
         return Arrays.copyOf(armor, armor.length);
     }
 
+    @Override
+    public PotionEffect[] getPotionEffects() {
+        return effects;
+    }
+
     // -- STATIC CONSTRUCTOR METHOD -- //
 
     public static ImmutableKit of(Kit kit) {
-        return new ImmutableKit(kit.getName(), kit.getContents(), kit.getArmor());
+        return new ImmutableKit(kit.getName(), kit.getContents(), kit.getArmor(), kit.getPotionEffects());
     }
 }

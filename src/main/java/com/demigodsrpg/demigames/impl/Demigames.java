@@ -22,8 +22,10 @@
 
 package com.demigodsrpg.demigames.impl;
 
+import com.demigodsrpg.demigames.impl.command.KitCommand;
 import com.demigodsrpg.demigames.impl.listener.DefaultSessionListener;
 import com.demigodsrpg.demigames.impl.registry.GameRegistry;
+import com.demigodsrpg.demigames.impl.registry.KitRegistry;
 import com.demigodsrpg.demigames.impl.registry.ProfileRegistry;
 import com.demigodsrpg.demigames.impl.registry.SessionRegistry;
 import com.demigodsrpg.demigames.impl.util.LibraryHandler;
@@ -41,6 +43,7 @@ public class Demigames extends JavaPlugin {
     // -- REGISTRIES -- //
     private static GameRegistry GAME_REGISTRY;
     private static ProfileRegistry PROFILE_REGISTRY;
+    private static KitRegistry KIT_REGISTRY;
     private static SessionRegistry SESSION_REGISTRY;
 
     @Override
@@ -66,18 +69,22 @@ public class Demigames extends JavaPlugin {
 
         // Create the registries
         GAME_REGISTRY = new GameRegistry();
-
         PROFILE_REGISTRY = new ProfileRegistry();
+        KIT_REGISTRY = new KitRegistry();
         SESSION_REGISTRY = new SessionRegistry();
 
         // Handle listeners
         getServer().getPluginManager().registerEvents(new DefaultSessionListener(), this);
+
+        // Register commands
+        getCommand("demikit").setExecutor(new KitCommand());
 
         // Load the components. If there was an error, cancel the plugin from loading
         if (!loadComponents()) {
             getServer().getPluginManager().disablePlugin(this);
             return;
         }
+
 
         // Handle minigame server start methods
         GAME_REGISTRY.handlePluginStart();
@@ -123,6 +130,7 @@ public class Demigames extends JavaPlugin {
         // Censored Lib
         LIBRARIES.addMavenLibrary("http://repo.ii.dg-mg.club/", "com.censoredsoftware.library", "util", "1.0.2");
         LIBRARIES.addMavenLibrary("http://repo.ii.dg-mg.club/", "com.censoredsoftware.library", "bukkit-util", "1.0.2");
+        LIBRARIES.addMavenLibrary("http://repo.ii.dg-mg.club/", "com.censoredsoftware.library", "command", "1.0.2");
     }
 
     // -- STATIC GETTERS -- //
@@ -137,6 +145,10 @@ public class Demigames extends JavaPlugin {
 
     public static ProfileRegistry getProfileRegistry() {
         return PROFILE_REGISTRY;
+    }
+
+    public static KitRegistry getKitRegistry() {
+        return KIT_REGISTRY;
     }
 
     public static GameRegistry getGameRegistry() {

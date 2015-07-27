@@ -24,27 +24,34 @@ package com.demigodsrpg.demigames.kit;
 
 import com.censoredsoftware.library.bukkitutil.ItemUtil;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.potion.PotionEffect;
 
 import java.io.Serializable;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 public class MutableKit implements Kit, Serializable {
     private static final long serialVersionUID = 1L;
 
     // -- DATA -- //
 
-    private String name;
-    private String contents;
-    private String armor;
+    String name;
+    String contents;
+    String armor;
+    List<Map<String, Object>> effects;
 
     // -- CONSTRUCTOR -- //
 
     public MutableKit() {
     }
 
-    public MutableKit(String name, ItemStack[] contents, ItemStack[] armor) {
+    public MutableKit(String name, ItemStack[] contents, ItemStack[] armor, PotionEffect[] effects) {
         this.name = name;
         this.contents = ItemUtil.serializeItemStacks(contents);
         this.armor = ItemUtil.serializeItemStacks(armor);
+        this.effects = Arrays.asList(effects).stream().map(PotionEffect::serialize).collect(Collectors.toList());
     }
 
     @Override
@@ -62,12 +69,23 @@ public class MutableKit implements Kit, Serializable {
         return ItemUtil.deserializeItemStacks(armor);
     }
 
+    @Override
+    public PotionEffect[] getPotionEffects() {
+        PotionEffect[] effects = new PotionEffect[this.effects.size()];
+        int i = 0;
+        for (Map<String, Object> effect : this.effects) {
+            effects[i] = new PotionEffect(effect);
+            i++;
+        }
+        return effects;
+    }
+
     // -- STATIC CONSTRUCTOR METHOD -- //
 
     public static MutableKit of(Kit kit) {
         if (kit instanceof MutableKit) {
             return (MutableKit) kit;
         }
-        return new MutableKit(kit.getName(), kit.getContents(), kit.getArmor());
+        return new MutableKit(kit.getName(), kit.getContents(), kit.getArmor(), kit.getPotionEffects());
     }
 }

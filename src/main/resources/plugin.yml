@@ -8,6 +8,8 @@ commands:
   ## Everyday Commands
   demigames:
     usage: /demigames
+  demikit:
+    usage: /demikit
 permisions:
   demigames.admin:
     default: op
