@@ -38,6 +38,8 @@ import org.bukkit.entity.Player;
 import java.util.Optional;
 
 public class CreateLocationCommand extends BaseCommand {
+    private FileConfiguration CONFIG = Demigames.getInstance().getConfig();
+
     @Override
     protected CommandResult onCommand(CommandSender sender, Command command, String[] args) {
         if (sender instanceof ConsoleCommandSender) {
@@ -51,8 +53,8 @@ public class CreateLocationCommand extends BaseCommand {
                     String name = args[0];
                     Optional<Game> game = session.get().getGame();
                     if (game.isPresent()) {
-                        FileConfiguration config = Demigames.getInstance().getConfig();
-                        config.set(game.get().getName() + "." + name, LocationUtil.stringFromLocation(player.getLocation(), true));
+                        CONFIG.set(game.get().getName() + "." + name, LocationUtil.stringFromLocation(player.getLocation(), true));
+                        Demigames.getInstance().saveConfig();
                         sender.sendMessage(ChatColor.YELLOW + "Location " + name + " has been created!");
                         return CommandResult.SUCCESS;
                     } else {
