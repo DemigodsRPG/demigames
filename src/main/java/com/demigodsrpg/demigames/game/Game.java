@@ -24,6 +24,7 @@ package com.demigodsrpg.demigames.game;
 
 import com.demigodsrpg.demigames.impl.Demigames;
 import com.demigodsrpg.demigames.session.Session;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 
@@ -66,6 +67,10 @@ public interface Game extends Listener {
     }
 
     default void onServerStop() {
+    }
+
+    default ConfigurationSection getConfig() {
+        return Demigames.getInstance().getConfig().getConfigurationSection(getName());
     }
 
     default Optional<Session> checkPlayer(Player player) {
