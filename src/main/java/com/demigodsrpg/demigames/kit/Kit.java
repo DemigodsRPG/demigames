@@ -63,6 +63,7 @@ public interface Kit {
         PlayerInventory inventory = player.getInventory();
         inventory.setContents(getContents());
         inventory.setArmorContents(getArmor());
+        player.getActivePotionEffects().forEach(potionEffect -> player.removePotionEffect(potionEffect.getType()));
         player.addPotionEffects(Arrays.asList(getPotionEffects()));
     }
 }
