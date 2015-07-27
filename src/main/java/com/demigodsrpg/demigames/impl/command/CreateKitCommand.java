@@ -24,12 +24,26 @@ package com.demigodsrpg.demigames.impl.command;
 
 import com.censoredsoftware.library.command.type.BaseCommand;
 import com.censoredsoftware.library.command.type.CommandResult;
+import com.demigodsrpg.demigames.kit.MutableKit;
+import net.md_5.bungee.api.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.ConsoleCommandSender;
+import org.bukkit.entity.Player;
 
-public class KitCommand extends BaseCommand {
+public class CreateKitCommand extends BaseCommand {
     @Override
-    protected CommandResult onCommand(CommandSender commandSender, Command command, String[] strings) {
-        return CommandResult.NO_PERMISSIONS;
+    protected CommandResult onCommand(CommandSender sender, Command command, String[] args) {
+        if (sender instanceof ConsoleCommandSender) {
+            return CommandResult.PLAYER_ONLY;
+        }
+        if (args.length == 1) {
+            String name = args[0];
+            MutableKit kit = MutableKit.of(name, (Player) sender);
+            kit.register();
+            sender.sendMessage(ChatColor.YELLOW + "Kit " + name + " has been created!");
+            return CommandResult.SUCCESS;
+        }
+        return CommandResult.INVALID_SYNTAX;
     }
 }

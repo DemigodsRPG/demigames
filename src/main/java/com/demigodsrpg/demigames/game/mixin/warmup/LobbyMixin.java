@@ -20,7 +20,7 @@
  * SOFTWARE.
  */
 
-package com.demigodsrpg.demigames.game.mixin;
+package com.demigodsrpg.demigames.game.mixin.warmup;
 
 import com.demigodsrpg.demigames.game.Game;
 import com.demigodsrpg.demigames.impl.Demigames;
@@ -33,13 +33,12 @@ import org.bukkit.Location;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 
-public interface LobbyWarmupMixin extends Game {
+public interface LobbyMixin extends Game {
     Location getWarmupSpawn();
 
     @StageHandler(stage = DefaultStage.WARMUP)
     default void roundWarmup(Session session) {
         for (Player player : session.getPlayers()) {
-            Bukkit.broadcastMessage(player.getName());
             player.teleport(getWarmupSpawn());
         }
 

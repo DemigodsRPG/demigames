@@ -37,8 +37,9 @@ public class Profile implements Serializable {
     // -- DATA -- //
 
     private transient Optional<Player> player;
+
+    private Kit kit;
     private String mojangUniqueId;
-    private MutableKit kit;
     private String currentSessionId;
 
     // -- CONSTRUCTORS -- //

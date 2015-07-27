@@ -23,6 +23,8 @@
 package com.demigodsrpg.demigames.kit;
 
 import com.censoredsoftware.library.bukkitutil.ItemUtil;
+import com.demigodsrpg.demigames.impl.Demigames;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 
@@ -74,18 +76,45 @@ public class MutableKit implements Kit, Serializable {
         PotionEffect[] effects = new PotionEffect[this.effects.size()];
         int i = 0;
         for (Map<String, Object> effect : this.effects) {
-            effects[i] = new PotionEffect(effect);
+            effects[i] = new PotionEffect(fixEffect(effect));
             i++;
         }
         return effects;
     }
 
-    // -- STATIC CONSTRUCTOR METHOD -- //
+    // -- STATIC CONSTRUCTOR METHODS -- //
 
     public static MutableKit of(Kit kit) {
         if (kit instanceof MutableKit) {
             return (MutableKit) kit;
         }
         return new MutableKit(kit.getName(), kit.getContents(), kit.getArmor(), kit.getPotionEffects());
+    }
+
+    public static MutableKit of(String name, Player player) {
+        MutableKit kit = new MutableKit();
+        kit.name = name;
+        kit.contents = ItemUtil.serializeItemStacks(player.getInventory().getContents());
+        kit.armor = ItemUtil.serializeItemStacks(player.getInventory().getArmorContents());
+        kit.effects = player.getActivePotionEffects().stream().map(PotionEffect::serialize).collect(Collectors.toList());
+        return kit;
+    }
+
+    // -- PERSISTENCE METHOD -- //
+
+    public void register() {
+        Demigames.getKitRegistry().put(name, this);
+    }
+
+    // -- PRIVATE HELPER METHODS -- //
+
+    private Map<String, Object> fixEffect(Map<String, Object> map) {
+        int effect = (int) (double) map.get("effect");
+        int duration = (int) (double) map.get("duration");
+        int amplifier = (int) (double) map.get("amplifier");
+        map.put("effect", effect);
+        map.put("duration", duration);
+        map.put("amplifier", amplifier);
+        return map;
     }
 }

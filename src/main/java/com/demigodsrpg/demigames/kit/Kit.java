@@ -22,9 +22,12 @@
 
 package com.demigodsrpg.demigames.kit;
 
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.potion.PotionEffect;
 
+import java.util.Arrays;
 import java.util.Optional;
 
 public interface Kit {
@@ -54,5 +57,12 @@ public interface Kit {
 
     default Optional<ItemStack> getBoots() {
         return Optional.ofNullable(getArmor()[0]);
+    }
+
+    default void apply(Player player) {
+        PlayerInventory inventory = player.getInventory();
+        inventory.setContents(getContents());
+        inventory.setArmorContents(getArmor());
+        player.addPotionEffects(Arrays.asList(getPotionEffects()));
     }
 }

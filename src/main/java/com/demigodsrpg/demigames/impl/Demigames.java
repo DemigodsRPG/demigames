@@ -22,7 +22,8 @@
 
 package com.demigodsrpg.demigames.impl;
 
-import com.demigodsrpg.demigames.impl.command.KitCommand;
+import com.demigodsrpg.demigames.impl.command.ApplyKitCommand;
+import com.demigodsrpg.demigames.impl.command.CreateKitCommand;
 import com.demigodsrpg.demigames.impl.listener.DefaultSessionListener;
 import com.demigodsrpg.demigames.impl.registry.GameRegistry;
 import com.demigodsrpg.demigames.impl.registry.KitRegistry;
@@ -77,14 +78,14 @@ public class Demigames extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new DefaultSessionListener(), this);
 
         // Register commands
-        getCommand("demikit").setExecutor(new KitCommand());
+        getCommand("createkit").setExecutor(new CreateKitCommand());
+        getCommand("applykit").setExecutor(new ApplyKitCommand());
 
         // Load the components. If there was an error, cancel the plugin from loading
         if (!loadComponents()) {
             getServer().getPluginManager().disablePlugin(this);
             return;
         }
-
 
         // Handle minigame server start methods
         GAME_REGISTRY.handlePluginStart();
