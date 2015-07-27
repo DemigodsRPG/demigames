@@ -20,32 +20,31 @@
  * SOFTWARE.
  */
 
-package com.demigodsrpg.demigames.game.mixin.setup;
+package com.demigodsrpg.demigames.game.mixin;
 
 import com.demigodsrpg.demigames.game.Game;
-import com.demigodsrpg.demigames.impl.Demigames;
 import com.demigodsrpg.demigames.session.Session;
-import com.demigodsrpg.demigames.stage.DefaultStage;
-import com.demigodsrpg.demigames.stage.StageHandler;
-import org.bukkit.World;
+import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.entity.EntityDamageEvent;
 
 import java.util.Optional;
 
-public interface SetupNoTeamsMixin extends Game {
-    @StageHandler(stage = DefaultStage.SETUP)
-    default void roundSetup(Session session) {
-        // Setup the world
-        Optional<World> opWorld = Demigames.getSessionRegistry().setupWorld(session);
-
-        if (opWorld.isPresent()) {
-            // Setup the locations
-            setupLocations(session);
-
-            // Update the stage
-            session.updateStage(DefaultStage.WARMUP, true);
-        } else {
-            // Update the stage
-            session.updateStage(DefaultStage.ERROR, true);
+public interface FakeDeathMixin extends Game {
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+    default void onDamage(EntityDamageEvent event) {
+        if (event.getEntity() instanceof Player) {
+            Player player = (Player) event.getEntity();
+            Optional<Session> opSession = checkPlayer(player);
+            if (opSession.isPresent()) {
+                if (player.getHealth() - event.getDamage() <= 0.0) {
+                    event.setCancelled(true);
+                    onDeath(opSession.get(), event);
+                }
+            }
         }
     }
+
+    void onDeath(Session session, EntityDamageEvent event);
 }

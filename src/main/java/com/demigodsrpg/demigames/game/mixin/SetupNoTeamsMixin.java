@@ -20,39 +20,32 @@
  * SOFTWARE.
  */
 
-package com.demigodsrpg.demigames.impl.listener;
+package com.demigodsrpg.demigames.game.mixin;
 
 import com.demigodsrpg.demigames.game.Game;
-import com.demigodsrpg.demigames.game.mixin.WarmupLobbyMixin;
 import com.demigodsrpg.demigames.impl.Demigames;
-import com.demigodsrpg.demigames.profile.Profile;
 import com.demigodsrpg.demigames.session.Session;
 import com.demigodsrpg.demigames.stage.DefaultStage;
-import org.bukkit.Bukkit;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
-import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerJoinEvent;
+import com.demigodsrpg.demigames.stage.StageHandler;
+import org.bukkit.World;
 
-import java.util.List;
 import java.util.Optional;
 
-public class TestingListener implements Listener {
-    @EventHandler(priority = EventPriority.MONITOR)
-    public void onPlayerJoin(PlayerJoinEvent event) {
-        Optional<Game> opGame = Demigames.getGameRegistry().getMinigame("Spleef");
-        if (opGame.isPresent()) {
-            Profile profile = Demigames.getProfileRegistry().fromPlayer(event.getPlayer());
-            List<Session> sessions = Demigames.getSessionRegistry().fromGame(opGame.get());
-            if (sessions.isEmpty()) {
-                Session session = Demigames.getSessionRegistry().newSession(opGame.get());
-                session.addProfile(profile);
-                Bukkit.getScheduler().scheduleSyncDelayedTask(Demigames.getInstance(), () ->
-                        session.updateStage(DefaultStage.SETUP, true), 60);
-            } else {
-                sessions.get(0).addProfile(profile);
-                event.getPlayer().teleport(((WarmupLobbyMixin) opGame.get()).getWarmupSpawn());
-            }
+public interface SetupNoTeamsMixin extends Game {
+    @StageHandler(stage = DefaultStage.SETUP)
+    default void roundSetup(Session session) {
+        // Setup the world
+        Optional<World> opWorld = Demigames.getSessionRegistry().setupWorld(session);
+
+        if (opWorld.isPresent()) {
+            // Setup the locations
+            setupLocations(session);
+
+            // Update the stage
+            session.updateStage(DefaultStage.WARMUP, true);
+        } else {
+            // Update the stage
+            session.updateStage(DefaultStage.ERROR, true);
         }
     }
 }
