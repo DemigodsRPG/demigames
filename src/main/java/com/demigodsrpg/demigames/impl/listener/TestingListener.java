@@ -42,14 +42,15 @@ public class TestingListener implements Listener {
     public void onPlayerJoin(PlayerJoinEvent event) {
         Optional<Game> opGame = Demigames.getGameRegistry().getMinigame("Spleef");
         if (opGame.isPresent()) {
+            Profile profile = Demigames.getProfileRegistry().fromPlayer(event.getPlayer());
             List<Session> sessions = Demigames.getSessionRegistry().fromGame(opGame.get());
             if (sessions.isEmpty()) {
                 Session session = Demigames.getSessionRegistry().newSession(opGame.get());
-                session.addProfile(new Profile(event.getPlayer()));
+                session.addProfile(profile);
                 Bukkit.getScheduler().scheduleSyncDelayedTask(Demigames.getInstance(), () ->
                         session.updateStage(DefaultStage.SETUP, true), 60);
             } else {
-                sessions.get(0).addProfile(new Profile(event.getPlayer()));
+                sessions.get(0).addProfile(profile);
                 event.getPlayer().teleport(((WarmupLobbyMixin) opGame.get()).getWarmupSpawn());
             }
         }
