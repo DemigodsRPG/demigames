@@ -63,9 +63,9 @@ public interface Game extends Listener {
 
     void onTie(Session session, Player player);
 
-    void onPlayerJoin(Player player);
+    void onPlayerJoin(Session session, Player player);
 
-    void onPlayerQuit(Player player);
+    void onPlayerQuit(Session session, Player player);
 
     void setupLocations(Session session);
 

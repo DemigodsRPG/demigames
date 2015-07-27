@@ -90,12 +90,12 @@ public class Lobby implements Game {
     }
 
     @Override
-    public void onPlayerJoin(Player player) {
+    public void onPlayerJoin(Session session, Player player) {
         player.sendMessage("Welcome!");
     }
 
     @Override
-    public void onPlayerQuit(Player player) {
+    public void onPlayerQuit(Session session, Player player) {
     }
 
     @Override
