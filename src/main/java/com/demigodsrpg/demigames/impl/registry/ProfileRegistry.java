@@ -37,8 +37,6 @@ public class ProfileRegistry extends AbstractRegistry<String, Profile> {
         if (opProfile.isPresent()) {
             return opProfile.get();
         }
-        Profile profile = new Profile(player);
-        put(player.getUniqueId().toString(), profile);
-        return profile;
+        return new Profile(player);
     }
 }

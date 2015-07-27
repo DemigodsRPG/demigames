@@ -46,7 +46,6 @@ public class Profile implements Serializable {
 
     public Profile() {
         this.player = Optional.empty();
-        Demigames.getProfileRegistry().put(mojangUniqueId, this);
     }
 
     public Profile(Player player) {
