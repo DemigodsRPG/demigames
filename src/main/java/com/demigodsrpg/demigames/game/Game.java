@@ -43,13 +43,19 @@ public interface Game extends Listener {
 
     boolean canLateJoin();
 
-    boolean hasSpectateChat();
+    default boolean hasSpectateChat() {
+        return false;
+    }
 
     int getMinimumPlayers();
 
-    int getNumberOfTeams();
+    default int getNumberOfTeams() {
+        return 0;
+    }
 
-    int getTotalRounds();
+    default int getTotalRounds() {
+        return 1;
+    }
 
     void onWin(Session session, Player player);
 
