@@ -53,7 +53,7 @@ public class CreateLocationCommand extends BaseCommand {
                     String name = args[0];
                     Optional<Game> game = session.get().getGame();
                     if (game.isPresent()) {
-                        CONFIG.set(game.get().getName() + "." + name, LocationUtil.stringFromLocation(player.getLocation(), true));
+                        CONFIG.set(game.get().getName() + ".loc." + name, LocationUtil.stringFromLocation(player.getLocation(), true));
                         Demigames.getInstance().saveConfig();
                         sender.sendMessage(ChatColor.YELLOW + "Location " + name + " has been created!");
                         return CommandResult.SUCCESS;
