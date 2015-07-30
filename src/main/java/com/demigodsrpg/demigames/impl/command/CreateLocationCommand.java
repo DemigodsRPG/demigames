@@ -26,8 +26,10 @@ import com.censoredsoftware.library.command.type.BaseCommand;
 import com.censoredsoftware.library.command.type.CommandResult;
 import com.demigodsrpg.demigames.game.Game;
 import com.demigodsrpg.demigames.impl.Demigames;
+import com.demigodsrpg.demigames.impl.listener.LocationSelectListener;
 import com.demigodsrpg.demigames.impl.util.LocationUtil;
 import com.demigodsrpg.demigames.session.Session;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -38,7 +40,12 @@ import org.bukkit.entity.Player;
 import java.util.Optional;
 
 public class CreateLocationCommand extends BaseCommand {
+
+    // -- CONFIG -- //
+
     private FileConfiguration CONFIG = Demigames.getInstance().getConfig();
+
+    // -- COMMAND EXECUTOR -- //
 
     @Override
     protected CommandResult onCommand(CommandSender sender, Command command, String[] args) {
@@ -53,9 +60,20 @@ public class CreateLocationCommand extends BaseCommand {
                     String name = args[0];
                     Optional<Game> game = session.get().getGame();
                     if (game.isPresent()) {
-                        CONFIG.set(game.get().getName() + ".loc." + name, LocationUtil.stringFromLocation(player.getLocation(), true));
+                        CONFIG.set(game.get().getName() + ".loc." + name,
+                                LocationUtil.stringFromLocation(player.getLocation(), true));
                         Demigames.getInstance().saveConfig();
                         sender.sendMessage(ChatColor.YELLOW + "Location " + name + " has been created!");
+                        return CommandResult.SUCCESS;
+                    } else {
+                        return CommandResult.ERROR;
+                    }
+                } else if (args.length == 2 && "block".equalsIgnoreCase(args[0])) {
+                    Optional<Game> game = session.get().getGame();
+                    if (game.isPresent()) {
+                        Bukkit.getServer().getPluginManager().registerEvents(new LocationSelectListener(args[1],
+                                game.get().getName(), player), Demigames.getInstance());
+                        sender.sendMessage(ChatColor.YELLOW + "Right click a block with your bare hands.");
                         return CommandResult.SUCCESS;
                     } else {
                         return CommandResult.ERROR;

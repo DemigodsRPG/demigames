@@ -32,6 +32,9 @@ import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 
 public class CreateKitCommand extends BaseCommand {
+
+    // -- COMMAND EXECUTOR -- //
+
     @Override
     protected CommandResult onCommand(CommandSender sender, Command command, String[] args) {
         if (sender instanceof ConsoleCommandSender) {

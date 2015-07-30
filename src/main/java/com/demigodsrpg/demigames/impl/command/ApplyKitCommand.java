@@ -35,6 +35,9 @@ import org.bukkit.entity.Player;
 import java.util.Optional;
 
 public class ApplyKitCommand extends BaseCommand {
+
+    // -- COMMAND EXECUTOR -- //
+
     @Override
     protected CommandResult onCommand(CommandSender sender, Command command, String[] args) {
         if (sender instanceof ConsoleCommandSender) {
