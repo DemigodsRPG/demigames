@@ -68,4 +68,9 @@ public interface Kit {
         player.getActivePotionEffects().forEach(potionEffect -> player.removePotionEffect(potionEffect.getType()));
         player.addPotionEffects(Arrays.asList(getPotionEffects()));
     }
+
+    default void applyEffects(Player player) {
+        player.getActivePotionEffects().forEach(potionEffect -> player.removePotionEffect(potionEffect.getType()));
+        player.addPotionEffects(Arrays.asList(getPotionEffects()));
+    }
 }
