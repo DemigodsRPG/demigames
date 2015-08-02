@@ -20,24 +20,39 @@
  * SOFTWARE.
  */
 
-package com.demigodsrpg.demigames.impl.util;
+package com.demigodsrpg.demigames.session;
 
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
+import com.demigodsrpg.demigames.game.Lobby;
 
-public class LocationUtil {
-    public static String stringFromLocation(Location location, boolean blockLocation) {
-        if (blockLocation) {
-            return location.getBlockX() + ".0" + ";" + location.getBlockY() + ".0" + ";" + location.getBlockZ() + ".0" + ";" + location.getYaw() + ";" + location.getPitch();
-        }
-        return location.getX() + ";" + location.getY() + ";" + location.getZ() + ";" + location.getYaw() + ";" + location.getPitch();
+
+public class LobbySession extends Session {
+
+    // -- DEFAULT INSTANCE -- //
+
+    public static final LobbySession INST = new LobbySession();
+
+    // -- CONSTRUCTOR -- //
+
+    private LobbySession() {
+        super(Lobby.WORLD_NAME, Lobby.LOBBY);
     }
 
-    public static Location locationFromString(String world, String location) {
-        String[] part = location.split(";");
-        if (Bukkit.getWorld(world) != null) {
-            return new Location(Bukkit.getWorld(world), Double.parseDouble(part[0]), Double.parseDouble(part[1]), Double.parseDouble(part[2]), Float.parseFloat(part[3]), Float.parseFloat(part[4]));
-        }
-        return null;
+    // -- IGNORE THE FOLLOWING METHODS -- //
+
+    public void setStage(String stage) {
+    }
+
+    public void updateStage(String stage, boolean process) {
+    }
+
+    public void setCurrentRound(int currentRound) {
+    }
+
+    public void endSession(boolean nextGame) {
+    }
+
+    // -- TOUCH -- //
+
+    public static void touch() {
     }
 }

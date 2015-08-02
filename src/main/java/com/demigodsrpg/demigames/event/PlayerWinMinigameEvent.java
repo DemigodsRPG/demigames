@@ -20,31 +20,42 @@
  * SOFTWARE.
  */
 
-package com.demigodsrpg.demigames.impl.listener;
+package com.demigodsrpg.demigames.event;
 
 import com.demigodsrpg.demigames.game.Game;
 import com.demigodsrpg.demigames.impl.Demigames;
-import com.demigodsrpg.demigames.profile.Profile;
 import com.demigodsrpg.demigames.session.Session;
-import com.demigodsrpg.demigames.stage.DefaultStage;
-import org.bukkit.Bukkit;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
-import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.entity.Player;
+import org.bukkit.event.HandlerList;
+import org.bukkit.event.player.PlayerEvent;
 
 import java.util.Optional;
 
-public class TestingListener implements Listener {
-    @EventHandler(priority = EventPriority.MONITOR)
-    public void onPlayerJoin(PlayerJoinEvent event) {
-        Optional<Game> opGame = Demigames.getGameRegistry().getMinigame("Spleef");
-        if (opGame.isPresent()) {
-            Profile profile = Demigames.getProfileRegistry().fromPlayer(event.getPlayer());
-            Session session = Demigames.getSessionRegistry().newSession(opGame.get());
-            session.addProfile(profile);
-            Bukkit.getScheduler().scheduleSyncDelayedTask(Demigames.getInstance(), () ->
-                    session.updateStage(DefaultStage.SETUP, true), 60);
-        }
+public class PlayerWinMinigameEvent extends PlayerEvent {
+    private static final HandlerList handlers = new HandlerList();
+    Optional<Game> game;
+    String sessionId;
+
+    public PlayerWinMinigameEvent(Player player, Session session) {
+        super(player);
+        this.game = session.getGame();
+        this.sessionId = session.getId();
+    }
+
+    public Optional<Game> getGame() {
+        return game;
+    }
+
+    public Optional<Session> getSession() {
+        return Demigames.getSessionRegistry().fromKey(sessionId);
+    }
+
+    @Override
+    public HandlerList getHandlers() {
+        return handlers;
+    }
+
+    public static HandlerList getHandlerList() {
+        return handlers;
     }
 }

@@ -22,10 +22,17 @@
 
 package com.demigodsrpg.demigames.game;
 
+import com.demigodsrpg.demigames.event.*;
 import com.demigodsrpg.demigames.impl.Demigames;
+import com.demigodsrpg.demigames.impl.registry.SessionRegistry;
+import com.demigodsrpg.demigames.profile.Profile;
 import com.demigodsrpg.demigames.session.Session;
+import com.demigodsrpg.demigames.stage.DefaultStage;
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 
 import java.util.Optional;
@@ -57,16 +64,6 @@ public interface Game extends Listener {
         return 1;
     }
 
-    void onWin(Session session, Player player);
-
-    void onLose(Session session, Player player);
-
-    void onTie(Session session, Player player);
-
-    void onPlayerJoin(Session session, Player player);
-
-    void onPlayerQuit(Session session, Player player);
-
     void setupLocations(Session session);
 
     default void onServerStart() {
@@ -92,4 +89,66 @@ public interface Game extends Listener {
         }
         return Optional.empty();
     }
+
+    default void callWin(Session session, Player player) {
+        Bukkit.getPluginManager().callEvent(new PlayerWinMinigameEvent(player, session));
+    }
+
+    default void callLose(Session session, Player player) {
+        Bukkit.getPluginManager().callEvent(new PlayerLoseMinigameEvent(player, session));
+    }
+
+    default void callTie(Session session, Player player) {
+        Bukkit.getPluginManager().callEvent(new PlayerTieMinigameEvent(player, session));
+    }
+
+    default void join(Player player) {
+        SessionRegistry sessions = Demigames.getSessionRegistry();
+        Session session = null;
+        if (sessions.fromGame(this).size() > 0) {
+            Optional<Session> maybe = sessions.fromGame(this).stream().filter(Session::isJoinable).findAny();
+            if (maybe.isPresent()) {
+                session = maybe.get();
+            }
+        }
+        if (session == null) {
+            session = sessions.newSession(this);
+            session.updateStage(DefaultStage.SETUP, true);
+        }
+        Optional<Session> previous;
+        Optional<String> previousId = Demigames.getProfileRegistry().fromPlayer(player).getCurrentSessionId();
+        if (previousId.isPresent()) {
+            previous = sessions.fromKey(previousId.get());
+        } else {
+            previous = Optional.empty();
+        }
+        PlayerJoinMinigameEvent event = new PlayerJoinMinigameEvent(player, session, previous);
+        Profile profile = Demigames.getProfileRegistry().fromPlayer(event.getPlayer());
+        session.addProfile(profile);
+        profile.setCurrentSessionId(session.getId());
+        Bukkit.getPluginManager().callEvent(event);
+    }
+
+    default void quit(Player player, PlayerQuitMinigameEvent.QuitReason reason) {
+        SessionRegistry sessions = Demigames.getSessionRegistry();
+        Session session = null;
+        if (sessions.fromGame(this).size() > 0) {
+            Optional<Session> maybe = sessions.fromGame(this).stream().filter(Session::isJoinable).findAny();
+            if (maybe.isPresent()) {
+                session = maybe.get();
+            }
+        }
+        if (session == null) {
+            session = sessions.newSession(this);
+        }
+        PlayerQuitMinigameEvent event = new PlayerQuitMinigameEvent(player, session, reason);
+        session.removeProfile(event.getPlayer());
+        Bukkit.getPluginManager().callEvent(event);
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR)
+    void onJoin(PlayerJoinMinigameEvent event);
+
+    @EventHandler(priority = EventPriority.MONITOR)
+    void onLeave(PlayerQuitMinigameEvent event);
 }

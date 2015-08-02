@@ -20,24 +20,42 @@
  * SOFTWARE.
  */
 
-package com.demigodsrpg.demigames.impl.util;
+package com.demigodsrpg.demigames.event;
 
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
+import com.demigodsrpg.demigames.game.Game;
+import com.demigodsrpg.demigames.impl.Demigames;
+import com.demigodsrpg.demigames.session.Session;
+import org.bukkit.entity.Player;
+import org.bukkit.event.HandlerList;
+import org.bukkit.event.player.PlayerEvent;
 
-public class LocationUtil {
-    public static String stringFromLocation(Location location, boolean blockLocation) {
-        if (blockLocation) {
-            return location.getBlockX() + ".0" + ";" + location.getBlockY() + ".0" + ";" + location.getBlockZ() + ".0" + ";" + location.getYaw() + ";" + location.getPitch();
-        }
-        return location.getX() + ";" + location.getY() + ";" + location.getZ() + ";" + location.getYaw() + ";" + location.getPitch();
+import java.util.Optional;
+
+public class PlayerTieMinigameEvent extends PlayerEvent {
+    private static final HandlerList handlers = new HandlerList();
+    Optional<Game> game;
+    String sessionId;
+
+    public PlayerTieMinigameEvent(Player player, Session session) {
+        super(player);
+        this.game = session.getGame();
+        this.sessionId = session.getId();
     }
 
-    public static Location locationFromString(String world, String location) {
-        String[] part = location.split(";");
-        if (Bukkit.getWorld(world) != null) {
-            return new Location(Bukkit.getWorld(world), Double.parseDouble(part[0]), Double.parseDouble(part[1]), Double.parseDouble(part[2]), Float.parseFloat(part[3]), Float.parseFloat(part[4]));
-        }
-        return null;
+    public Optional<Game> getGame() {
+        return game;
+    }
+
+    public Optional<Session> getSession() {
+        return Demigames.getSessionRegistry().fromKey(sessionId);
+    }
+
+    @Override
+    public HandlerList getHandlers() {
+        return handlers;
+    }
+
+    public static HandlerList getHandlerList() {
+        return handlers;
     }
 }

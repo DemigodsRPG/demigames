@@ -20,32 +20,52 @@
  * SOFTWARE.
  */
 
-package com.demigodsrpg.demigames.game.mixin;
+package com.demigodsrpg.demigames.event;
 
 import com.demigodsrpg.demigames.game.Game;
 import com.demigodsrpg.demigames.impl.Demigames;
 import com.demigodsrpg.demigames.session.Session;
-import com.demigodsrpg.demigames.stage.DefaultStage;
-import com.demigodsrpg.demigames.stage.StageHandler;
-import org.bukkit.World;
+import org.bukkit.entity.Player;
+import org.bukkit.event.HandlerList;
+import org.bukkit.event.player.PlayerEvent;
 
 import java.util.Optional;
 
-public interface SetupNoTeamsMixin extends Game {
-    @StageHandler(stage = DefaultStage.SETUP)
-    default void roundSetup(Session session) {
-        // Setup the world
-        Optional<World> opWorld = Demigames.getSessionRegistry().setupWorld(session);
+public class PlayerQuitMinigameEvent extends PlayerEvent {
+    private static final HandlerList handlers = new HandlerList();
+    Optional<Game> game;
+    String sessionId;
+    QuitReason reason;
 
-        if (opWorld.isPresent()) {
-            // Setup the locations
-            setupLocations(session);
+    public PlayerQuitMinigameEvent(Player player, Session session, QuitReason reason) {
+        super(player);
+        this.game = session.getGame();
+        this.sessionId = session.getId();
+        this.reason = reason;
+    }
 
-            // Update the stage TODO This isn't the best place to start the warmup
-            session.updateStage(DefaultStage.WARMUP, true);
-        } else {
-            // Update the stage
-            session.updateStage(DefaultStage.ERROR, true);
-        }
+    public Optional<Game> getGame() {
+        return game;
+    }
+
+    public Optional<Session> getSession() {
+        return Demigames.getSessionRegistry().fromKey(sessionId);
+    }
+
+    public QuitReason getReason() {
+        return reason;
+    }
+
+    @Override
+    public HandlerList getHandlers() {
+        return handlers;
+    }
+
+    public static HandlerList getHandlerList() {
+        return handlers;
+    }
+
+    public enum QuitReason {
+        SESSION_END, LEAVE_SESSION, LEAVE_SERVER
     }
 }

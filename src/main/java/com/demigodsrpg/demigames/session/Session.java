@@ -23,6 +23,7 @@
 package com.demigodsrpg.demigames.session;
 
 import com.demigodsrpg.demigames.game.Game;
+import com.demigodsrpg.demigames.game.Lobby;
 import com.demigodsrpg.demigames.impl.Demigames;
 import com.demigodsrpg.demigames.impl.Setting;
 import com.demigodsrpg.demigames.impl.registry.ProfileRegistry;
@@ -47,15 +48,17 @@ public class Session implements Serializable {
     protected Map<String, Object> data;
     protected String id;
     protected String stage;
+    protected boolean joinable;
     protected int currentRound;
 
     // -- CONSTRUCTOR -- //
 
     public Session(String id, Game game) {
         this.id = id;
-        this.game = Optional.of(game);
+        this.game = Optional.ofNullable(game);
         this.stage = DefaultStage.SETUP;
         this.data = new HashMap<>();
+        this.joinable = true;
     }
 
     public Session(String id, Game game, String stage) {
@@ -63,6 +66,7 @@ public class Session implements Serializable {
         this.game = Optional.of(game);
         this.stage = stage;
         this.data = new HashMap<>();
+        this.joinable = true;
     }
 
     // -- GETTERS -- //
@@ -102,7 +106,15 @@ public class Session implements Serializable {
         return data;
     }
 
+    public boolean isJoinable() {
+        return joinable;
+    }
+
     // -- MUTATORS -- //
+
+    public void setJoinable(boolean joinable) {
+        this.joinable = joinable;
+    }
 
     public void addProfile(Profile profile) {
         profile.setCurrentSessionId(id);
@@ -159,11 +171,12 @@ public class Session implements Serializable {
                 Session newSession = registry.newSession(opGame.get());
                 newSession.profiles.addAll(profiles);
                 newSession.updateStage(DefaultStage.SETUP, true);
+                getPlayers().forEach(opGame.get()::join);
             }
         }
         // Lobby mode, or empty party
         else {
-            getPlayers().forEach(player -> player.teleport(Bukkit.getWorlds().get(0).getSpawnLocation())); // TODO
+            getPlayers().forEach(Lobby.LOBBY::join);
         }
 
         // Unload the world

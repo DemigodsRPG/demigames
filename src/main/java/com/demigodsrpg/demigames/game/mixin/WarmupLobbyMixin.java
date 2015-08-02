@@ -33,13 +33,17 @@ import org.bukkit.Location;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 
+import java.util.Optional;
+
 public interface WarmupLobbyMixin extends Game {
-    Location getWarmupSpawn();
+    Location getWarmupSpawn(Session session);
 
     @StageHandler(stage = DefaultStage.WARMUP)
     default void roundWarmup(Session session) {
+        Bukkit.broadcastMessage("TESFTESFGTESTSD"); // TODO DEBUG
+
         for (Player player : session.getPlayers()) {
-            player.teleport(getWarmupSpawn());
+            player.teleport(getWarmupSpawn(session));
         }
 
         // Iterate the round
@@ -48,18 +52,21 @@ public interface WarmupLobbyMixin extends Game {
         for (int i = 0; i <= 10; i++) {
             final int k = i;
             Bukkit.getScheduler().scheduleSyncDelayedTask(Demigames.getInstance(), () -> {
-                if (k == 10) {
-                    // Update the stage
-                    session.getPlayers().forEach(player -> {
-                        Demigames.getTitleUtil().broadcastTitle(session, 0, 18, 2, ChatColor.GREEN + "GO!", "Have fun!");
-                        player.playSound(player.getLocation(), Sound.NOTE_PIANO, 1f, 1f);
-                    });
-                    session.updateStage(DefaultStage.BEGIN, true);
-                } else {
-                    Demigames.getTitleUtil().broadcastTitle(session, 2, 30, 0, ChatColor.GOLD + getName() + "!", "In " + (10 - k) + " seconds!");
-                    session.getPlayers().forEach(player -> {
-                        player.playSound(player.getLocation(), Sound.NOTE_PIANO, 1f, 0.5f);
-                    });
+                Optional<Session> current = Demigames.getSessionRegistry().fromKey(session.getId());
+                if (current.isPresent()) {
+                    if (k == 10) {
+                        // Update the stage
+                        current.get().getPlayers().forEach(player -> {
+                            Demigames.getTitleUtil().broadcastTitle(session, 0, 18, 2, ChatColor.GREEN + "GO!", "Have fun!");
+                            player.playSound(player.getLocation(), Sound.NOTE_PIANO, 1f, 1f);
+                        });
+                        current.get().updateStage(DefaultStage.BEGIN, true);
+                    } else {
+                        Demigames.getTitleUtil().broadcastTitle(session, 2, 30, 0, ChatColor.GOLD + getName() + "!", "In " + (10 - k) + " seconds!");
+                        current.get().getPlayers().forEach(player -> {
+                            player.playSound(player.getLocation(), Sound.NOTE_PIANO, 1f, 0.5f);
+                        });
+                    }
                 }
             }, i * 20);
         }

@@ -25,6 +25,7 @@ package com.demigodsrpg.demigames.impl.registry;
 import com.censoredsoftware.library.util.RandomUtil;
 import com.demigodsrpg.demigames.game.Game;
 import com.demigodsrpg.demigames.impl.Demigames;
+import com.demigodsrpg.demigames.impl.Setting;
 import com.demigodsrpg.demigames.impl.util.ClassPathHack;
 import com.demigodsrpg.demigames.session.Session;
 import com.demigodsrpg.demigames.stage.StageHandler;
@@ -48,6 +49,7 @@ import java.util.stream.Collectors;
 
 public class GameRegistry {
     private final ConcurrentMap<String, Game> MINIGAMES = new ConcurrentHashMap<>();
+    private final boolean partyMode = "party".equalsIgnoreCase(Setting.MODE);
 
     public void register(Game game) {
         Bukkit.getPluginManager().registerEvents(game, Demigames.getInstance());
@@ -95,7 +97,7 @@ public class GameRegistry {
 
     public Optional<Game> randomGame() {
         if (!MINIGAMES.isEmpty()) {
-            int index = RandomUtil.generateIntRange(0, MINIGAMES.size() - 1);
+            int index = RandomUtil.generateIntRange(partyMode ? 0 : 1, MINIGAMES.size() - 1);
             return Optional.of(Lists.newArrayList(MINIGAMES.values()).get(index));
         }
         return Optional.empty();

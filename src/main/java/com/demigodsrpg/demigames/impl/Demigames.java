@@ -22,15 +22,18 @@
 
 package com.demigodsrpg.demigames.impl;
 
+import com.demigodsrpg.demigames.game.Lobby;
 import com.demigodsrpg.demigames.impl.command.ApplyKitCommand;
 import com.demigodsrpg.demigames.impl.command.CreateKitCommand;
 import com.demigodsrpg.demigames.impl.command.CreateLocationCommand;
-import com.demigodsrpg.demigames.impl.listener.TestingListener;
+import com.demigodsrpg.demigames.impl.command.JoinGameCommand;
+import com.demigodsrpg.demigames.impl.listener.SessionListener;
 import com.demigodsrpg.demigames.impl.registry.GameRegistry;
 import com.demigodsrpg.demigames.impl.registry.KitRegistry;
 import com.demigodsrpg.demigames.impl.registry.ProfileRegistry;
 import com.demigodsrpg.demigames.impl.registry.SessionRegistry;
 import com.demigodsrpg.demigames.impl.util.LibraryHandler;
+import com.demigodsrpg.demigames.session.LobbySession;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
@@ -76,12 +79,16 @@ public class Demigames extends JavaPlugin {
         SESSION_REGISTRY = new SessionRegistry();
 
         // Handle listeners
-        getServer().getPluginManager().registerEvents(new TestingListener(), this);
+        getServer().getPluginManager().registerEvents(new SessionListener(), this);
 
         // Register commands
+        getCommand("joingame").setExecutor(new JoinGameCommand());
         getCommand("createkit").setExecutor(new CreateKitCommand());
         getCommand("applykit").setExecutor(new ApplyKitCommand());
         getCommand("createlocation").setExecutor(new CreateLocationCommand());
+
+        GAME_REGISTRY.register(Lobby.LOBBY);
+        LobbySession.touch();
 
         // Load the components. If there was an error, cancel the plugin from loading
         if (!loadComponents()) {

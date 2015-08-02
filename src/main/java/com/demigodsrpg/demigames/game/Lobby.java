@@ -20,13 +20,33 @@
  * SOFTWARE.
  */
 
-package com.demigodsrpg.demigames.game.lobby;
+package com.demigodsrpg.demigames.game;
 
-import com.demigodsrpg.demigames.game.Game;
+import com.demigodsrpg.demigames.event.PlayerJoinMinigameEvent;
+import com.demigodsrpg.demigames.event.PlayerQuitMinigameEvent;
+import com.demigodsrpg.demigames.impl.util.LocationUtil;
 import com.demigodsrpg.demigames.session.Session;
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 
 public class Lobby implements Game {
+    public static final Lobby LOBBY = new Lobby();
+    public static final String WORLD_NAME = "world"; //Bukkit.getWorlds().get(0).getName();
+
+    private Location spawnPoint;
+
+    public Lobby() {
+        spawnPoint = LocationUtil.locationFromString(WORLD_NAME, getConfig().getString("loc.spawn",
+                LocationUtil.stringFromLocation(Bukkit.getWorld(WORLD_NAME).getSpawnLocation(), false)));
+    }
+
+    @Override
+    public void setupLocations(Session session) {
+    }
+
     @Override
     public String getName() {
         return "Lobby";
@@ -34,7 +54,7 @@ public class Lobby implements Game {
 
     @Override
     public String getDirectory() {
-        return "lobby";
+        return "";
     }
 
     @Override
@@ -77,28 +97,29 @@ public class Lobby implements Game {
         return 0;
     }
 
-    @Override
-    public void onWin(Session session, Player player) {
+    public Location getSpawnPoint() {
+        return spawnPoint;
     }
 
-    @Override
-    public void onLose(Session session, Player player) {
+    @EventHandler(priority = EventPriority.MONITOR)
+    public void onJoin(PlayerJoinMinigameEvent event) {
+        if (event.getGame().isPresent() && event.getGame().get().equals(this)) {
+            Player player = event.getPlayer();
+            player.teleport(spawnPoint);
+            player.sendMessage("WELCOME TO THE LOBBY.");
+            if (event.getPreviusSession().isPresent() && event.getPreviusSession().get().getGame().isPresent()) {
+                Game previousGame = event.getPreviusSession().get().getGame().get();
+                if (!(previousGame instanceof Lobby)) {
+                    player.sendMessage("Did you have fun playing " + previousGame.getName() + "?");
+                }
+            }
+        }
     }
 
-    @Override
-    public void onTie(Session session, Player player) {
-    }
-
-    @Override
-    public void onPlayerJoin(Session session, Player player) {
-        player.sendMessage("Welcome!");
-    }
-
-    @Override
-    public void onPlayerQuit(Session session, Player player) {
-    }
-
-    @Override
-    public void setupLocations(Session session) {
+    @EventHandler(priority = EventPriority.MONITOR)
+    public void onLeave(PlayerQuitMinigameEvent event) {
+        if (event.getGame().isPresent() && event.getGame().get().equals(this)) {
+            event.getPlayer().sendMessage("THE LOBBY MISSES YOU :C");
+        }
     }
 }

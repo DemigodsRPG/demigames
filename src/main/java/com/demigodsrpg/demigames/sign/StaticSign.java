@@ -20,24 +20,36 @@
  * SOFTWARE.
  */
 
-package com.demigodsrpg.demigames.impl.util;
+package com.demigodsrpg.demigames.sign;
 
-import org.bukkit.Bukkit;
+import com.demigodsrpg.demigames.impl.util.LocationUtil;
+import com.demigodsrpg.demigames.session.Session;
 import org.bukkit.Location;
 
-public class LocationUtil {
-    public static String stringFromLocation(Location location, boolean blockLocation) {
-        if (blockLocation) {
-            return location.getBlockX() + ".0" + ";" + location.getBlockY() + ".0" + ";" + location.getBlockZ() + ".0" + ";" + location.getYaw() + ";" + location.getPitch();
-        }
-        return location.getX() + ";" + location.getY() + ";" + location.getZ() + ";" + location.getYaw() + ";" + location.getPitch();
+import java.util.List;
+import java.util.Optional;
+
+public abstract class StaticSign implements DemiSign {
+
+    // -- DATA -- //
+
+    String name;
+    String location;
+    List<String> lines;
+
+    // -- GETTERS -- //
+
+    @Override
+    public String getName() {
+        return name;
     }
 
-    public static Location locationFromString(String world, String location) {
-        String[] part = location.split(";");
-        if (Bukkit.getWorld(world) != null) {
-            return new Location(Bukkit.getWorld(world), Double.parseDouble(part[0]), Double.parseDouble(part[1]), Double.parseDouble(part[2]), Float.parseFloat(part[3]), Float.parseFloat(part[4]));
-        }
-        return null;
+    @Override
+    public Optional<Location> getLocation(Session session) {
+        return Optional.ofNullable(LocationUtil.locationFromString(session.getId(), location));
+    }
+
+    public List<String> getLines() {
+        return lines;
     }
 }

@@ -23,8 +23,11 @@
 package com.demigodsrpg.demigames.impl.registry;
 
 import com.demigodsrpg.demigames.game.Game;
+import com.demigodsrpg.demigames.game.Lobby;
 import com.demigodsrpg.demigames.impl.Demigames;
+import com.demigodsrpg.demigames.impl.Setting;
 import com.demigodsrpg.demigames.profile.Profile;
+import com.demigodsrpg.demigames.session.LobbySession;
 import com.demigodsrpg.demigames.session.Session;
 import org.apache.commons.io.FileUtils;
 import org.bukkit.Bukkit;
@@ -33,14 +36,15 @@ import org.bukkit.WorldCreator;
 import org.bukkit.entity.Player;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 
 public class SessionRegistry extends AbstractRegistry<String, Session> {
+
+    // -- KEEP TRACK OF THESE VALUES -- //
+
+    private String mainWorld = Bukkit.getWorlds().get(0).getName();
 
     // -- CONSTRUCTOR -- //
 
@@ -48,21 +52,46 @@ public class SessionRegistry extends AbstractRegistry<String, Session> {
         super("session", Session.class, false);
     }
 
+    @Override
+    public Optional<Session> fromKey(String key) {
+        if (key.equals(mainWorld)) {
+            return Optional.of(LobbySession.INST);
+        }
+        return super.fromKey(key);
+    }
+
+    @Override
+    public Session put(String key, Session value) {
+        if (key.equals(mainWorld)) {
+            return LobbySession.INST;
+        }
+        return super.put(key, value);
+    }
+
     // -- GETTERS -- //
 
     public Session newSession(Game game) {
+        if (game instanceof Lobby) {
+            return LobbySession.INST;
+        }
         String keyId = UUID.randomUUID().toString();
         Session newSession = new Session(keyId, game);
         return put(keyId, newSession);
     }
 
     public Session newSession(Game game, String stage) {
+        if (game instanceof Lobby) {
+            return LobbySession.INST;
+        }
         String keyId = UUID.randomUUID().toString();
         Session newSession = new Session(keyId, game, stage);
         return put(keyId, newSession);
     }
 
     public List<Session> fromGame(Game game) {
+        if (game instanceof Lobby) {
+            return Collections.singletonList(LobbySession.INST);
+        }
         if (game != null) {
             return REGISTERED_DATA.asMap().values().parallelStream().filter(session -> {
                 Optional<Game> foundGame = session.getGame();
@@ -80,12 +109,27 @@ public class SessionRegistry extends AbstractRegistry<String, Session> {
                 return fromKey(opId.get());
             }
         }
-        return Optional.empty();
+        if (Setting.MODE.equalsIgnoreCase("party")) {
+            if (REGISTERED_DATA.asMap().values().size() > 0) {
+                Optional<Session> maybe = REGISTERED_DATA.asMap().values().stream().findAny();
+                if (maybe.isPresent()) {
+                    return maybe;
+                }
+            }
+            Optional<Game> opGame = Demigames.getGameRegistry().randomGame();
+            if (opGame.isPresent()) {
+                opGame.get().join(player);
+            }
+        }
+        return Optional.of(LobbySession.INST);
     }
 
     // -- WORLD STUFF -- //
 
     public Optional<World> setupWorld(Session session) {
+        if (session instanceof LobbySession) {
+            return Optional.of(Bukkit.getWorld(mainWorld));
+        }
         if (session.getGame().isPresent()) {
             Game game = session.getGame().get();
 
@@ -109,6 +153,11 @@ public class SessionRegistry extends AbstractRegistry<String, Session> {
     }
 
     public void unloadWorld(Session session) {
+        // Ignore the lobby session
+        if (session instanceof LobbySession) {
+            return;
+        }
+
         // Unregister old worlds
         if (Bukkit.getWorld(session.getId()) != null) {
             Bukkit.unloadWorld(session.getId(), false);

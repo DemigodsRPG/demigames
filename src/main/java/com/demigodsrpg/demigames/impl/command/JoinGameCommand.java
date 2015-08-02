@@ -20,32 +20,36 @@
  * SOFTWARE.
  */
 
-package com.demigodsrpg.demigames.game.mixin;
+package com.demigodsrpg.demigames.impl.command;
 
+import com.censoredsoftware.library.command.type.BaseCommand;
+import com.censoredsoftware.library.command.type.CommandResult;
 import com.demigodsrpg.demigames.game.Game;
 import com.demigodsrpg.demigames.impl.Demigames;
-import com.demigodsrpg.demigames.session.Session;
-import com.demigodsrpg.demigames.stage.DefaultStage;
-import com.demigodsrpg.demigames.stage.StageHandler;
-import org.bukkit.World;
+import org.bukkit.ChatColor;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 
 import java.util.Optional;
 
-public interface SetupNoTeamsMixin extends Game {
-    @StageHandler(stage = DefaultStage.SETUP)
-    default void roundSetup(Session session) {
-        // Setup the world
-        Optional<World> opWorld = Demigames.getSessionRegistry().setupWorld(session);
-
-        if (opWorld.isPresent()) {
-            // Setup the locations
-            setupLocations(session);
-
-            // Update the stage TODO This isn't the best place to start the warmup
-            session.updateStage(DefaultStage.WARMUP, true);
-        } else {
-            // Update the stage
-            session.updateStage(DefaultStage.ERROR, true);
+public class JoinGameCommand extends BaseCommand {
+    @Override
+    protected CommandResult onCommand(CommandSender sender, Command command, String[] args) {
+        if (args.length < 1) {
+            return CommandResult.INVALID_SYNTAX;
         }
+        if (sender instanceof Player) {
+            Optional<Game> opGame = Demigames.getGameRegistry().getMinigame(args[0]);
+            if (opGame.isPresent()) {
+                sender.sendMessage(ChatColor.YELLOW + "Joining " + args[0] + ".");
+                opGame.get().join((Player) sender);
+                return CommandResult.SUCCESS;
+            } else {
+                sender.sendMessage(ChatColor.RED + "No such game called " + args[0] + ".");
+                return CommandResult.QUIET_ERROR;
+            }
+        }
+        return CommandResult.PLAYER_ONLY;
     }
 }

@@ -8,6 +8,8 @@ commands:
   ## Everyday Commands
   demigames:
     usage: /demigames
+  joingame:
+    usage: /joingame <name>
   createkit:
     usage: /createkit <name>
   applykit:

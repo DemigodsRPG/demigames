@@ -20,24 +20,25 @@
  * SOFTWARE.
  */
 
-package com.demigodsrpg.demigames.impl.util;
+package com.demigodsrpg.demigames.sign;
 
-import org.bukkit.Bukkit;
+import com.demigodsrpg.demigames.session.Session;
 import org.bukkit.Location;
+import org.bukkit.entity.Player;
 
-public class LocationUtil {
-    public static String stringFromLocation(Location location, boolean blockLocation) {
-        if (blockLocation) {
-            return location.getBlockX() + ".0" + ";" + location.getBlockY() + ".0" + ";" + location.getBlockZ() + ".0" + ";" + location.getYaw() + ";" + location.getPitch();
-        }
-        return location.getX() + ";" + location.getY() + ";" + location.getZ() + ";" + location.getYaw() + ";" + location.getPitch();
+import java.util.List;
+import java.util.Optional;
+
+public interface DemiSign {
+    String getName();
+
+    Optional<Location> getLocation(Session session);
+
+    default String getLine(int index) throws IndexOutOfBoundsException {
+        return getLines().get(index);
     }
 
-    public static Location locationFromString(String world, String location) {
-        String[] part = location.split(";");
-        if (Bukkit.getWorld(world) != null) {
-            return new Location(Bukkit.getWorld(world), Double.parseDouble(part[0]), Double.parseDouble(part[1]), Double.parseDouble(part[2]), Float.parseFloat(part[3]), Float.parseFloat(part[4]));
-        }
-        return null;
-    }
+    List<String> getLines();
+
+    void onClick(Player player);
 }
