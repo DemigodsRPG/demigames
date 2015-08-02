@@ -124,7 +124,6 @@ public interface Game extends Listener {
             }
         }
         if (session == null) {
-            Bukkit.broadcastMessage("NEW SESSION"); //TODO Debug message
             session = sessions.newSession(this);
             session.setupWorld();
             session.updateStage(DefaultStage.SETUP, true);
