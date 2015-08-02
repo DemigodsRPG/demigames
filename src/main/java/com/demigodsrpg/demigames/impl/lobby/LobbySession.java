@@ -20,9 +20,9 @@
  * SOFTWARE.
  */
 
-package com.demigodsrpg.demigames.session;
+package com.demigodsrpg.demigames.impl.lobby;
 
-import com.demigodsrpg.demigames.game.Lobby;
+import com.demigodsrpg.demigames.session.Session;
 
 
 public class LobbySession extends Session {
@@ -49,10 +49,5 @@ public class LobbySession extends Session {
     }
 
     public void endSession(boolean nextGame) {
-    }
-
-    // -- TOUCH -- //
-
-    public static void touch() {
     }
 }

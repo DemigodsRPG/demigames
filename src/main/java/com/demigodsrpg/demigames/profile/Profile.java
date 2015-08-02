@@ -24,7 +24,6 @@ package com.demigodsrpg.demigames.profile;
 
 import com.demigodsrpg.demigames.impl.Demigames;
 import com.demigodsrpg.demigames.kit.Kit;
-import com.demigodsrpg.demigames.kit.MutableKit;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
@@ -37,11 +36,13 @@ public class Profile implements Serializable {
     // -- DATA -- //
 
     private transient Optional<Player> player;
+    private transient Optional<Kit> kit;
 
-    private Kit kit;
+    private transient String currentSessionId;
+    private transient String previousSessionId;
+
     private String mojangUniqueId;
     private String lastKnownName;
-    private String currentSessionId;
 
     // -- CONSTRUCTORS -- //
 
@@ -53,8 +54,9 @@ public class Profile implements Serializable {
         this.player = Optional.of(player);
         this.mojangUniqueId = player.getUniqueId().toString();
         this.lastKnownName = player.getName();
-        this.kit = null;
+        this.kit = Optional.empty();
         this.currentSessionId = null;
+        this.previousSessionId = null;
         Demigames.getProfileRegistry().put(mojangUniqueId, this);
     }
 
@@ -62,8 +64,9 @@ public class Profile implements Serializable {
         this.player = Optional.of(player);
         this.mojangUniqueId = player.getUniqueId().toString();
         this.lastKnownName = player.getName();
-        this.kit = MutableKit.of(kit);
+        this.kit = Optional.of(kit);
         this.currentSessionId = null;
+        this.previousSessionId = null;
         Demigames.getProfileRegistry().put(mojangUniqueId, this);
     }
 
@@ -88,22 +91,31 @@ public class Profile implements Serializable {
     }
 
     public Optional<Kit> getKit() {
-        return Optional.ofNullable(kit);
+        return kit;
     }
 
     public Optional<String> getCurrentSessionId() {
         return Optional.ofNullable(currentSessionId);
     }
 
+    public Optional<String> getPreviousSessionId() {
+        return Optional.ofNullable(previousSessionId);
+    }
+
     // -- MUTATORS -- //
 
     public void setKit(Kit kit) {
-        this.kit = MutableKit.of(kit);
+        this.kit = Optional.of(kit);
         Demigames.getProfileRegistry().put(mojangUniqueId, this);
     }
 
     public void setCurrentSessionId(String sessionId) {
         this.currentSessionId = sessionId;
+        Demigames.getProfileRegistry().put(mojangUniqueId, this);
+    }
+
+    public void setPreviousSessionId(String sessionId) {
+        this.previousSessionId = sessionId;
         Demigames.getProfileRegistry().put(mojangUniqueId, this);
     }
 }

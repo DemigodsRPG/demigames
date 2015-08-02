@@ -59,11 +59,9 @@ public abstract class AbstractRegistry<K extends Serializable, V extends Seriali
         return value;
     }
 
-    public void removeIfPresent(K key) {
-        if (REGISTERED_DATA.asMap().containsKey(key)) {
-            REGISTERED_DATA.asMap().remove(key);
-            removeFile(key);
-        }
+    public void remove(K key) {
+        REGISTERED_DATA.asMap().remove(key);
+        removeFile(key);
     }
 
     private void createFile(File file) {
@@ -114,5 +112,10 @@ public abstract class AbstractRegistry<K extends Serializable, V extends Seriali
         } catch (Exception oops) {
             oops.printStackTrace();
         }
+    }
+
+    public void purge() {
+        REGISTERED_DATA.asMap().keySet().forEach(this::removeFile);
+        REGISTERED_DATA.asMap().clear();
     }
 }

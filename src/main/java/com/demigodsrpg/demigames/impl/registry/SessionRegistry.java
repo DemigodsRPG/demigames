@@ -23,11 +23,11 @@
 package com.demigodsrpg.demigames.impl.registry;
 
 import com.demigodsrpg.demigames.game.Game;
-import com.demigodsrpg.demigames.game.Lobby;
 import com.demigodsrpg.demigames.impl.Demigames;
 import com.demigodsrpg.demigames.impl.Setting;
+import com.demigodsrpg.demigames.impl.lobby.Lobby;
+import com.demigodsrpg.demigames.impl.lobby.LobbySession;
 import com.demigodsrpg.demigames.profile.Profile;
-import com.demigodsrpg.demigames.session.LobbySession;
 import com.demigodsrpg.demigames.session.Session;
 import org.apache.commons.io.FileUtils;
 import org.bukkit.Bukkit;

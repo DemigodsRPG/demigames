@@ -22,37 +22,41 @@
 
 package com.demigodsrpg.demigames.impl.listener;
 
-import com.demigodsrpg.demigames.event.PlayerQuitMinigameEvent;
-import com.demigodsrpg.demigames.game.Game;
 import com.demigodsrpg.demigames.impl.Demigames;
-import com.demigodsrpg.demigames.impl.lobby.Lobby;
-import com.demigodsrpg.demigames.session.Session;
+import com.demigodsrpg.demigames.kit.ImmutableKit;
+import com.demigodsrpg.demigames.profile.Profile;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.inventory.InventoryInteractEvent;
+import org.bukkit.event.inventory.InventoryPickupItemEvent;
+import org.bukkit.event.player.PlayerDropItemEvent;
 
-import java.util.Optional;
-
-public class SessionListener implements Listener {
+public class KitListener implements Listener {
     @EventHandler(priority = EventPriority.LOWEST)
-    public void onJoin(PlayerJoinEvent event) {
-        Optional<Session> opSession = Demigames.getSessionRegistry().getSession(event.getPlayer());
-        if (opSession.isPresent() && opSession.get().getGame().isPresent()) {
-            opSession.get().getGame().get().join(event.getPlayer());
-        } else {
-            Lobby.LOBBY.join(event.getPlayer());
+    public void onPickup(InventoryPickupItemEvent event) {
+        if (event.getInventory().getHolder() instanceof Player) {
+            Profile profile = Demigames.getProfileRegistry().fromPlayer((Player) event.getInventory().getHolder());
+            if (profile.getKit().isPresent() && profile.getKit().get() instanceof ImmutableKit) {
+                event.setCancelled(true);
+            }
         }
     }
 
     @EventHandler(priority = EventPriority.LOWEST)
-    public void onQuit(PlayerQuitEvent event) {
-        Optional<Session> opSession = Demigames.getSessionRegistry().getSession(event.getPlayer());
-        if (opSession.isPresent() && opSession.get().getGame().isPresent()) {
-            Game game = opSession.get().getGame().get();
-            game.quit(event.getPlayer(), PlayerQuitMinigameEvent.QuitReason.LEAVE_SERVER);
-            Demigames.getProfileRegistry().fromPlayer(event.getPlayer()).setCurrentSessionId(null);
+    public void onInteract(InventoryInteractEvent event) {
+        Profile profile = Demigames.getProfileRegistry().fromPlayer((Player) event.getWhoClicked());
+        if (profile.getKit().isPresent() && profile.getKit().get() instanceof ImmutableKit) {
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler(priority = EventPriority.LOWEST)
+    public void onInteract(PlayerDropItemEvent event) {
+        Profile profile = Demigames.getProfileRegistry().fromPlayer(event.getPlayer());
+        if (profile.getKit().isPresent() && profile.getKit().get() instanceof ImmutableKit) {
+            event.setCancelled(true);
         }
     }
 }

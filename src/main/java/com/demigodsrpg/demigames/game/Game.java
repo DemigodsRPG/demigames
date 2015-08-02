@@ -91,15 +91,27 @@ public interface Game extends Listener {
     }
 
     default void callWin(Session session, Player player) {
-        Bukkit.getPluginManager().callEvent(new PlayerWinMinigameEvent(player, session));
+        try {
+            Bukkit.getPluginManager().callEvent(new PlayerWinMinigameEvent(player, session));
+        } catch (Exception oops) {
+            oops.printStackTrace();
+        }
     }
 
     default void callLose(Session session, Player player) {
-        Bukkit.getPluginManager().callEvent(new PlayerLoseMinigameEvent(player, session));
+        try {
+            Bukkit.getPluginManager().callEvent(new PlayerLoseMinigameEvent(player, session));
+        } catch (Exception oops) {
+            oops.printStackTrace();
+        }
     }
 
     default void callTie(Session session, Player player) {
-        Bukkit.getPluginManager().callEvent(new PlayerTieMinigameEvent(player, session));
+        try {
+            Bukkit.getPluginManager().callEvent(new PlayerTieMinigameEvent(player, session));
+        } catch (Exception oops) {
+            oops.printStackTrace();
+        }
     }
 
     default void join(Player player) {
@@ -112,7 +124,9 @@ public interface Game extends Listener {
             }
         }
         if (session == null) {
+            Bukkit.broadcastMessage("NEW SESSION"); //TODO Debug message
             session = sessions.newSession(this);
+            session.setupWorld();
             session.updateStage(DefaultStage.SETUP, true);
         }
         Optional<Session> previous;
@@ -126,7 +140,11 @@ public interface Game extends Listener {
         Profile profile = Demigames.getProfileRegistry().fromPlayer(event.getPlayer());
         session.addProfile(profile);
         profile.setCurrentSessionId(session.getId());
-        Bukkit.getPluginManager().callEvent(event);
+        try {
+            Bukkit.getPluginManager().callEvent(event);
+        } catch (Exception oops) {
+            oops.printStackTrace();
+        }
     }
 
     default void quit(Player player, PlayerQuitMinigameEvent.QuitReason reason) {
@@ -142,8 +160,15 @@ public interface Game extends Listener {
             session = sessions.newSession(this);
         }
         PlayerQuitMinigameEvent event = new PlayerQuitMinigameEvent(player, session, reason);
-        session.removeProfile(event.getPlayer());
-        Bukkit.getPluginManager().callEvent(event);
+        Profile profile = Demigames.getProfileRegistry().fromPlayer(player);
+        session.removeProfile(profile);
+        profile.setCurrentSessionId(null);
+        profile.setPreviousSessionId(session.getId());
+        try {
+            Bukkit.getPluginManager().callEvent(event);
+        } catch (Exception oops) {
+            oops.printStackTrace();
+        }
     }
 
     @EventHandler(priority = EventPriority.MONITOR)

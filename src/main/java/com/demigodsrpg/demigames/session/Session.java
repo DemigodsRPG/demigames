@@ -23,9 +23,9 @@
 package com.demigodsrpg.demigames.session;
 
 import com.demigodsrpg.demigames.game.Game;
-import com.demigodsrpg.demigames.game.Lobby;
 import com.demigodsrpg.demigames.impl.Demigames;
 import com.demigodsrpg.demigames.impl.Setting;
+import com.demigodsrpg.demigames.impl.lobby.Lobby;
 import com.demigodsrpg.demigames.impl.registry.ProfileRegistry;
 import com.demigodsrpg.demigames.impl.registry.SessionRegistry;
 import com.demigodsrpg.demigames.kit.Kit;
@@ -44,6 +44,7 @@ public class Session implements Serializable {
     // -- DATA -- //
 
     protected transient Optional<Game> game;
+    protected transient boolean done = false;
     protected List<String> profiles = new ArrayList<>();
     protected Map<String, Object> data;
     protected String id;
@@ -112,35 +113,59 @@ public class Session implements Serializable {
 
     // -- MUTATORS -- //
 
+    public Optional<World> setupWorld() {
+        return Demigames.getSessionRegistry().setupWorld(this);
+    }
+
+    public void setDone(boolean done) {
+        if (!this.done) {
+            this.done = done;
+            Demigames.getSessionRegistry().put(id, this);
+        }
+    }
+
     public void setJoinable(boolean joinable) {
         this.joinable = joinable;
+        if (!done) {
+            Demigames.getSessionRegistry().put(id, this);
+        }
     }
 
     public void addProfile(Profile profile) {
         profile.setCurrentSessionId(id);
         profiles.add(profile.getMojangUniqueId());
-        Demigames.getSessionRegistry().put(id, this);
+        if (!done) {
+            Demigames.getSessionRegistry().put(id, this);
+        }
     }
 
     public void addProfiles(List<Profile> profiles) {
         profiles.forEach(profile -> profile.setCurrentSessionId(id));
         this.profiles.addAll(profiles.stream().map(Profile::getMojangUniqueId).collect(Collectors.toList()));
-        Demigames.getSessionRegistry().put(id, this);
+        if (!done) {
+            Demigames.getSessionRegistry().put(id, this);
+        }
     }
 
     public void removeProfile(Profile profile) {
         profiles.remove(profile.getMojangUniqueId());
-        Demigames.getSessionRegistry().put(id, this);
+        if (!done) {
+            Demigames.getSessionRegistry().put(id, this);
+        }
     }
 
     public void removeProfile(Player player) {
         profiles = profiles.parallelStream().filter(profile -> !profile.equals(player.getUniqueId().toString())).collect(Collectors.toList());
-        Demigames.getSessionRegistry().put(id, this);
+        if (!done) {
+            Demigames.getSessionRegistry().put(id, this);
+        }
     }
 
     public void setStage(String stage) {
         this.stage = stage;
-        Demigames.getSessionRegistry().put(id, this);
+        if (!done) {
+            Demigames.getSessionRegistry().put(id, this);
+        }
     }
 
     public void updateStage(String stage, boolean process) {
@@ -149,17 +174,23 @@ public class Session implements Serializable {
         } else {
             throw new NullPointerException("A session is missing its respective game!");
         }
-        Demigames.getSessionRegistry().put(id, this);
+        if (!done) {
+            Demigames.getSessionRegistry().put(id, this);
+        }
     }
 
     public void setCurrentRound(int currentRound) {
         this.currentRound = currentRound;
-        Demigames.getSessionRegistry().put(id, this);
+        if (!done) {
+            Demigames.getSessionRegistry().put(id, this);
+        }
     }
 
     public void endSession(boolean nextGame) {
         SessionRegistry registry = Demigames.getSessionRegistry();
-        registry.removeIfPresent(id);
+
+        // Set this to done to make sure nothing is overwritten
+        setDone(true);
 
         // Empty their kits
         getPlayers().forEach(Kit.EMPTY::apply);
@@ -179,7 +210,8 @@ public class Session implements Serializable {
             getPlayers().forEach(Lobby.LOBBY::join);
         }
 
-        // Unload the world
+        // Remove the file and unload the world
+        registry.remove(id);
         registry.unloadWorld(this);
     }
 }

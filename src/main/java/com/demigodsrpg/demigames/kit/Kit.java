@@ -22,6 +22,7 @@
 
 package com.demigodsrpg.demigames.kit;
 
+import com.demigodsrpg.demigames.impl.Demigames;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
@@ -32,6 +33,7 @@ import java.util.Optional;
 
 public interface Kit {
     Kit EMPTY = new EmptyKit();
+    Kit IMMUTABLE_EMPTY = ImmutableKit.of(new EmptyKit());
 
     String getName();
 
@@ -67,6 +69,7 @@ public interface Kit {
         inventory.setArmorContents(getArmor());
         player.getActivePotionEffects().forEach(potionEffect -> player.removePotionEffect(potionEffect.getType()));
         player.addPotionEffects(Arrays.asList(getPotionEffects()));
+        Demigames.getProfileRegistry().fromPlayer(player).setKit(this);
     }
 
     default void applyEffects(Player player) {
