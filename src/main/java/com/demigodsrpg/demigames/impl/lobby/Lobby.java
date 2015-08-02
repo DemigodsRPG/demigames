@@ -115,11 +115,11 @@ public class Lobby implements Game {
         return spawnPoint;
     }
 
-    @EventHandler(priority = EventPriority.MONITOR)
+    @EventHandler(priority = EventPriority.LOWEST)
     public void onJoin(PlayerJoinMinigameEvent event) {
         if (event.getGame().isPresent() && event.getGame().get().equals(this)) {
             Player player = event.getPlayer();
-            LOBBY_KIT.apply(player);
+            LOBBY_KIT.apply(player, true);
             player.teleport(spawnPoint);
             player.sendMessage("WELCOME TO THE LOBBY.");
             if (event.getPreviusSession().isPresent() && event.getPreviusSession().get().getGame().isPresent()) {
@@ -131,7 +131,7 @@ public class Lobby implements Game {
         }
     }
 
-    @EventHandler(priority = EventPriority.MONITOR)
+    @EventHandler(priority = EventPriority.LOWEST)
     public void onLeave(PlayerQuitMinigameEvent event) {
         if (event.getGame().isPresent() && event.getGame().get().equals(this)) {
             event.getPlayer().sendMessage("THE LOBBY MISSES YOU :C");

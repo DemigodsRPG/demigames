@@ -43,6 +43,12 @@ public interface Kit {
 
     PotionEffect[] getPotionEffects();
 
+    double getMaxHealth();
+
+    double getHealth();
+
+    float getExhaustion();
+
     default Optional<ItemStack> getItemStack(int index) {
         return Optional.ofNullable(getContents()[index]);
     }
@@ -63,12 +69,17 @@ public interface Kit {
         return Optional.ofNullable(getArmor()[0]);
     }
 
-    default void apply(Player player) {
+    default void apply(Player player, boolean health) {
         PlayerInventory inventory = player.getInventory();
         inventory.setContents(getContents());
         inventory.setArmorContents(getArmor());
         player.getActivePotionEffects().forEach(potionEffect -> player.removePotionEffect(potionEffect.getType()));
         player.addPotionEffects(Arrays.asList(getPotionEffects()));
+        if (health) {
+            player.setMaxHealth(getMaxHealth());
+            player.setHealth(getHealth());
+            player.setExhaustion(getExhaustion());
+        }
         Demigames.getProfileRegistry().fromPlayer(player).setKit(this);
     }
 

@@ -43,17 +43,24 @@ public class MutableKit implements Kit, Serializable {
     String contents;
     String armor;
     List<Map<String, Object>> effects;
+    double maxHealth;
+    double health;
+    double exhaustion;
 
     // -- CONSTRUCTOR -- //
 
     public MutableKit() {
     }
 
-    public MutableKit(String name, ItemStack[] contents, ItemStack[] armor, PotionEffect[] effects) {
+    public MutableKit(String name, ItemStack[] contents, ItemStack[] armor, PotionEffect[] effects, double maxHealth,
+                      double health, float exhaustion) {
         this.name = name;
         this.contents = ItemUtil.serializeItemStacks(contents);
         this.armor = ItemUtil.serializeItemStacks(armor);
         this.effects = Arrays.asList(effects).stream().map(PotionEffect::serialize).collect(Collectors.toList());
+        this.maxHealth = maxHealth;
+        this.health = health;
+        this.exhaustion = exhaustion;
     }
 
     @Override
@@ -82,13 +89,29 @@ public class MutableKit implements Kit, Serializable {
         return effects;
     }
 
+    @Override
+    public double getMaxHealth() {
+        return maxHealth;
+    }
+
+    @Override
+    public double getHealth() {
+        return health;
+    }
+
+    @Override
+    public float getExhaustion() {
+        return (float) exhaustion;
+    }
+
     // -- STATIC CONSTRUCTOR METHODS -- //
 
     public static MutableKit of(Kit kit) {
         if (kit instanceof MutableKit) {
             return (MutableKit) kit;
         }
-        return new MutableKit(kit.getName(), kit.getContents(), kit.getArmor(), kit.getPotionEffects());
+        return new MutableKit(kit.getName(), kit.getContents(), kit.getArmor(), kit.getPotionEffects(),
+                kit.getMaxHealth(), kit.getHealth(), kit.getExhaustion());
     }
 
     public static MutableKit of(String name, Player player) {
@@ -97,6 +120,9 @@ public class MutableKit implements Kit, Serializable {
         kit.contents = ItemUtil.serializeItemStacks(player.getInventory().getContents());
         kit.armor = ItemUtil.serializeItemStacks(player.getInventory().getArmorContents());
         kit.effects = player.getActivePotionEffects().stream().map(PotionEffect::serialize).collect(Collectors.toList());
+        kit.maxHealth = player.getMaxHealth();
+        kit.health = player.getHealth();
+        kit.exhaustion = player.getExhaustion();
         return kit;
     }
 

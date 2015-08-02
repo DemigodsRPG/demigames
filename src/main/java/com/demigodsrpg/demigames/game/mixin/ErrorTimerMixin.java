@@ -42,7 +42,7 @@ public interface ErrorTimerMixin extends Game {
                     session.getPlayers().forEach(player -> {
                         player.playSound(player.getLocation(), Sound.NOTE_PIANO, 1f, 1f);
                     });
-                    session.endSession(false);
+                    session.endSession();
                 } else {
                     Demigames.getTitleUtil().broadcastTitle(session, 2, 30, 0, ChatColor.RED + "ERROR!", "Ending in " + (5 - k) + " seconds.");
                     session.getPlayers().forEach(player -> {

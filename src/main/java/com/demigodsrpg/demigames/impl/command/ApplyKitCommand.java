@@ -48,7 +48,7 @@ public class ApplyKitCommand extends BaseCommand {
                 String name = args[0];
                 Optional<MutableKit> kit = Demigames.getKitRegistry().fromKey(name);
                 if (kit.isPresent()) {
-                    kit.get().apply((Player) sender);
+                    kit.get().apply((Player) sender, true);
                     sender.sendMessage(ChatColor.YELLOW + "Kit " + name + " applied!");
                     return CommandResult.SUCCESS;
                 }

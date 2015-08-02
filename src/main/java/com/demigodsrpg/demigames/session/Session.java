@@ -22,13 +22,13 @@
 
 package com.demigodsrpg.demigames.session;
 
+import com.demigodsrpg.demigames.event.PlayerQuitMinigameEvent;
 import com.demigodsrpg.demigames.game.Game;
 import com.demigodsrpg.demigames.impl.Demigames;
 import com.demigodsrpg.demigames.impl.Setting;
 import com.demigodsrpg.demigames.impl.lobby.Lobby;
 import com.demigodsrpg.demigames.impl.registry.ProfileRegistry;
 import com.demigodsrpg.demigames.impl.registry.SessionRegistry;
-import com.demigodsrpg.demigames.kit.Kit;
 import com.demigodsrpg.demigames.profile.Profile;
 import com.demigodsrpg.demigames.stage.DefaultStage;
 import org.bukkit.Bukkit;
@@ -89,6 +89,10 @@ public class Session implements Serializable {
         return profiles.stream().map(registry::fromKey).filter(Optional::isPresent).map(Optional::get).collect(Collectors.toList());
     }
 
+    public List<String> getRawProfiles() {
+        return profiles;
+    }
+
     @Deprecated
     public List<Player> getPlayers() {
         return getProfiles().stream().filter(profile -> profile.getPlayer().isPresent()).map(profile ->
@@ -108,7 +112,17 @@ public class Session implements Serializable {
     }
 
     public boolean isJoinable() {
-        return joinable;
+        return joinable && !isDone();
+    }
+
+    public boolean isDone() {
+        if (!done) {
+            Optional<Session> found = Demigames.getSessionRegistry().fromKey(id);
+            if (found.isPresent()) {
+                return found.get().done;
+            }
+        }
+        return done;
     }
 
     // -- MUTATORS -- //
@@ -117,16 +131,16 @@ public class Session implements Serializable {
         return Demigames.getSessionRegistry().setupWorld(this);
     }
 
-    public void setDone(boolean done) {
-        if (!this.done) {
-            this.done = done;
+    public void setDone() {
+        if (!done) {
+            this.done = true;
             Demigames.getSessionRegistry().put(id, this);
         }
     }
 
     public void setJoinable(boolean joinable) {
         this.joinable = joinable;
-        if (!done) {
+        if (!isDone()) {
             Demigames.getSessionRegistry().put(id, this);
         }
     }
@@ -134,7 +148,7 @@ public class Session implements Serializable {
     public void addProfile(Profile profile) {
         profile.setCurrentSessionId(id);
         profiles.add(profile.getMojangUniqueId());
-        if (!done) {
+        if (!isDone()) {
             Demigames.getSessionRegistry().put(id, this);
         }
     }
@@ -142,28 +156,41 @@ public class Session implements Serializable {
     public void addProfiles(List<Profile> profiles) {
         profiles.forEach(profile -> profile.setCurrentSessionId(id));
         this.profiles.addAll(profiles.stream().map(Profile::getMojangUniqueId).collect(Collectors.toList()));
-        if (!done) {
+        if (!isDone()) {
             Demigames.getSessionRegistry().put(id, this);
         }
     }
 
+    public void setRawProfiles(List<String> rawProfiles) {
+        this.profiles = rawProfiles;
+    }
+
     public void removeProfile(Profile profile) {
         profiles.remove(profile.getMojangUniqueId());
-        if (!done) {
+        if (profile.getCurrentSessionId().isPresent() && profile.getCurrentSessionId().get().equals(id)) {
+            profile.setCurrentSessionId(null);
+            profile.setPreviousSessionId(id);
+        }
+        if (!isDone()) {
             Demigames.getSessionRegistry().put(id, this);
         }
     }
 
     public void removeProfile(Player player) {
         profiles = profiles.parallelStream().filter(profile -> !profile.equals(player.getUniqueId().toString())).collect(Collectors.toList());
-        if (!done) {
+        Profile profile = Demigames.getProfileRegistry().fromPlayer(player);
+        if (profile.getCurrentSessionId().isPresent() && profile.getCurrentSessionId().get().equals(id)) {
+            profile.setCurrentSessionId(null);
+            profile.setPreviousSessionId(id);
+        }
+        if (!isDone()) {
             Demigames.getSessionRegistry().put(id, this);
         }
     }
 
     public void setStage(String stage) {
         this.stage = stage;
-        if (!done) {
+        if (!isDone()) {
             Demigames.getSessionRegistry().put(id, this);
         }
     }
@@ -174,44 +201,53 @@ public class Session implements Serializable {
         } else {
             throw new NullPointerException("A session is missing its respective game!");
         }
-        if (!done) {
+        if (!isDone()) {
             Demigames.getSessionRegistry().put(id, this);
         }
     }
 
     public void setCurrentRound(int currentRound) {
         this.currentRound = currentRound;
-        if (!done) {
+        if (!isDone()) {
             Demigames.getSessionRegistry().put(id, this);
         }
     }
 
-    public void endSession(boolean nextGame) {
+    public void endSession() {
         SessionRegistry registry = Demigames.getSessionRegistry();
 
         // Set this to done to make sure nothing is overwritten
-        setDone(true);
+        setDone();
 
-        // Empty their kits
-        getPlayers().forEach(Kit.EMPTY::apply);
+        // Make all players quit the game
+        getPlayers().forEach(player -> {
+            if (getGame().isPresent()) {
+                getGame().get().quit(player, this, PlayerQuitMinigameEvent.QuitReason.SESSION_END);
+            } else {
+                Profile profile = Demigames.getProfileRegistry().fromPlayer(player);
+                profile.setCurrentSessionId(null);
+                profile.setPreviousSessionId(id);
+            }
+        });
 
         // Party mode
-        if ("party".equals(Setting.MODE) && nextGame) {
+        if ("party".equals(Setting.MODE)) {
             Optional<Game> opGame = Demigames.getGameRegistry().randomGame();
             if (opGame.isPresent()) {
                 Session newSession = registry.newSession(opGame.get());
-                newSession.profiles.addAll(profiles);
+                newSession.setRawProfiles(profiles);
                 newSession.updateStage(DefaultStage.SETUP, true);
                 getPlayers().forEach(opGame.get()::join);
+            } else {
+                getPlayers().forEach(Lobby.LOBBY::join);
             }
         }
-        // Lobby mode, or empty party
-        else {
-            getPlayers().forEach(Lobby.LOBBY::join);
-        }
 
-        // Remove the file and unload the world
-        registry.remove(id);
-        registry.unloadWorld(this);
+        // Remove the file and unload the world (after a delay to account for reflection lag)
+        Session delayed = this;
+        Bukkit.getScheduler().scheduleAsyncDelayedTask(Demigames.getInstance(), () -> {
+            registry.remove(id);
+            registry.unloadWorld(delayed);
+        }, 60);
     }
 }

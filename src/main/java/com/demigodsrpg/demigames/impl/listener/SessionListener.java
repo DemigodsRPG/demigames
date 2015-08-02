@@ -51,8 +51,7 @@ public class SessionListener implements Listener {
         Optional<Session> opSession = Demigames.getSessionRegistry().getSession(event.getPlayer());
         if (opSession.isPresent() && opSession.get().getGame().isPresent()) {
             Game game = opSession.get().getGame().get();
-            game.quit(event.getPlayer(), PlayerQuitMinigameEvent.QuitReason.LEAVE_SERVER);
-            Demigames.getProfileRegistry().fromPlayer(event.getPlayer()).setCurrentSessionId(null);
+            game.quit(event.getPlayer(), opSession.get(), PlayerQuitMinigameEvent.QuitReason.LEAVE_SERVER);
         }
     }
 }

@@ -48,4 +48,19 @@ public class EmptyKit implements Kit {
     public PotionEffect[] getPotionEffects() {
         return new PotionEffect[0];
     }
+
+    @Override
+    public double getMaxHealth() {
+        return 20.0D;
+    }
+
+    @Override
+    public double getHealth() {
+        return 20.0D;
+    }
+
+    @Override
+    public float getExhaustion() {
+        return 0F;
+    }
 }

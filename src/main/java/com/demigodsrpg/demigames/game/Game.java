@@ -24,6 +24,8 @@ package com.demigodsrpg.demigames.game;
 
 import com.demigodsrpg.demigames.event.*;
 import com.demigodsrpg.demigames.impl.Demigames;
+import com.demigodsrpg.demigames.impl.Setting;
+import com.demigodsrpg.demigames.impl.lobby.Lobby;
 import com.demigodsrpg.demigames.impl.registry.SessionRegistry;
 import com.demigodsrpg.demigames.profile.Profile;
 import com.demigodsrpg.demigames.session.Session;
@@ -129,7 +131,7 @@ public interface Game extends Listener {
             session.updateStage(DefaultStage.SETUP, true);
         }
         Optional<Session> previous;
-        Optional<String> previousId = Demigames.getProfileRegistry().fromPlayer(player).getCurrentSessionId();
+        Optional<String> previousId = Demigames.getProfileRegistry().fromPlayer(player).getPreviousSessionId();
         if (previousId.isPresent()) {
             previous = sessions.fromKey(previousId.get());
         } else {
@@ -138,7 +140,6 @@ public interface Game extends Listener {
         PlayerJoinMinigameEvent event = new PlayerJoinMinigameEvent(player, session, previous);
         Profile profile = Demigames.getProfileRegistry().fromPlayer(event.getPlayer());
         session.addProfile(profile);
-        profile.setCurrentSessionId(session.getId());
         try {
             Bukkit.getPluginManager().callEvent(event);
         } catch (Exception oops) {
@@ -146,23 +147,18 @@ public interface Game extends Listener {
         }
     }
 
-    default void quit(Player player, PlayerQuitMinigameEvent.QuitReason reason) {
-        SessionRegistry sessions = Demigames.getSessionRegistry();
-        Session session = null;
-        if (sessions.fromGame(this).size() > 0) {
-            Optional<Session> maybe = sessions.fromGame(this).stream().filter(Session::isJoinable).findAny();
-            if (maybe.isPresent()) {
-                session = maybe.get();
-            }
-        }
-        if (session == null) {
-            session = sessions.newSession(this);
-        }
-        PlayerQuitMinigameEvent event = new PlayerQuitMinigameEvent(player, session, reason);
+    default void quit(Player player, Session session, PlayerQuitMinigameEvent.QuitReason reason) {
+        // Remove from profile
         Profile profile = Demigames.getProfileRegistry().fromPlayer(player);
         session.removeProfile(profile);
-        profile.setCurrentSessionId(null);
-        profile.setPreviousSessionId(session.getId());
+
+        // Lobby mode
+        if ("lobby".equalsIgnoreCase(Setting.MODE)) {
+            Lobby.LOBBY.join(player);
+        }
+
+        // Create and call the event
+        PlayerQuitMinigameEvent event = new PlayerQuitMinigameEvent(player, session, reason);
         try {
             Bukkit.getPluginManager().callEvent(event);
         } catch (Exception oops) {

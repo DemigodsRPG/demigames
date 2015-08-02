@@ -26,6 +26,9 @@ import com.censoredsoftware.library.command.type.BaseCommand;
 import com.censoredsoftware.library.command.type.CommandResult;
 import com.demigodsrpg.demigames.game.Game;
 import com.demigodsrpg.demigames.impl.Demigames;
+import com.demigodsrpg.demigames.impl.lobby.Lobby;
+import com.demigodsrpg.demigames.impl.lobby.LobbySession;
+import com.demigodsrpg.demigames.session.Session;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -40,8 +43,16 @@ public class JoinGameCommand extends BaseCommand {
             return CommandResult.INVALID_SYNTAX;
         }
         if (sender instanceof Player) {
+            // Stop them if they are in a game already
+            Optional<Session> opSession = Demigames.getSessionRegistry().getSession((Player) sender);
+            if (opSession.isPresent() && !(opSession.get() instanceof LobbySession)) {
+                sender.sendMessage(ChatColor.RED + "You are already in a game!");
+                return CommandResult.QUIET_ERROR;
+            }
+
+            // Join a game if possible
             Optional<Game> opGame = Demigames.getGameRegistry().getMinigame(args[0]);
-            if (opGame.isPresent()) {
+            if (opGame.isPresent() && opGame.get() != Lobby.LOBBY) {
                 sender.sendMessage(ChatColor.YELLOW + "Joining " + args[0] + ".");
                 opGame.get().join((Player) sender);
                 return CommandResult.SUCCESS;

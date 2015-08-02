@@ -35,14 +35,21 @@ public class ImmutableKit implements Kit {
     private final ItemStack[] contents;
     private final ItemStack[] armor;
     private final PotionEffect[] effects;
+    private final double maxHealth;
+    private final double health;
+    private final double exhaustion;
 
     // -- PRIVATE CONSTRUCTOR -- //
 
-    private ImmutableKit(String name, ItemStack[] contents, ItemStack[] armor, PotionEffect[] effects) {
+    private ImmutableKit(String name, ItemStack[] contents, ItemStack[] armor, PotionEffect[] effects, double maxHealth,
+                         double health, float exhaustion) {
         this.name = name;
         this.contents = contents;
         this.armor = armor;
         this.effects = effects;
+        this.maxHealth = maxHealth;
+        this.health = health;
+        this.exhaustion = exhaustion;
     }
 
     // -- GETTERS -- //
@@ -67,9 +74,28 @@ public class ImmutableKit implements Kit {
         return effects;
     }
 
+    @Override
+    public double getMaxHealth() {
+        return maxHealth;
+    }
+
+    @Override
+    public double getHealth() {
+        return health;
+    }
+
+    @Override
+    public float getExhaustion() {
+        return (float) exhaustion;
+    }
+
     // -- STATIC CONSTRUCTOR METHOD -- //
 
     public static ImmutableKit of(Kit kit) {
-        return new ImmutableKit(kit.getName(), kit.getContents(), kit.getArmor(), kit.getPotionEffects());
+        if (kit instanceof ImmutableKit) {
+            return (ImmutableKit) kit;
+        }
+        return new ImmutableKit(kit.getName(), kit.getContents(), kit.getArmor(), kit.getPotionEffects(),
+                kit.getMaxHealth(), kit.getHealth(), kit.getExhaustion());
     }
 }
