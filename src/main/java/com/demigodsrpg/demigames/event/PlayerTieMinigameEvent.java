@@ -32,15 +32,25 @@ import org.bukkit.event.player.PlayerEvent;
 import java.util.Optional;
 
 public class PlayerTieMinigameEvent extends PlayerEvent {
+
+    // -- HANDLER LIST -- //
+
     private static final HandlerList handlers = new HandlerList();
+
+    // -- DATA -- //
+
     Optional<Game> game;
     String sessionId;
+
+    // -- CONSTRUCTOR -- //
 
     public PlayerTieMinigameEvent(Player player, Session session) {
         super(player);
         this.game = session.getGame();
         this.sessionId = session.getId();
     }
+
+    // -- GETTERS -- //
 
     public Optional<Game> getGame() {
         return game;

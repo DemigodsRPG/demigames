@@ -32,10 +32,18 @@ import org.bukkit.event.player.PlayerEvent;
 import java.util.Optional;
 
 public class PlayerQuitMinigameEvent extends PlayerEvent {
+
+    // -- HANDLER LIST -- //
+
     private static final HandlerList handlers = new HandlerList();
+
+    // -- DATA -- //
+
     Optional<Game> game;
     String sessionId;
     QuitReason reason;
+
+    // -- CONSTRUCTOR -- //
 
     public PlayerQuitMinigameEvent(Player player, Session session, QuitReason reason) {
         super(player);
@@ -43,6 +51,8 @@ public class PlayerQuitMinigameEvent extends PlayerEvent {
         this.sessionId = session.getId();
         this.reason = reason;
     }
+
+    // -- GETTERS -- //
 
     public Optional<Game> getGame() {
         return game;
@@ -64,6 +74,8 @@ public class PlayerQuitMinigameEvent extends PlayerEvent {
     public static HandlerList getHandlerList() {
         return handlers;
     }
+
+    // -- ENUM -- //
 
     public enum QuitReason {
         SESSION_END, LEAVE_SESSION, LEAVE_SERVER

@@ -32,13 +32,17 @@ import org.bukkit.ChatColor;
 import org.bukkit.Sound;
 
 public interface ErrorTimerMixin extends Game {
+
+    // -- ERROR -- //
+
     @StageHandler(stage = DefaultStage.ERROR)
     default void roundError(Session session) {
+        // Loop through 5 seconds and end the session
         for (int i = 0; i <= 5; i++) {
             final int k = i;
             Bukkit.getScheduler().scheduleSyncDelayedTask(Demigames.getInstance(), () -> {
                 if (k == 10) {
-                    // Update the stage
+                    // End the session
                     session.getPlayers().forEach(player -> {
                         player.playSound(player.getLocation(), Sound.NOTE_PIANO, 1f, 1f);
                     });

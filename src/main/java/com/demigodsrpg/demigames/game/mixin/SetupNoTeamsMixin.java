@@ -28,6 +28,9 @@ import com.demigodsrpg.demigames.stage.DefaultStage;
 import com.demigodsrpg.demigames.stage.StageHandler;
 
 public interface SetupNoTeamsMixin extends Game {
+
+    // -- SETUP -- //
+
     @StageHandler(stage = DefaultStage.SETUP)
     default void roundSetup(Session session) {
         // Make sure the world is present

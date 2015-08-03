@@ -29,7 +29,7 @@ import org.bukkit.Location;
 import java.util.List;
 import java.util.Optional;
 
-public abstract class StaticSign implements DemiSign {
+public abstract class StaticSign implements MutableSign {
 
     // -- DATA -- //
 

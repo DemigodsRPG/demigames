@@ -32,8 +32,13 @@ import java.util.Arrays;
 import java.util.Optional;
 
 public interface Kit {
+
+    // -- DEFAULT IMPLEMENTATIONS -- //
+
     Kit EMPTY = new EmptyKit();
     Kit IMMUTABLE_EMPTY = ImmutableKit.of(new EmptyKit());
+
+    // -- GETTERS -- //
 
     String getName();
 
@@ -69,6 +74,8 @@ public interface Kit {
         return Optional.ofNullable(getArmor()[0]);
     }
 
+    // -- DEFAULT BEHAVIOR -- //
+
     default void apply(Player player, boolean health) {
         PlayerInventory inventory = player.getInventory();
         inventory.setContents(getContents());
@@ -81,6 +88,12 @@ public interface Kit {
             player.setExhaustion(getExhaustion());
         }
         Demigames.getProfileRegistry().fromPlayer(player).setKit(this);
+    }
+
+    default void applyItems(Player player) {
+        PlayerInventory inventory = player.getInventory();
+        inventory.setContents(getContents());
+        inventory.setArmorContents(getArmor());
     }
 
     default void applyEffects(Player player) {

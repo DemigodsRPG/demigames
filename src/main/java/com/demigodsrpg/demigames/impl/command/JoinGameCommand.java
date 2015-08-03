@@ -37,6 +37,9 @@ import org.bukkit.entity.Player;
 import java.util.Optional;
 
 public class JoinGameCommand extends BaseCommand {
+
+    // -- COMMAND EXECUTOR -- //
+
     @Override
     protected CommandResult onCommand(CommandSender sender, Command command, String[] args) {
         if (args.length < 1) {

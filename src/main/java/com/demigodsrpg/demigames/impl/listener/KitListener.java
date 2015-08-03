@@ -29,6 +29,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.inventory.InventoryInteractEvent;
 import org.bukkit.event.inventory.InventoryPickupItemEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
@@ -40,15 +41,26 @@ public class KitListener implements Listener {
             Profile profile = Demigames.getProfileRegistry().fromPlayer((Player) event.getInventory().getHolder());
             if (profile.getKit().isPresent() && profile.getKit().get() instanceof ImmutableKit) {
                 event.setCancelled(true);
+                ((Player) event.getInventory().getHolder()).updateInventory();
             }
         }
     }
 
     @EventHandler(priority = EventPriority.LOWEST)
-    public void onInteract(InventoryInteractEvent event) {
+    public void onInventoryInteract(InventoryInteractEvent event) {
         Profile profile = Demigames.getProfileRegistry().fromPlayer((Player) event.getWhoClicked());
         if (profile.getKit().isPresent() && profile.getKit().get() instanceof ImmutableKit) {
             event.setCancelled(true);
+            ((Player) event.getWhoClicked()).updateInventory();
+        }
+    }
+
+    @EventHandler(priority = EventPriority.LOWEST)
+    public void onInteract(BlockPlaceEvent event) {
+        Profile profile = Demigames.getProfileRegistry().fromPlayer(event.getPlayer());
+        if (profile.getKit().isPresent() && profile.getKit().get() instanceof ImmutableKit) {
+            profile.getKit().get().applyItems(event.getPlayer());
+            event.getPlayer().updateInventory();
         }
     }
 
@@ -57,6 +69,7 @@ public class KitListener implements Listener {
         Profile profile = Demigames.getProfileRegistry().fromPlayer(event.getPlayer());
         if (profile.getKit().isPresent() && profile.getKit().get() instanceof ImmutableKit) {
             event.setCancelled(true);
+            event.getPlayer().updateInventory();
         }
     }
 }

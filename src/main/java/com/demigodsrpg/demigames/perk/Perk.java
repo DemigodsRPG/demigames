@@ -26,7 +26,12 @@ import com.demigodsrpg.demigames.profile.Profile;
 import org.bukkit.event.Listener;
 
 public interface Perk extends Listener {
+
+    // -- SETTINGS -- //
+
     String getName();
+
+    // -- OPTIONAL RUNNABLE METHODS -- //
 
     default void onSync(Profile profile) {
     }

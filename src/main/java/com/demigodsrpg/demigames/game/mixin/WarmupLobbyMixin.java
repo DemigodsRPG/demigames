@@ -36,10 +36,12 @@ import org.bukkit.entity.Player;
 import java.util.Optional;
 
 public interface WarmupLobbyMixin extends Game {
-    Location getWarmupSpawn(Session session);
+
+    // -- WARMUP -- //
 
     @StageHandler(stage = DefaultStage.WARMUP)
     default void roundWarmup(Session session) {
+        // Teleport all players to the warmup point
         for (Player player : session.getPlayers()) {
             player.teleport(getWarmupSpawn(session));
         }
@@ -69,4 +71,8 @@ public interface WarmupLobbyMixin extends Game {
             }, i * 20);
         }
     }
+
+    // -- GETTER -- //
+
+    Location getWarmupSpawn(Session session);
 }

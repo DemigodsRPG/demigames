@@ -41,10 +41,13 @@ import java.util.stream.Collectors;
 
 public class Session implements Serializable {
 
-    // -- DATA -- //
+    // -- TRANSIENT DATA -- //
 
     protected transient Optional<Game> game;
     protected transient boolean done = false;
+
+    // -- DATA -- //
+
     protected List<String> profiles = new ArrayList<>();
     protected Map<String, Object> data;
     protected String id;
@@ -52,7 +55,7 @@ public class Session implements Serializable {
     protected boolean joinable;
     protected int currentRound;
 
-    // -- CONSTRUCTOR -- //
+    // -- CONSTRUCTORS -- //
 
     public Session(String id, Game game) {
         this.id = id;

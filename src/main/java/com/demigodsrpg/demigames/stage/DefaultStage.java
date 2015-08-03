@@ -23,6 +23,9 @@
 package com.demigodsrpg.demigames.stage;
 
 public class DefaultStage {
+
+    // -- DEFAULT STAGES -- //
+
     public static final String WARMUP = "warmup";
     public static final String BEGIN = "begin";
     public static final String PLAY = "play";
@@ -31,6 +34,8 @@ public class DefaultStage {
     public static final String RESET = "reset";
     public static final String SETUP = "setup";
     public static final String ERROR = "error";
+
+    // -- PRIVATE CONSTRUCTOR -- //
 
     private DefaultStage() {
     }

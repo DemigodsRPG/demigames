@@ -29,7 +29,10 @@ import org.bukkit.entity.Player;
 import java.util.List;
 import java.util.Optional;
 
-public interface DemiSign {
+public interface MutableSign {
+
+    // -- GETTERS -- //
+
     String getName();
 
     Optional<Location> getLocation(Session session);
@@ -39,6 +42,8 @@ public interface DemiSign {
     }
 
     List<String> getLines();
+
+    // -- CLICK BEHAVIOR -- //
 
     void onClick(Player player);
 }

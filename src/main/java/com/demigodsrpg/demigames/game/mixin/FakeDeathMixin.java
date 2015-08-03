@@ -32,12 +32,17 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import java.util.Optional;
 
 public interface FakeDeathMixin extends Game {
+
+    // -- DAMAGE LISTENER -- //
+
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     default void onDamage(EntityDamageEvent event) {
+        // Only do anything if this is a player
         if (event.getEntity() instanceof Player) {
             Player player = (Player) event.getEntity();
             Optional<Session> opSession = checkPlayer(player);
             if (opSession.isPresent()) {
+                // If they should be dead, cancel the event and call the fake death method
                 if (player.getHealth() - event.getDamage() <= 0.0) {
                     event.setCancelled(true);
                     onDeath(opSession.get(), event);
@@ -45,6 +50,8 @@ public interface FakeDeathMixin extends Game {
             }
         }
     }
+
+    // -- FAKE DEATH -- //
 
     void onDeath(Session session, EntityDamageEvent event);
 }

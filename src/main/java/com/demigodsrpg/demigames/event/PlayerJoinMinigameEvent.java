@@ -32,10 +32,18 @@ import org.bukkit.event.player.PlayerEvent;
 import java.util.Optional;
 
 public class PlayerJoinMinigameEvent extends PlayerEvent {
+
+    // -- HANDLER LIST -- //
+
     private static final HandlerList handlers = new HandlerList();
+
+    // -- DATA -- //
+
     Optional<Game> game;
     Optional<Session> previusSession;
     String sessionId;
+
+    // -- CONSTRUCTOR -- //
 
     public PlayerJoinMinigameEvent(Player player, Session session, Optional<Session> previousSession) {
         super(player);
@@ -43,6 +51,8 @@ public class PlayerJoinMinigameEvent extends PlayerEvent {
         this.sessionId = session.getId();
         this.previusSession = previousSession;
     }
+
+    // -- GETTERS -- //
 
     public Optional<Game> getGame() {
         return game;

@@ -26,8 +26,13 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 
 public class EmptyKit implements Kit {
+
+    // -- CONSTRUCTOR -- //
+
     EmptyKit() {
     }
+
+    // -- GETTERS -- //
 
     @Override
     public String getName() {

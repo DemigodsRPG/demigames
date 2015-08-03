@@ -33,13 +33,15 @@ import java.util.Optional;
 import java.util.UUID;
 
 public class Profile implements Serializable {
-    // -- DATA -- //
+
+    // -- TRANSIENT DATA -- //
 
     private transient Optional<Player> player;
     private transient Optional<Kit> kit;
-
     private transient String currentSessionId;
     private transient String previousSessionId;
+
+    // -- DATA -- //
 
     private String mojangUniqueId;
     private String lastKnownName;

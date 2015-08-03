@@ -47,7 +47,7 @@ public class MutableKit implements Kit, Serializable {
     double health;
     double exhaustion;
 
-    // -- CONSTRUCTOR -- //
+    // -- CONSTRUCTORS -- //
 
     public MutableKit() {
     }

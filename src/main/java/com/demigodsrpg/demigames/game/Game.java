@@ -40,6 +40,9 @@ import org.bukkit.event.Listener;
 import java.util.Optional;
 
 public interface Game extends Listener {
+
+    // -- SETTINGS -- //
+
     String getName();
 
     String getDirectory();
@@ -66,13 +69,19 @@ public interface Game extends Listener {
         return 1;
     }
 
+    // -- HELPER METHODS -- //
+
     void setupLocations(Session session);
+
+    // -- SERVER START/STOP -- //
 
     default void onServerStart() {
     }
 
     default void onServerStop() {
     }
+
+    // -- DEFAULT BEHAVIOR -- //
 
     default ConfigurationSection getConfig() {
         ConfigurationSection parent = Demigames.getInstance().getConfig();
@@ -165,6 +174,8 @@ public interface Game extends Listener {
             oops.printStackTrace();
         }
     }
+
+    // -- REQUIRED EVENT LISTENERS -- //
 
     @EventHandler(priority = EventPriority.MONITOR)
     void onJoin(PlayerJoinMinigameEvent event);
