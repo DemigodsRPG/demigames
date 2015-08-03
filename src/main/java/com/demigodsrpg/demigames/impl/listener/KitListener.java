@@ -30,7 +30,8 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockPlaceEvent;
-import org.bukkit.event.inventory.InventoryInteractEvent;
+import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.event.inventory.InventoryPickupItemEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 
@@ -47,7 +48,16 @@ public class KitListener implements Listener {
     }
 
     @EventHandler(priority = EventPriority.LOWEST)
-    public void onInventoryInteract(InventoryInteractEvent event) {
+    public void onInventoryDrag(InventoryDragEvent event) {
+        Profile profile = Demigames.getProfileRegistry().fromPlayer((Player) event.getWhoClicked());
+        if (profile.getKit().isPresent() && profile.getKit().get() instanceof ImmutableKit) {
+            event.setCancelled(true);
+            ((Player) event.getWhoClicked()).updateInventory();
+        }
+    }
+
+    @EventHandler(priority = EventPriority.LOWEST)
+    public void onInventoryClick(InventoryClickEvent event) {
         Profile profile = Demigames.getProfileRegistry().fromPlayer((Player) event.getWhoClicked());
         if (profile.getKit().isPresent() && profile.getKit().get() instanceof ImmutableKit) {
             event.setCancelled(true);
@@ -65,11 +75,10 @@ public class KitListener implements Listener {
     }
 
     @EventHandler(priority = EventPriority.LOWEST)
-    public void onInteract(PlayerDropItemEvent event) {
+    public void onDrop(PlayerDropItemEvent event) {
         Profile profile = Demigames.getProfileRegistry().fromPlayer(event.getPlayer());
         if (profile.getKit().isPresent() && profile.getKit().get() instanceof ImmutableKit) {
             event.setCancelled(true);
-            event.getPlayer().updateInventory();
         }
     }
 }
