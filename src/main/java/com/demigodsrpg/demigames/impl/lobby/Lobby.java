@@ -31,11 +31,14 @@ import com.demigodsrpg.demigames.kit.ImmutableKit;
 import com.demigodsrpg.demigames.kit.Kit;
 import com.demigodsrpg.demigames.kit.MutableKit;
 import com.demigodsrpg.demigames.session.Session;
+import com.demigodsrpg.demigames.sign.MinigameSign;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
+import org.bukkit.event.block.Action;
+import org.bukkit.event.player.PlayerInteractEvent;
 
 import java.util.Optional;
 
@@ -135,6 +138,24 @@ public class Lobby implements Game {
     public void onLeave(PlayerQuitMinigameEvent event) {
         if (event.getGame().isPresent() && event.getGame().get().equals(this)) {
             event.getPlayer().sendMessage("THE LOBBY MISSES YOU :C");
+        }
+    }
+
+    @EventHandler(priority = EventPriority.LOWEST)
+    public void onClick(PlayerInteractEvent event) {
+        if (event.getAction() == Action.RIGHT_CLICK_BLOCK || event.getAction() == Action.LEFT_CLICK_BLOCK) {
+            Optional<Session> opSession = checkPlayer(event.getPlayer());
+            if (opSession.isPresent()) {
+                if (opSession.get() instanceof LobbySession) {
+                    Optional<? extends MinigameSign> opSign = Demigames.getSignRegistry().fromLocation(opSession.get(),
+                            event.getClickedBlock().getLocation());
+                    if (opSign.isPresent()) {
+                        String command = opSign.get().getCommand();
+                        event.getPlayer().performCommand(command);
+                        event.setCancelled(true);
+                    }
+                }
+            }
         }
     }
 }

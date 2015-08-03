@@ -23,8 +23,11 @@
 package com.demigodsrpg.demigames.impl.listener;
 
 import com.demigodsrpg.demigames.impl.Demigames;
+import com.demigodsrpg.demigames.impl.registry.SignRegistry;
 import com.demigodsrpg.demigames.impl.util.LocationUtil;
+import com.demigodsrpg.demigames.sign.MutableMinigameSign;
 import org.bukkit.ChatColor;
+import org.bukkit.block.Sign;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -34,19 +37,23 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
-public class LocationSelectListener implements Listener {
+import java.util.Arrays;
+
+public class SignSelectListener implements Listener {
 
     // -- DATA -- //
 
     private String name;
     private String gameName;
+    private String command;
     private Player player;
 
     // -- CONSTRUCTOR -- //
 
-    public LocationSelectListener(String name, String gameName, Player player) {
+    public SignSelectListener(String name, String gameName, String command, Player player) {
         this.name = name;
         this.gameName = gameName;
+        this.command = command;
         this.player = player;
     }
 
@@ -62,11 +69,15 @@ public class LocationSelectListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onSelect(PlayerInteractEvent event) {
-        if (event.getPlayer().equals(player) && event.getAction() == Action.RIGHT_CLICK_BLOCK) {
-            Demigames.getInstance().getConfig().set(gameName + ".loc." + name,
-                    LocationUtil.stringFromLocation(player.getLocation(), true));
-            Demigames.getInstance().saveConfig();
-            event.getPlayer().sendMessage(ChatColor.YELLOW + "Location " + name + " has been created!");
+        event.getPlayer().sendMessage("TEST " + (event.getAction() == Action.RIGHT_CLICK_BLOCK) + " " + event.getClickedBlock().getType().name()); // TODO Debug message
+        if (event.getClickedBlock() instanceof Sign && event.getPlayer().equals(player) &&
+                event.getAction() == Action.RIGHT_CLICK_BLOCK) {
+            SignRegistry registry = Demigames.getSignRegistry();
+            Sign sign = (Sign) event.getClickedBlock();
+            registry.put(name, new MutableMinigameSign(name, gameName,
+                    LocationUtil.stringFromLocation(sign.getLocation(), true), command,
+                    Arrays.asList(sign.getLines())));
+            event.getPlayer().sendMessage(ChatColor.YELLOW + "Sign " + name + " has been created!");
             HandlerList.unregisterAll(this);
         }
     }

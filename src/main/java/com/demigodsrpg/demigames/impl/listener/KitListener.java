@@ -25,6 +25,7 @@ package com.demigodsrpg.demigames.impl.listener;
 import com.demigodsrpg.demigames.impl.Demigames;
 import com.demigodsrpg.demigames.kit.ImmutableKit;
 import com.demigodsrpg.demigames.profile.Profile;
+import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -38,7 +39,8 @@ import org.bukkit.event.player.PlayerDropItemEvent;
 public class KitListener implements Listener {
     @EventHandler(priority = EventPriority.LOWEST)
     public void onPickup(InventoryPickupItemEvent event) {
-        if (event.getInventory().getHolder() instanceof Player) {
+        if (event.getInventory().getHolder() instanceof Player &&
+                ((Player) event.getInventory().getHolder()).getGameMode() != GameMode.CREATIVE) {
             Profile profile = Demigames.getProfileRegistry().fromPlayer((Player) event.getInventory().getHolder());
             if (profile.getKit().isPresent() && profile.getKit().get() instanceof ImmutableKit) {
                 event.setCancelled(true);
@@ -50,7 +52,8 @@ public class KitListener implements Listener {
     @EventHandler(priority = EventPriority.LOWEST)
     public void onInventoryDrag(InventoryDragEvent event) {
         Profile profile = Demigames.getProfileRegistry().fromPlayer((Player) event.getWhoClicked());
-        if (profile.getKit().isPresent() && profile.getKit().get() instanceof ImmutableKit) {
+        if (event.getWhoClicked().getGameMode() != GameMode.CREATIVE && profile.getKit().isPresent() &&
+                profile.getKit().get() instanceof ImmutableKit) {
             event.setCancelled(true);
             ((Player) event.getWhoClicked()).updateInventory();
         }
@@ -59,7 +62,8 @@ public class KitListener implements Listener {
     @EventHandler(priority = EventPriority.LOWEST)
     public void onInventoryClick(InventoryClickEvent event) {
         Profile profile = Demigames.getProfileRegistry().fromPlayer((Player) event.getWhoClicked());
-        if (profile.getKit().isPresent() && profile.getKit().get() instanceof ImmutableKit) {
+        if (event.getWhoClicked().getGameMode() != GameMode.CREATIVE && profile.getKit().isPresent() &&
+                profile.getKit().get() instanceof ImmutableKit) {
             event.setCancelled(true);
             ((Player) event.getWhoClicked()).updateInventory();
         }
@@ -68,7 +72,8 @@ public class KitListener implements Listener {
     @EventHandler(priority = EventPriority.LOWEST)
     public void onInteract(BlockPlaceEvent event) {
         Profile profile = Demigames.getProfileRegistry().fromPlayer(event.getPlayer());
-        if (profile.getKit().isPresent() && profile.getKit().get() instanceof ImmutableKit) {
+        if (event.getPlayer().getGameMode() != GameMode.CREATIVE && profile.getKit().isPresent() &&
+                profile.getKit().get() instanceof ImmutableKit) {
             profile.getKit().get().applyItems(event.getPlayer());
             event.getPlayer().updateInventory();
         }
@@ -77,7 +82,8 @@ public class KitListener implements Listener {
     @EventHandler(priority = EventPriority.LOWEST)
     public void onDrop(PlayerDropItemEvent event) {
         Profile profile = Demigames.getProfileRegistry().fromPlayer(event.getPlayer());
-        if (profile.getKit().isPresent() && profile.getKit().get() instanceof ImmutableKit) {
+        if (event.getPlayer().getGameMode() != GameMode.CREATIVE && profile.getKit().isPresent() &&
+                profile.getKit().get() instanceof ImmutableKit) {
             event.setCancelled(true);
         }
     }

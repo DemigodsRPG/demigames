@@ -20,30 +20,32 @@
  * SOFTWARE.
  */
 
-package com.demigodsrpg.demigames.sign;
+package com.demigodsrpg.demigames.impl.registry;
 
+import com.demigodsrpg.demigames.game.Game;
+import com.demigodsrpg.demigames.impl.util.LocationUtil;
 import com.demigodsrpg.demigames.session.Session;
+import com.demigodsrpg.demigames.sign.MinigameSign;
+import com.demigodsrpg.demigames.sign.MutableMinigameSign;
 import org.bukkit.Location;
-import org.bukkit.entity.Player;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
-public interface MutableSign {
-
-    // -- GETTERS -- //
-
-    String getName();
-
-    Optional<Location> getLocation(Session session);
-
-    default String getLine(int index) throws IndexOutOfBoundsException {
-        return getLines().get(index);
+public class SignRegistry extends AbstractRegistry<String, MutableMinigameSign> {
+    public SignRegistry() {
+        super("sign", MutableMinigameSign.class, true);
     }
 
-    List<String> getLines();
+    public List<MinigameSign> fromGame(Game game) {
+        String gameName = game.getName();
+        return REGISTERED_DATA.asMap().values().stream().filter(sign -> sign.getGameName().equals(gameName)).
+                collect(Collectors.toList());
+    }
 
-    // -- CLICK BEHAVIOR -- //
-
-    void onClick(Player player);
+    public Optional<? extends MinigameSign> fromLocation(Session session, Location location) {
+        String strLoc = LocationUtil.stringFromLocation(location, true);
+        return REGISTERED_DATA.asMap().values().stream().filter(sign -> sign.getLocationRaw().equals(strLoc)).findAny();
+    }
 }

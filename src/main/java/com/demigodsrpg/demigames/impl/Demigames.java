@@ -22,17 +22,11 @@
 
 package com.demigodsrpg.demigames.impl;
 
-import com.demigodsrpg.demigames.impl.command.ApplyKitCommand;
-import com.demigodsrpg.demigames.impl.command.CreateKitCommand;
-import com.demigodsrpg.demigames.impl.command.CreateLocationCommand;
-import com.demigodsrpg.demigames.impl.command.JoinGameCommand;
+import com.demigodsrpg.demigames.impl.command.*;
 import com.demigodsrpg.demigames.impl.listener.KitListener;
 import com.demigodsrpg.demigames.impl.listener.SessionListener;
 import com.demigodsrpg.demigames.impl.lobby.Lobby;
-import com.demigodsrpg.demigames.impl.registry.GameRegistry;
-import com.demigodsrpg.demigames.impl.registry.KitRegistry;
-import com.demigodsrpg.demigames.impl.registry.ProfileRegistry;
-import com.demigodsrpg.demigames.impl.registry.SessionRegistry;
+import com.demigodsrpg.demigames.impl.registry.*;
 import com.demigodsrpg.demigames.impl.util.LibraryHandler;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -50,6 +44,7 @@ public class Demigames extends JavaPlugin {
     private static GameRegistry GAME_REGISTRY;
     private static ProfileRegistry PROFILE_REGISTRY;
     private static KitRegistry KIT_REGISTRY;
+    private static SignRegistry SIGN_REGISTRY;
     private static SessionRegistry SESSION_REGISTRY;
 
     @Override
@@ -77,6 +72,7 @@ public class Demigames extends JavaPlugin {
         GAME_REGISTRY = new GameRegistry();
         PROFILE_REGISTRY = new ProfileRegistry();
         KIT_REGISTRY = new KitRegistry();
+        SIGN_REGISTRY = new SignRegistry();
         SESSION_REGISTRY = new SessionRegistry();
 
         // Handle listeners
@@ -89,6 +85,7 @@ public class Demigames extends JavaPlugin {
         getCommand("createkit").setExecutor(new CreateKitCommand());
         getCommand("applykit").setExecutor(new ApplyKitCommand());
         getCommand("createlocation").setExecutor(new CreateLocationCommand());
+        getCommand("createsign").setExecutor(new CreateSignCommand());
 
         GAME_REGISTRY.register(Lobby.LOBBY);
 
@@ -107,11 +104,11 @@ public class Demigames extends JavaPlugin {
         // Handle minigame server stop methods
         GAME_REGISTRY.handlePluginStop();
 
-        // Purge the session registry to clean up old sessions
-        SESSION_REGISTRY.purge();
-
         // Unload all sessions
         SESSION_REGISTRY.unloadAllWorlds();
+
+        // Purge the session registry to clean up old sessions
+        SESSION_REGISTRY.purge();
     }
 
     // -- HELPER METHODS -- //
@@ -164,6 +161,10 @@ public class Demigames extends JavaPlugin {
 
     public static KitRegistry getKitRegistry() {
         return KIT_REGISTRY;
+    }
+
+    public static SignRegistry getSignRegistry() {
+        return SIGN_REGISTRY;
     }
 
     public static GameRegistry getGameRegistry() {

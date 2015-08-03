@@ -246,11 +246,9 @@ public class Session implements Serializable {
             }
         }
 
-        // Remove the file and unload the world (after a delay to account for reflection lag)
-        Session delayed = this;
-        Bukkit.getScheduler().scheduleAsyncDelayedTask(Demigames.getInstance(), () -> {
-            registry.remove(id);
-            registry.unloadWorld(delayed);
-        }, 60);
+        // Remove the file and unload the world
+        Demigames.getInstance().getLogger().info("Unloading session " + id + ".");
+        registry.remove(id);
+        registry.unloadWorld(this);
     }
 }

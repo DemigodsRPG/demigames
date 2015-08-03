@@ -22,34 +22,32 @@
 
 package com.demigodsrpg.demigames.sign;
 
-import com.demigodsrpg.demigames.impl.util.LocationUtil;
+import com.demigodsrpg.demigames.game.Game;
 import com.demigodsrpg.demigames.session.Session;
 import org.bukkit.Location;
 
 import java.util.List;
 import java.util.Optional;
 
-public abstract class StaticSign implements MutableSign {
-
-    // -- DATA -- //
-
-    String name;
-    String location;
-    List<String> lines;
+public interface MinigameSign {
 
     // -- GETTERS -- //
 
-    @Override
-    public String getName() {
-        return name;
+    String getName();
+
+    String getGameName();
+
+    Optional<Game> getGame();
+
+    Optional<Location> getLocation(Session session);
+
+    String getLocationRaw();
+
+    String getCommand();
+
+    default String getLine(int index) throws IndexOutOfBoundsException {
+        return getLines().get(index);
     }
 
-    @Override
-    public Optional<Location> getLocation(Session session) {
-        return Optional.ofNullable(LocationUtil.locationFromString(session.getId(), location));
-    }
-
-    public List<String> getLines() {
-        return lines;
-    }
+    List<String> getLines();
 }

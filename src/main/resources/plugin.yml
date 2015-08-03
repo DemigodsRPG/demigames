@@ -16,6 +16,8 @@ commands:
     usage: /applykit <name>
   createlocation:
     usage: /createlocation <name>
+  createsign:
+    usage: /createsign <name> <command...>
 permisions:
   demigames.admin:
     default: op

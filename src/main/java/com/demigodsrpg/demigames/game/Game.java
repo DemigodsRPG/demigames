@@ -129,6 +129,7 @@ public interface Game extends Listener {
         SessionRegistry sessions = Demigames.getSessionRegistry();
         Session session = null;
         if (sessions.fromGame(this).size() > 0) {
+            // TODO The game finding algorithm needs to take into account the distribution of players
             Optional<Session> maybe = sessions.fromGame(this).stream().filter(Session::isJoinable).findAny();
             if (maybe.isPresent()) {
                 session = maybe.get();
