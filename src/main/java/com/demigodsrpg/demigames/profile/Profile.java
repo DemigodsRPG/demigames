@@ -107,7 +107,7 @@ public class Profile implements Serializable {
     // -- MUTATORS -- //
 
     public void setKit(Kit kit) {
-        this.kit = Optional.of(kit);
+        this.kit = Optional.ofNullable(kit);
         Demigames.getProfileRegistry().put(mojangUniqueId, this);
     }
 
