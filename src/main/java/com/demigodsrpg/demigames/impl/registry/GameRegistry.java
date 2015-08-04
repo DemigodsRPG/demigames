@@ -37,10 +37,7 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.net.URLClassLoader;
-import java.util.Arrays;
-import java.util.Enumeration;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.jar.JarEntry;
@@ -50,6 +47,10 @@ import java.util.stream.Collectors;
 public class GameRegistry {
     private final ConcurrentMap<String, Game> MINIGAMES = new ConcurrentHashMap<>();
     private final boolean partyMode = "party".equalsIgnoreCase(Setting.MODE);
+
+    public Collection<Game> getMinigames() {
+        return MINIGAMES.values();
+    }
 
     public void register(Game game) {
         Bukkit.getPluginManager().registerEvents(game, Demigames.getInstance());

@@ -24,28 +24,26 @@ package com.demigodsrpg.demigames.impl.registry;
 
 import com.demigodsrpg.demigames.game.Game;
 import com.demigodsrpg.demigames.impl.util.LocationUtil;
-import com.demigodsrpg.demigames.session.Session;
 import com.demigodsrpg.demigames.sign.MinigameSign;
 import com.demigodsrpg.demigames.sign.MutableMinigameSign;
 import org.bukkit.Location;
 
-import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 public class SignRegistry extends AbstractRegistry<String, MutableMinigameSign> {
-    public SignRegistry() {
-        super("sign", MutableMinigameSign.class, true);
+    private String gameName;
+
+    public SignRegistry(Game game) {
+        super("sign", MutableMinigameSign.class, true, game.getName());
+        this.gameName = game.getName();
     }
 
-    public List<MinigameSign> fromGame(Game game) {
-        String gameName = game.getName();
-        return REGISTERED_DATA.asMap().values().stream().filter(sign -> sign.getGameName().equals(gameName)).
-                collect(Collectors.toList());
-    }
-
-    public Optional<? extends MinigameSign> fromLocation(Session session, Location location) {
+    public Optional<? extends MinigameSign> fromLocation(Location location) {
         String strLoc = LocationUtil.stringFromLocation(location, true);
-        return REGISTERED_DATA.asMap().values().stream().filter(sign -> sign.getLocationRaw().equals(strLoc)).findAny();
+        return fromKey(strLoc);
+    }
+
+    public String getGameName() {
+        return gameName;
     }
 }

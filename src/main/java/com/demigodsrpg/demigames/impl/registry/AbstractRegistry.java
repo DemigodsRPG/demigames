@@ -46,6 +46,13 @@ public abstract class AbstractRegistry<K extends Serializable, V extends Seriali
         PRETTY = pretty;
     }
 
+    public AbstractRegistry(String folder, Class<V> vType, boolean pretty, String gameName) {
+        FOLDER = new File(Demigames.getInstance().getDataFolder().getPath() + "/games/" + gameName + "/" + folder + "/");
+        V_TYPE = vType;
+        REGISTERED_DATA = CacheBuilder.newBuilder().concurrencyLevel(4).expireAfterAccess(3, TimeUnit.MINUTES).build();
+        PRETTY = pretty;
+    }
+
     public Optional<V> fromKey(K key) {
         if (!REGISTERED_DATA.asMap().containsKey(key)) {
             loadFromFile(key);

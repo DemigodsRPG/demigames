@@ -26,6 +26,7 @@ import com.demigodsrpg.demigames.event.PlayerJoinMinigameEvent;
 import com.demigodsrpg.demigames.event.PlayerQuitMinigameEvent;
 import com.demigodsrpg.demigames.game.Game;
 import com.demigodsrpg.demigames.impl.Demigames;
+import com.demigodsrpg.demigames.impl.registry.SignRegistry;
 import com.demigodsrpg.demigames.impl.util.LocationUtil;
 import com.demigodsrpg.demigames.kit.ImmutableKit;
 import com.demigodsrpg.demigames.kit.Kit;
@@ -147,12 +148,15 @@ public class Lobby implements Game {
             Optional<Session> opSession = checkPlayer(event.getPlayer());
             if (opSession.isPresent()) {
                 if (opSession.get() instanceof LobbySession) {
-                    Optional<? extends MinigameSign> opSign = Demigames.getSignRegistry().fromLocation(opSession.get(),
-                            event.getClickedBlock().getLocation());
-                    if (opSign.isPresent()) {
-                        String command = opSign.get().getCommand();
-                        event.getPlayer().performCommand(command);
-                        event.setCancelled(true);
+                    Optional<SignRegistry> opRegistry = Demigames.getSignRegistry(getName());
+                    if (opRegistry.isPresent()) {
+                        Optional<? extends MinigameSign> opSign = opRegistry.get().fromLocation(
+                                event.getClickedBlock().getLocation());
+                        if (opSign.isPresent()) {
+                            String command = opSign.get().getCommand();
+                            event.getPlayer().performCommand(command);
+                            event.setCancelled(true);
+                        }
                     }
                 }
             }

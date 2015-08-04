@@ -38,6 +38,7 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
 import java.util.Arrays;
+import java.util.Optional;
 
 public class SignSelectListener implements Listener {
 
@@ -72,12 +73,18 @@ public class SignSelectListener implements Listener {
         event.getPlayer().sendMessage("TEST " + (event.getAction() == Action.RIGHT_CLICK_BLOCK) + " " + event.getClickedBlock().getType().name()); // TODO Debug message
         if (event.getClickedBlock().getState() instanceof Sign && event.getPlayer().equals(player) &&
                 event.getAction() == Action.RIGHT_CLICK_BLOCK) {
-            SignRegistry registry = Demigames.getSignRegistry();
-            Sign sign = (Sign) event.getClickedBlock().getState();
-            registry.put(name, new MutableMinigameSign(name, gameName,
-                    LocationUtil.stringFromLocation(sign.getLocation(), true), command,
-                    Arrays.asList(sign.getLines())));
-            event.getPlayer().sendMessage(ChatColor.YELLOW + "Sign " + name + " has been created!");
+            Optional<SignRegistry> opRegistry = Demigames.getSignRegistry(gameName);
+            if (opRegistry.isPresent()) {
+                Sign sign = (Sign) event.getClickedBlock().getState();
+                String location = LocationUtil.stringFromLocation(sign.getLocation(), true);
+                opRegistry.get().put(location, new MutableMinigameSign(name, gameName,
+                        location, command,
+                        Arrays.asList(sign.getLines())));
+                event.getPlayer().sendMessage(ChatColor.YELLOW + "Sign " + name + " has been created!");
+            } else {
+                event.getPlayer().sendMessage(ChatColor.RED +
+                        "There was an error getting the sign registry for this game.");
+            }
             HandlerList.unregisterAll(this);
         }
     }

@@ -32,6 +32,9 @@ import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
+import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 public class Demigames extends JavaPlugin {
     private static Demigames INST;
@@ -43,9 +46,9 @@ public class Demigames extends JavaPlugin {
     // -- REGISTRIES -- //
     private static GameRegistry GAME_REGISTRY;
     private static ProfileRegistry PROFILE_REGISTRY;
-    private static KitRegistry KIT_REGISTRY;
-    private static SignRegistry SIGN_REGISTRY;
     private static SessionRegistry SESSION_REGISTRY;
+    private static KitRegistry KIT_REGISTRY;
+    private static ConcurrentMap<String, SignRegistry> SIGN_REGISTRIES;
 
     @Override
     public void onEnable() {
@@ -72,7 +75,6 @@ public class Demigames extends JavaPlugin {
         GAME_REGISTRY = new GameRegistry();
         PROFILE_REGISTRY = new ProfileRegistry();
         KIT_REGISTRY = new KitRegistry();
-        SIGN_REGISTRY = new SignRegistry();
         SESSION_REGISTRY = new SessionRegistry();
 
         // Handle listeners
@@ -94,6 +96,12 @@ public class Demigames extends JavaPlugin {
             getServer().getPluginManager().disablePlugin(this);
             return;
         }
+
+        // Register the signs
+        SIGN_REGISTRIES = new ConcurrentHashMap<>();
+        GAME_REGISTRY.getMinigames().stream().map(SignRegistry::new).forEach(registry -> {
+            SIGN_REGISTRIES.put(registry.getGameName(), registry);
+        });
 
         // Handle minigame server start methods
         GAME_REGISTRY.handlePluginStart();
@@ -163,8 +171,8 @@ public class Demigames extends JavaPlugin {
         return KIT_REGISTRY;
     }
 
-    public static SignRegistry getSignRegistry() {
-        return SIGN_REGISTRY;
+    public static Optional<SignRegistry> getSignRegistry(String gameName) {
+        return Optional.ofNullable(SIGN_REGISTRIES.getOrDefault(gameName, null));
     }
 
     public static GameRegistry getGameRegistry() {
