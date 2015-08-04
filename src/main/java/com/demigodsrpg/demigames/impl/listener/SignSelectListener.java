@@ -70,10 +70,10 @@ public class SignSelectListener implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onSelect(PlayerInteractEvent event) {
         event.getPlayer().sendMessage("TEST " + (event.getAction() == Action.RIGHT_CLICK_BLOCK) + " " + event.getClickedBlock().getType().name()); // TODO Debug message
-        if (event.getClickedBlock() instanceof Sign && event.getPlayer().equals(player) &&
+        if (event.getClickedBlock().getState() instanceof Sign && event.getPlayer().equals(player) &&
                 event.getAction() == Action.RIGHT_CLICK_BLOCK) {
             SignRegistry registry = Demigames.getSignRegistry();
-            Sign sign = (Sign) event.getClickedBlock();
+            Sign sign = (Sign) event.getClickedBlock().getState();
             registry.put(name, new MutableMinigameSign(name, gameName,
                     LocationUtil.stringFromLocation(sign.getLocation(), true), command,
                     Arrays.asList(sign.getLines())));
