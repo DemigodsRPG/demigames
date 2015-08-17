@@ -22,5 +22,29 @@
 
 package com.demigodsrpg.demigames.game.mixin;
 
+import com.demigodsrpg.demigames.event.PlayerSpectateMinigameEvent;
+import com.demigodsrpg.demigames.kit.Kit;
+import com.demigodsrpg.demigames.session.Session;
+import org.bukkit.GameMode;
+
+import java.util.Optional;
+
 public interface ConfinedSpectateMixin extends SpectateMixin {
+    @Override
+    default void onSpectate(PlayerSpectateMinigameEvent event) {
+        if (event.getGame().isPresent() && event.getGame().get().equals(this)) {
+            Optional<Session> opSession = checkPlayer(event.getPlayer());
+
+            if (opSession.isPresent()) {
+                // Teleport tot the spectator box
+                event.getPlayer().teleport(getSpectatorSpawn(opSession.get()));
+
+                // Add the empty kit to the player
+                Kit.EMPTY.apply(event.getPlayer(), true);
+
+                // Set them to adventure so they can't break the box
+                event.getPlayer().setGameMode(GameMode.ADVENTURE);
+            }
+        }
+    }
 }

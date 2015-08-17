@@ -62,10 +62,6 @@ public class Lobby implements Game {
     }
 
     @Override
-    public void setupLocations(Session session) {
-    }
-
-    @Override
     public String getName() {
         return "Lobby";
     }

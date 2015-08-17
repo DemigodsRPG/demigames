@@ -23,6 +23,7 @@
 package com.demigodsrpg.demigames.game.mixin;
 
 import com.demigodsrpg.demigames.event.PlayerSpectateMinigameEvent;
+import com.demigodsrpg.demigames.game.Game;
 import com.demigodsrpg.demigames.session.Session;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -30,8 +31,12 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 
-interface SpectateMixin {
-    Location getSpectatorSpawn();
+import java.util.List;
+
+interface SpectateMixin extends Game {
+    Location getSpectatorSpawn(Session session);
+
+    List<String> getSpectators(Session session);
 
     default void callSpectate(Session session, Player player) {
         try {

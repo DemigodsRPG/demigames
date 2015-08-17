@@ -22,6 +22,7 @@
 
 package com.demigodsrpg.demigames.game.mixin;
 
+import com.demigodsrpg.demigames.game.Game;
 import com.demigodsrpg.demigames.impl.Demigames;
 import com.demigodsrpg.demigames.session.Session;
 import com.demigodsrpg.demigames.stage.DefaultStage;
@@ -34,11 +35,9 @@ import org.bukkit.entity.Player;
 
 import java.util.Optional;
 
-public interface WarmupLobbyMixin {
+public interface WarmupLobbyMixin extends Game {
 
     // -- GETTER -- //
-
-    String getName();
 
     Location getWarmupSpawn(Session session);
 

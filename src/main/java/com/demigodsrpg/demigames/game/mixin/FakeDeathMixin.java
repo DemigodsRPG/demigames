@@ -22,6 +22,7 @@
 
 package com.demigodsrpg.demigames.game.mixin;
 
+import com.demigodsrpg.demigames.game.Game;
 import com.demigodsrpg.demigames.session.Session;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -30,10 +31,7 @@ import org.bukkit.event.entity.EntityDamageEvent;
 
 import java.util.Optional;
 
-public interface FakeDeathMixin {
-
-    Optional<Session> checkPlayer(Player player);
-
+public interface FakeDeathMixin extends Game {
     // -- DAMAGE LISTENER -- //
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)

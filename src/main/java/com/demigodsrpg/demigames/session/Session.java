@@ -49,11 +49,11 @@ public class Session implements Serializable {
     // -- DATA -- //
 
     protected List<String> profiles = new ArrayList<>();
-    protected Map<String, Object> data;
     protected String id;
     protected String stage;
     protected boolean joinable;
     protected int currentRound;
+    protected Map<String, Serializable> data;
 
     // -- CONSTRUCTORS -- //
 
@@ -110,7 +110,7 @@ public class Session implements Serializable {
         return Optional.ofNullable(Bukkit.getWorld(id));
     }
 
-    public Map<String, Object> getData() {
+    public Map<String, Serializable> getData() {
         return data;
     }
 
