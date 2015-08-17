@@ -22,28 +22,5 @@
 
 package com.demigodsrpg.demigames.game.mixin;
 
-import com.demigodsrpg.demigames.session.Session;
-import com.demigodsrpg.demigames.stage.DefaultStage;
-import com.demigodsrpg.demigames.stage.StageHandler;
-
-public interface SetupNoTeamsMixin {
-
-    void setupLocations(Session session);
-
-    // -- SETUP -- //
-
-    @StageHandler(stage = DefaultStage.SETUP)
-    default void roundSetup(Session session) {
-        // Make sure the world is present
-        if (session.getWorld().isPresent()) {
-            // Setup the locations
-            setupLocations(session);
-
-            // Update the stage TODO This isn't the best place to start the warmup
-            session.updateStage(DefaultStage.WARMUP, true);
-        } else {
-            // Update the stage
-            session.updateStage(DefaultStage.ERROR, true);
-        }
-    }
+public interface ConfinedSpectateMixin extends SpectateMixin {
 }

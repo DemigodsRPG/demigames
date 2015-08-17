@@ -22,7 +22,6 @@
 
 package com.demigodsrpg.demigames.game.mixin;
 
-import com.demigodsrpg.demigames.game.Game;
 import com.demigodsrpg.demigames.impl.Demigames;
 import com.demigodsrpg.demigames.session.Session;
 import com.demigodsrpg.demigames.stage.DefaultStage;
@@ -31,7 +30,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Sound;
 
-public interface ErrorTimerMixin extends Game {
+public interface ErrorTimerMixin {
 
     // -- ERROR -- //
 

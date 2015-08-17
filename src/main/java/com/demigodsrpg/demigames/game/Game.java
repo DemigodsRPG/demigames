@@ -69,10 +69,6 @@ public interface Game extends Listener {
         return 1;
     }
 
-    // -- HELPER METHODS -- //
-
-    void setupLocations(Session session);
-
     // -- SERVER START/STOP -- //
 
     default void onServerStart() {

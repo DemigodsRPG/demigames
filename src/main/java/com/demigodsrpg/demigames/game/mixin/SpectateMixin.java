@@ -22,28 +22,25 @@
 
 package com.demigodsrpg.demigames.game.mixin;
 
+import com.demigodsrpg.demigames.event.PlayerSpectateMinigameEvent;
 import com.demigodsrpg.demigames.session.Session;
-import com.demigodsrpg.demigames.stage.DefaultStage;
-import com.demigodsrpg.demigames.stage.StageHandler;
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 
-public interface SetupNoTeamsMixin {
+interface SpectateMixin {
+    Location getSpectatorSpawn();
 
-    void setupLocations(Session session);
-
-    // -- SETUP -- //
-
-    @StageHandler(stage = DefaultStage.SETUP)
-    default void roundSetup(Session session) {
-        // Make sure the world is present
-        if (session.getWorld().isPresent()) {
-            // Setup the locations
-            setupLocations(session);
-
-            // Update the stage TODO This isn't the best place to start the warmup
-            session.updateStage(DefaultStage.WARMUP, true);
-        } else {
-            // Update the stage
-            session.updateStage(DefaultStage.ERROR, true);
+    default void callSpectate(Session session, Player player) {
+        try {
+            Bukkit.getPluginManager().callEvent(new PlayerSpectateMinigameEvent(player, session));
+        } catch (Exception oops) {
+            oops.printStackTrace();
         }
     }
+
+    @EventHandler(priority = EventPriority.MONITOR)
+    void onSpectate(PlayerSpectateMinigameEvent event);
 }

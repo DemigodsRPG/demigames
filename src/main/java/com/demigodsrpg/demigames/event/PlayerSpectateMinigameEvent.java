@@ -20,30 +20,52 @@
  * SOFTWARE.
  */
 
-package com.demigodsrpg.demigames.game.mixin;
+package com.demigodsrpg.demigames.event;
 
+import com.demigodsrpg.demigames.game.Game;
+import com.demigodsrpg.demigames.impl.Demigames;
 import com.demigodsrpg.demigames.session.Session;
-import com.demigodsrpg.demigames.stage.DefaultStage;
-import com.demigodsrpg.demigames.stage.StageHandler;
+import org.bukkit.entity.Player;
+import org.bukkit.event.HandlerList;
+import org.bukkit.event.player.PlayerEvent;
 
-public interface SetupNoTeamsMixin {
+import java.util.Optional;
 
-    void setupLocations(Session session);
+public class PlayerSpectateMinigameEvent extends PlayerEvent {
 
-    // -- SETUP -- //
+    // -- HANDLER LIST -- //
 
-    @StageHandler(stage = DefaultStage.SETUP)
-    default void roundSetup(Session session) {
-        // Make sure the world is present
-        if (session.getWorld().isPresent()) {
-            // Setup the locations
-            setupLocations(session);
+    private static final HandlerList handlers = new HandlerList();
 
-            // Update the stage TODO This isn't the best place to start the warmup
-            session.updateStage(DefaultStage.WARMUP, true);
-        } else {
-            // Update the stage
-            session.updateStage(DefaultStage.ERROR, true);
-        }
+    // -- DATA -- //
+
+    Optional<Game> game;
+    String sessionId;
+
+    // -- CONSTRUCTOR -- //
+
+    public PlayerSpectateMinigameEvent(Player player, Session session) {
+        super(player);
+        this.game = session.getGame();
+        this.sessionId = session.getId();
+    }
+
+    // -- GETTERS -- //
+
+    public Optional<Game> getGame() {
+        return game;
+    }
+
+    public Optional<Session> getSession() {
+        return Demigames.getSessionRegistry().fromKey(sessionId);
+    }
+
+    @Override
+    public HandlerList getHandlers() {
+        return handlers;
+    }
+
+    public static HandlerList getHandlerList() {
+        return handlers;
     }
 }
