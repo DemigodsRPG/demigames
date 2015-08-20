@@ -52,12 +52,14 @@ public class Lobby implements Game {
     private Location spawnPoint;
 
     public Lobby() {
-        Optional<Location> spawnPoint = new GameLocation(getConfig().getString("loc.spawn")).toLocation(WORLD);
+        GameLocation gameSpawnPoint = getConfigLocation("loc.spawn", WORLD.getSpawnLocation());
+        Optional<Location> spawnPoint = gameSpawnPoint.toLocation(WORLD);
         if (spawnPoint.isPresent()) {
             this.spawnPoint = spawnPoint.get();
         } else {
-            this.spawnPoint = WORLD.getSpawnLocation();
+            throw new NullPointerException("No world found for the Lobby.");
         }
+
         Optional<MutableKit> opKit = Demigames.getKitRegistry().fromKey("lobby");
         if (opKit.isPresent()) {
             LOBBY_KIT = ImmutableKit.of(opKit.get());

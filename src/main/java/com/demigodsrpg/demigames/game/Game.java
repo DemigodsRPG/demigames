@@ -31,6 +31,7 @@ import com.demigodsrpg.demigames.profile.Profile;
 import com.demigodsrpg.demigames.session.Session;
 import com.demigodsrpg.demigames.stage.DefaultStage;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -77,7 +78,7 @@ public interface Game extends Listener {
     default void onServerStop() {
     }
 
-    // -- DEFAULT BEHAVIOR -- //
+    // -- HELPER METHODS -- //
 
     default ConfigurationSection getConfig() {
         ConfigurationSection parent = Demigames.getInstance().getConfig();
@@ -96,6 +97,24 @@ public interface Game extends Listener {
         }
         return Optional.empty();
     }
+
+    default Optional<GameLocation> getConfigLocation(String path) {
+        try {
+            return Optional.of(new GameLocation(getConfig().getString(path)));
+        } catch (Exception ignored) {
+        }
+        return Optional.empty();
+    }
+
+    default GameLocation getConfigLocation(String path, Location fallback) {
+        try {
+            return new GameLocation(getConfig().getString(path));
+        } catch (Exception ignored) {
+        }
+        return new GameLocation(fallback, false);
+    }
+
+    // -- DEFAULT BEHAVIOR -- //
 
     default void callWin(Session session, Player player) {
         try {

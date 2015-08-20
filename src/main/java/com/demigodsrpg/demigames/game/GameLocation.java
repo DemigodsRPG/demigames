@@ -41,6 +41,9 @@ public class GameLocation {
     // -- CONSTRUCTORS -- //
 
     public GameLocation(String strLocation) {
+        if (strLocation == null || "".equals(strLocation)) {
+            throw new IllegalArgumentException("Invalid String representation of a GameLocation.");
+        }
         String[] part = strLocation.split(";");
         x = Double.parseDouble(part[0]);
         y = Double.parseDouble(part[1]);
