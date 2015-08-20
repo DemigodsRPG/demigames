@@ -107,6 +107,7 @@ public interface Game extends Listener {
             LocationRegistry reg = opReg.get();
             return reg.fromKey(name);
         }
+        Demigames.getInstance().getLogger().warning(getName() + " is missing a Location Registry.");
         return Optional.empty();
     }
 
@@ -123,6 +124,8 @@ public interface Game extends Listener {
         if (opReg.isPresent()) {
             LocationRegistry reg = opReg.get();
             reg.put(name, location);
+        } else {
+            Demigames.getInstance().getLogger().warning(getName() + " is missing a Location Registry.");
         }
     }
 

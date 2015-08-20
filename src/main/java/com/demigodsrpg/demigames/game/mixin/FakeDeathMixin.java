@@ -23,11 +23,15 @@
 package com.demigodsrpg.demigames.game.mixin;
 
 import com.demigodsrpg.demigames.game.Game;
+import com.demigodsrpg.demigames.impl.Demigames;
 import com.demigodsrpg.demigames.session.Session;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
+import org.bukkit.event.HandlerList;
 import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.player.PlayerEvent;
 
 import java.util.Optional;
 
@@ -44,7 +48,7 @@ public interface FakeDeathMixin extends Game {
                 // If they should be dead, cancel the event and call the fake death method
                 if (player.getHealth() - event.getDamage() <= 0.0) {
                     event.setCancelled(true);
-                    onDeath(opSession.get(), event);
+                    Bukkit.getPluginManager().callEvent(new Event(player, opSession.get(), event));
                 }
             }
         }
@@ -52,5 +56,50 @@ public interface FakeDeathMixin extends Game {
 
     // -- FAKE DEATH -- //
 
-    void onDeath(Session session, EntityDamageEvent event);
+    @EventHandler(priority = EventPriority.LOW)
+    void onDeath(FakeDeathMixin.Event event);
+
+    class Event extends PlayerEvent {
+        // -- HANDLER LIST -- //
+
+        private static final HandlerList handlers = new HandlerList();
+
+        // -- DATA -- //
+
+        Optional<Game> game;
+        String sessionId;
+        EntityDamageEvent damageEvent;
+
+        // -- CONSTRUCTOR -- //
+
+        public Event(Player player, Session session, EntityDamageEvent damageEvent) {
+            super(player);
+            this.game = session.getGame();
+            this.sessionId = session.getId();
+            this.damageEvent = damageEvent;
+        }
+
+        // -- GETTERS -- //
+
+        public Optional<Game> getGame() {
+            return game;
+        }
+
+        public Optional<Session> getSession() {
+            return Demigames.getSessionRegistry().fromKey(sessionId);
+        }
+
+        public EntityDamageEvent getDamageEvent() {
+            return damageEvent;
+        }
+
+        @Override
+        public HandlerList getHandlers() {
+            return handlers;
+        }
+
+        public static HandlerList getHandlerList() {
+            return handlers;
+        }
+    }
 }

@@ -48,10 +48,11 @@ public class Lobby implements Game {
     public static Lobby LOBBY;
     public static Kit LOBBY_KIT;
 
-    protected final World WORLD = Bukkit.getWorld("world"); //Bukkit.getWorlds().get(0);
-    private final Location SPAWN;
+    protected World WORLD = Bukkit.getWorld("world"); //Bukkit.getWorlds().get(0);
+    private Location SPAWN;
 
-    public Lobby() {
+    @Override
+    public void onServerStart() {
         GameLocation gameSpawnPoint = getLocation("spawn", WORLD.getSpawnLocation());
         Optional<Location> spawnPoint = gameSpawnPoint.toLocation(WORLD);
         if (spawnPoint.isPresent()) {
@@ -123,7 +124,7 @@ public class Lobby implements Game {
         return 0;
     }
 
-    public Location getSPAWN() {
+    public Location getSpawn() {
         return SPAWN;
     }
 

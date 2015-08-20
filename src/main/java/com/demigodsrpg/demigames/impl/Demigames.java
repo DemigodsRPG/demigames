@@ -78,6 +78,29 @@ public class Demigames extends JavaPlugin {
         KIT_REGISTRY = new KitRegistry();
         SESSION_REGISTRY = new SessionRegistry();
 
+        // Define and registry the lobby
+        Lobby.LOBBY = new Lobby();
+        GAME_REGISTRY.register(Lobby.LOBBY);
+
+        // Handle listeners
+        PluginManager manager = getServer().getPluginManager();
+        manager.registerEvents(new SessionListener(), this);
+        manager.registerEvents(new KitListener(), this);
+
+        // Register commands
+        getCommand("joingame").setExecutor(new JoinGameCommand());
+        getCommand("leavegame").setExecutor(new LeaveGameCommand());
+        getCommand("createkit").setExecutor(new CreateKitCommand());
+        getCommand("applykit").setExecutor(new ApplyKitCommand());
+        getCommand("createlocation").setExecutor(new CreateLocationCommand());
+        getCommand("createsign").setExecutor(new CreateSignCommand());
+
+        // Load the components. If there was an error, cancel the plugin from loading
+        if (!loadComponents()) {
+            getServer().getPluginManager().disablePlugin(this);
+            return;
+        }
+
         // Register the signs
         SIGN_REGISTRIES = new ConcurrentHashMap<>();
         GAME_REGISTRY.getMinigames().stream().map(SignRegistry::new).forEach(registry -> {
@@ -89,28 +112,6 @@ public class Demigames extends JavaPlugin {
         GAME_REGISTRY.getMinigames().stream().map(LocationRegistry::new).forEach(registry -> {
             LOC_REGISTRIES.put(registry.getGameName(), registry);
         });
-
-        // Handle listeners
-        PluginManager manager = getServer().getPluginManager();
-        manager.registerEvents(new SessionListener(), this);
-        manager.registerEvents(new KitListener(), this);
-
-        // Register commands
-        getCommand("joingame").setExecutor(new JoinGameCommand());
-        getCommand("createkit").setExecutor(new CreateKitCommand());
-        getCommand("applykit").setExecutor(new ApplyKitCommand());
-        getCommand("createlocation").setExecutor(new CreateLocationCommand());
-        getCommand("createsign").setExecutor(new CreateSignCommand());
-
-        // Define and registry the lobby
-        Lobby.LOBBY = new Lobby();
-        GAME_REGISTRY.register(Lobby.LOBBY);
-
-        // Load the components. If there was an error, cancel the plugin from loading
-        if (!loadComponents()) {
-            getServer().getPluginManager().disablePlugin(this);
-            return;
-        }
 
         // Handle minigame server start methods
         GAME_REGISTRY.handlePluginStart();
