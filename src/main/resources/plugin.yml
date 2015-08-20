@@ -8,12 +8,14 @@ commands:
   ## Everyday Commands
   demigames:
     usage: /demigames
+  sessioninfo:
+    usage: /sessioninfo <game> [sessionid]
   joingame:
     usage: /joingame <name>
-    alias: [join]
+    aliases: [join]
   leavegame:
     usage: /leavegame
-    alias: [leave]
+    aliases: [leave]
   createkit:
     usage: /createkit <name>
   applykit:

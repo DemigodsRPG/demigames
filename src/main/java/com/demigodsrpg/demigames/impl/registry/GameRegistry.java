@@ -52,6 +52,10 @@ public class GameRegistry {
         return MINIGAMES.values();
     }
 
+    public Set<String> getMinigameNames() {
+        return MINIGAMES.keySet();
+    }
+
     public void register(Game game) {
         Bukkit.getPluginManager().registerEvents(game, Demigames.getInstance());
         MINIGAMES.put(game.getName(), game);

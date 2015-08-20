@@ -94,6 +94,9 @@ public class Demigames extends JavaPlugin {
         getCommand("applykit").setExecutor(new ApplyKitCommand());
         getCommand("createlocation").setExecutor(new CreateLocationCommand());
         getCommand("createsign").setExecutor(new CreateSignCommand());
+        SessionInfoCommand sessionInfoCommand = new SessionInfoCommand();
+        getCommand("sessioninfo").setExecutor(sessionInfoCommand);
+        getCommand("sessioninfo").setTabCompleter(sessionInfoCommand);
 
         // Load the components. If there was an error, cancel the plugin from loading
         if (!loadComponents()) {
