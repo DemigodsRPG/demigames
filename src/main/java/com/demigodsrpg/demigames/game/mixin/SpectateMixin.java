@@ -24,6 +24,7 @@ package com.demigodsrpg.demigames.game.mixin;
 
 import com.demigodsrpg.demigames.event.PlayerSpectateMinigameEvent;
 import com.demigodsrpg.demigames.game.Game;
+import com.demigodsrpg.demigames.profile.Profile;
 import com.demigodsrpg.demigames.session.Session;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -37,6 +38,14 @@ interface SpectateMixin extends Game {
     Location getSpectatorSpawn(Session session);
 
     List<String> getSpectators(Session session);
+
+    default boolean isSpectator(Session session, Player player) {
+        return getSpectators(session).contains(player.getUniqueId().toString());
+    }
+
+    default boolean isSpectator(Session session, Profile profile) {
+        return getSpectators(session).contains(profile.getMojangUniqueId());
+    }
 
     default void callSpectate(Session session, Player player) {
         try {
