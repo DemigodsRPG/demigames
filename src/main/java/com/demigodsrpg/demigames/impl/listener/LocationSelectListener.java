@@ -22,8 +22,8 @@
 
 package com.demigodsrpg.demigames.impl.listener;
 
+import com.demigodsrpg.demigames.game.GameLocation;
 import com.demigodsrpg.demigames.impl.Demigames;
-import com.demigodsrpg.demigames.impl.util.LocationUtil;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -64,7 +64,7 @@ public class LocationSelectListener implements Listener {
     public void onSelect(PlayerInteractEvent event) {
         if (event.getPlayer().equals(player) && event.getAction() == Action.RIGHT_CLICK_BLOCK) {
             Demigames.getInstance().getConfig().set(gameName + ".loc." + name,
-                    LocationUtil.stringFromLocation(player.getLocation(), true));
+                    new GameLocation(player.getLocation(), true).toString());
             Demigames.getInstance().saveConfig();
             event.getPlayer().sendMessage(ChatColor.YELLOW + "Location " + name + " has been created!");
             HandlerList.unregisterAll(this);

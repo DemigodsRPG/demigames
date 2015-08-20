@@ -23,6 +23,7 @@
 package com.demigodsrpg.demigames.sign;
 
 import com.demigodsrpg.demigames.game.Game;
+import com.demigodsrpg.demigames.game.GameLocation;
 import com.demigodsrpg.demigames.session.Session;
 import org.bukkit.Location;
 
@@ -41,7 +42,7 @@ public interface MinigameSign {
 
     Optional<Location> getLocation(Session session);
 
-    String getLocationRaw();
+    GameLocation getGameLocation();
 
     String getCommand();
 

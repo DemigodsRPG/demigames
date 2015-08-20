@@ -23,8 +23,8 @@
 package com.demigodsrpg.demigames.sign;
 
 import com.demigodsrpg.demigames.game.Game;
+import com.demigodsrpg.demigames.game.GameLocation;
 import com.demigodsrpg.demigames.impl.Demigames;
-import com.demigodsrpg.demigames.impl.util.LocationUtil;
 import com.demigodsrpg.demigames.session.Session;
 import org.bukkit.Location;
 
@@ -44,10 +44,10 @@ public class MutableMinigameSign implements MinigameSign, Serializable {
 
     // -- CONSTRUCTOR -- //
 
-    public MutableMinigameSign(String name, String gameName, String location, String command, List<String> lines) {
+    public MutableMinigameSign(String name, String gameName, GameLocation location, String command, List<String> lines) {
         this.name = name;
         this.gameName = gameName;
-        this.location = location;
+        this.location = location.toString();
         this.command = command;
         this.lines = lines;
     }
@@ -71,12 +71,12 @@ public class MutableMinigameSign implements MinigameSign, Serializable {
 
     @Override
     public Optional<Location> getLocation(Session session) {
-        return Optional.ofNullable(LocationUtil.locationFromString(session.getId(), location));
+        return new GameLocation(location).toLocation(session.getId());
     }
 
     @Override
-    public String getLocationRaw() {
-        return location;
+    public GameLocation getGameLocation() {
+        return new GameLocation(location);
     }
 
     public List<String> getLines() {

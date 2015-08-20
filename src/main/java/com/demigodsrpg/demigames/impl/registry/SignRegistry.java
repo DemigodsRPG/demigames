@@ -23,7 +23,7 @@
 package com.demigodsrpg.demigames.impl.registry;
 
 import com.demigodsrpg.demigames.game.Game;
-import com.demigodsrpg.demigames.impl.util.LocationUtil;
+import com.demigodsrpg.demigames.game.GameLocation;
 import com.demigodsrpg.demigames.sign.MinigameSign;
 import com.demigodsrpg.demigames.sign.MutableMinigameSign;
 import org.bukkit.Location;
@@ -39,7 +39,7 @@ public class SignRegistry extends AbstractRegistry<String, MutableMinigameSign> 
     }
 
     public Optional<? extends MinigameSign> fromLocation(Location location) {
-        String strLoc = LocationUtil.stringFromLocation(location, true);
+        String strLoc = new GameLocation(location, true).toString();
         return fromKey(strLoc);
     }
 

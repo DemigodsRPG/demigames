@@ -25,9 +25,9 @@ package com.demigodsrpg.demigames.impl.command;
 import com.censoredsoftware.library.command.type.BaseCommand;
 import com.censoredsoftware.library.command.type.CommandResult;
 import com.demigodsrpg.demigames.game.Game;
+import com.demigodsrpg.demigames.game.GameLocation;
 import com.demigodsrpg.demigames.impl.Demigames;
 import com.demigodsrpg.demigames.impl.listener.LocationSelectListener;
-import com.demigodsrpg.demigames.impl.util.LocationUtil;
 import com.demigodsrpg.demigames.session.Session;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -61,7 +61,7 @@ public class CreateLocationCommand extends BaseCommand {
                     Optional<Game> game = session.get().getGame();
                     if (game.isPresent()) {
                         CONFIG.set(game.get().getName() + ".loc." + name,
-                                LocationUtil.stringFromLocation(player.getLocation(), true));
+                                new GameLocation(player.getLocation(), true).toString());
                         Demigames.getInstance().saveConfig();
                         sender.sendMessage(ChatColor.YELLOW + "Location " + name + " has been created!");
                         return CommandResult.SUCCESS;

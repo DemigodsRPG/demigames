@@ -25,9 +25,9 @@ package com.demigodsrpg.demigames.impl.lobby;
 import com.demigodsrpg.demigames.event.PlayerJoinMinigameEvent;
 import com.demigodsrpg.demigames.event.PlayerQuitMinigameEvent;
 import com.demigodsrpg.demigames.game.Game;
+import com.demigodsrpg.demigames.game.GameLocation;
 import com.demigodsrpg.demigames.impl.Demigames;
 import com.demigodsrpg.demigames.impl.registry.SignRegistry;
-import com.demigodsrpg.demigames.impl.util.LocationUtil;
 import com.demigodsrpg.demigames.kit.ImmutableKit;
 import com.demigodsrpg.demigames.kit.Kit;
 import com.demigodsrpg.demigames.kit.MutableKit;
@@ -35,6 +35,7 @@ import com.demigodsrpg.demigames.session.Session;
 import com.demigodsrpg.demigames.sign.MinigameSign;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -45,14 +46,18 @@ import java.util.Optional;
 
 public class Lobby implements Game {
     public static final Lobby LOBBY = new Lobby();
-    public static final String WORLD_NAME = "world"; //Bukkit.getWorlds().get(0).getName();
+    public static final World WORLD = Bukkit.getWorld("world"); //Bukkit.getWorlds().get(0);
     public static Kit LOBBY_KIT;
 
     private Location spawnPoint;
 
     public Lobby() {
-        spawnPoint = LocationUtil.locationFromString(WORLD_NAME, getConfig().getString("loc.spawn",
-                LocationUtil.stringFromLocation(Bukkit.getWorld(WORLD_NAME).getSpawnLocation(), false)));
+        Optional<Location> spawnPoint = new GameLocation(getConfig().getString("loc.spawn")).toLocation(WORLD);
+        if (spawnPoint.isPresent()) {
+            this.spawnPoint = spawnPoint.get();
+        } else {
+            this.spawnPoint = WORLD.getSpawnLocation();
+        }
         Optional<MutableKit> opKit = Demigames.getKitRegistry().fromKey("lobby");
         if (opKit.isPresent()) {
             LOBBY_KIT = ImmutableKit.of(opKit.get());

@@ -22,9 +22,9 @@
 
 package com.demigodsrpg.demigames.impl.listener;
 
+import com.demigodsrpg.demigames.game.GameLocation;
 import com.demigodsrpg.demigames.impl.Demigames;
 import com.demigodsrpg.demigames.impl.registry.SignRegistry;
-import com.demigodsrpg.demigames.impl.util.LocationUtil;
 import com.demigodsrpg.demigames.sign.MutableMinigameSign;
 import org.bukkit.ChatColor;
 import org.bukkit.block.Sign;
@@ -76,8 +76,8 @@ public class SignSelectListener implements Listener {
             Optional<SignRegistry> opRegistry = Demigames.getSignRegistry(gameName);
             if (opRegistry.isPresent()) {
                 Sign sign = (Sign) event.getClickedBlock().getState();
-                String location = LocationUtil.stringFromLocation(sign.getLocation(), true);
-                opRegistry.get().put(location, new MutableMinigameSign(name, gameName,
+                GameLocation location = new GameLocation(sign.getLocation(), true);
+                opRegistry.get().put(location.toString(), new MutableMinigameSign(name, gameName,
                         location, command,
                         Arrays.asList(sign.getLines())));
                 event.getPlayer().sendMessage(ChatColor.YELLOW + "Sign " + name + " has been created!");
