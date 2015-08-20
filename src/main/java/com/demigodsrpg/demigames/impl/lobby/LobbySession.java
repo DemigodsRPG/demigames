@@ -34,7 +34,7 @@ public class LobbySession extends Session {
     // -- CONSTRUCTOR -- //
 
     private LobbySession() {
-        super(Lobby.WORLD.getName(), Lobby.LOBBY);
+        super(Lobby.LOBBY.WORLD.getName(), Lobby.LOBBY);
     }
 
     // -- IGNORE THE FOLLOWING METHODS -- //

@@ -78,6 +78,18 @@ public class Demigames extends JavaPlugin {
         KIT_REGISTRY = new KitRegistry();
         SESSION_REGISTRY = new SessionRegistry();
 
+        // Register the signs
+        SIGN_REGISTRIES = new ConcurrentHashMap<>();
+        GAME_REGISTRY.getMinigames().stream().map(SignRegistry::new).forEach(registry -> {
+            SIGN_REGISTRIES.put(registry.getGameName(), registry);
+        });
+
+        // Register the locations
+        LOC_REGISTRIES = new ConcurrentHashMap<>();
+        GAME_REGISTRY.getMinigames().stream().map(LocationRegistry::new).forEach(registry -> {
+            LOC_REGISTRIES.put(registry.getGameName(), registry);
+        });
+
         // Handle listeners
         PluginManager manager = getServer().getPluginManager();
         manager.registerEvents(new SessionListener(), this);
@@ -90,6 +102,8 @@ public class Demigames extends JavaPlugin {
         getCommand("createlocation").setExecutor(new CreateLocationCommand());
         getCommand("createsign").setExecutor(new CreateSignCommand());
 
+        // Define and registry the lobby
+        Lobby.LOBBY = new Lobby();
         GAME_REGISTRY.register(Lobby.LOBBY);
 
         // Load the components. If there was an error, cancel the plugin from loading
@@ -97,18 +111,6 @@ public class Demigames extends JavaPlugin {
             getServer().getPluginManager().disablePlugin(this);
             return;
         }
-
-        // Register the signs
-        SIGN_REGISTRIES = new ConcurrentHashMap<>();
-        GAME_REGISTRY.getMinigames().stream().map(SignRegistry::new).forEach(registry -> {
-            SIGN_REGISTRIES.put(registry.getGameName(), registry);
-        });
-
-        // Register the locations
-        LOC_REGISTRIES = new ConcurrentHashMap<>();
-        GAME_REGISTRY.getMinigames().stream().map(LocationRegistry::new).forEach(registry -> {
-            LOC_REGISTRIES.put(registry.getGameName(), registry);
-        });
 
         // Handle minigame server start methods
         GAME_REGISTRY.handlePluginStart();

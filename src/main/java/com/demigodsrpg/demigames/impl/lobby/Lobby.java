@@ -45,17 +45,17 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import java.util.Optional;
 
 public class Lobby implements Game {
-    public static final Lobby LOBBY = new Lobby();
-    public static final World WORLD = Bukkit.getWorld("world"); //Bukkit.getWorlds().get(0);
+    public static Lobby LOBBY;
     public static Kit LOBBY_KIT;
 
-    private Location spawnPoint;
+    protected final World WORLD = Bukkit.getWorld("world"); //Bukkit.getWorlds().get(0);
+    private final Location SPAWN;
 
     public Lobby() {
         GameLocation gameSpawnPoint = getLocation("spawn", WORLD.getSpawnLocation());
         Optional<Location> spawnPoint = gameSpawnPoint.toLocation(WORLD);
         if (spawnPoint.isPresent()) {
-            this.spawnPoint = spawnPoint.get();
+            SPAWN = spawnPoint.get();
         } else {
             throw new NullPointerException("No world found for the Lobby.");
         }
@@ -123,8 +123,8 @@ public class Lobby implements Game {
         return 0;
     }
 
-    public Location getSpawnPoint() {
-        return spawnPoint;
+    public Location getSPAWN() {
+        return SPAWN;
     }
 
     @EventHandler(priority = EventPriority.LOWEST)
@@ -132,7 +132,7 @@ public class Lobby implements Game {
         if (event.getGame().isPresent() && event.getGame().get().equals(this)) {
             Player player = event.getPlayer();
             LOBBY_KIT.apply(player, true);
-            player.teleport(spawnPoint);
+            player.teleport(SPAWN);
             player.sendMessage("WELCOME TO THE LOBBY.");
             if (event.getPreviusSession().isPresent() && event.getPreviusSession().get().getGame().isPresent()) {
                 Game previousGame = event.getPreviusSession().get().getGame().get();
