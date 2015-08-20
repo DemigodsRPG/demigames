@@ -34,6 +34,7 @@ import com.demigodsrpg.demigames.kit.MutableKit;
 import com.demigodsrpg.demigames.session.Session;
 import com.demigodsrpg.demigames.sign.MinigameSign;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
@@ -134,11 +135,11 @@ public class Lobby implements Game {
             Player player = event.getPlayer();
             LOBBY_KIT.apply(player, true);
             player.teleport(SPAWN);
-            player.sendMessage("WELCOME TO THE LOBBY.");
+            player.sendMessage(ChatColor.GOLD + "Welcome to the Minigames Lobby.");
             if (event.getPreviusSession().isPresent() && event.getPreviusSession().get().getGame().isPresent()) {
                 Game previousGame = event.getPreviusSession().get().getGame().get();
                 if (!(previousGame instanceof Lobby)) {
-                    player.sendMessage("Did you have fun playing " + previousGame.getName() + "?");
+                    player.sendMessage(ChatColor.GREEN + "Did you have fun playing " + previousGame.getName() + "?");
                 }
             }
         }

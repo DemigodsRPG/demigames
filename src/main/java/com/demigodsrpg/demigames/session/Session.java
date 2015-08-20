@@ -48,7 +48,7 @@ public class Session implements Serializable {
 
     // -- DATA -- //
 
-    protected List<String> profiles = new ArrayList<>();
+    protected Set<String> profiles = new HashSet<>();
     protected String id;
     protected String stage;
     protected boolean joinable;
@@ -92,7 +92,7 @@ public class Session implements Serializable {
         return profiles.stream().map(registry::fromKey).filter(Optional::isPresent).map(Optional::get).collect(Collectors.toList());
     }
 
-    public List<String> getRawProfiles() {
+    public Set<String> getRawProfiles() {
         return profiles;
     }
 
@@ -164,7 +164,7 @@ public class Session implements Serializable {
         }
     }
 
-    public void setRawProfiles(List<String> rawProfiles) {
+    public void setRawProfiles(Set<String> rawProfiles) {
         this.profiles = rawProfiles;
     }
 
@@ -180,7 +180,8 @@ public class Session implements Serializable {
     }
 
     public void removeProfile(Player player) {
-        profiles = profiles.parallelStream().filter(profile -> !profile.equals(player.getUniqueId().toString())).collect(Collectors.toList());
+        profiles = profiles.parallelStream().filter(profile -> !profile.equals(player.getUniqueId().toString())).
+                collect(Collectors.toSet());
         Profile profile = Demigames.getProfileRegistry().fromPlayer(player);
         if (profile.getCurrentSessionId().isPresent() && profile.getCurrentSessionId().get().equals(id)) {
             profile.setCurrentSessionId(null);

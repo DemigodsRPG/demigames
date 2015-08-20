@@ -25,16 +25,22 @@ package com.demigodsrpg.demigames.impl.listener;
 import com.demigodsrpg.demigames.impl.Demigames;
 import com.demigodsrpg.demigames.kit.ImmutableKit;
 import com.demigodsrpg.demigames.profile.Profile;
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 import org.bukkit.GameMode;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.entity.ProjectileLaunchEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.event.inventory.InventoryPickupItemEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
+
+import java.util.concurrent.TimeUnit;
 
 public class KitListener implements Listener {
     @EventHandler(priority = EventPriority.LOWEST)
@@ -85,6 +91,25 @@ public class KitListener implements Listener {
         if (event.getPlayer().getGameMode() != GameMode.CREATIVE && profile.getKit().isPresent() &&
                 profile.getKit().get() instanceof ImmutableKit) {
             event.setCancelled(true);
+        }
+    }
+
+    private Cache<Player, EntityType> launchCache = CacheBuilder.newBuilder().
+            expireAfterWrite(10, TimeUnit.MILLISECONDS).build();
+
+    @EventHandler(priority = EventPriority.LOWEST)
+    public void onLaunch(ProjectileLaunchEvent event) {
+        if (event.getEntity().getShooter() instanceof Player) {
+            Player player = (Player) event.getEntity().getShooter();
+            if (!event.getEntityType().equals(launchCache.getIfPresent(player))) {
+                Profile profile = Demigames.getProfileRegistry().fromPlayer(player);
+                if (player.getGameMode() != GameMode.CREATIVE && profile.getKit().isPresent() &&
+                        profile.getKit().get() instanceof ImmutableKit) {
+                    event.setCancelled(true);
+                    launchCache.put(player, event.getEntityType());
+                    player.launchProjectile(event.getEntity().getClass(), event.getEntity().getVelocity());
+                }
+            }
         }
     }
 }

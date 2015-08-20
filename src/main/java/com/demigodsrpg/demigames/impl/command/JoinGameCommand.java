@@ -24,6 +24,7 @@ package com.demigodsrpg.demigames.impl.command;
 
 import com.censoredsoftware.library.command.type.BaseCommand;
 import com.censoredsoftware.library.command.type.CommandResult;
+import com.demigodsrpg.demigames.event.PlayerQuitMinigameEvent;
 import com.demigodsrpg.demigames.game.Game;
 import com.demigodsrpg.demigames.impl.Demigames;
 import com.demigodsrpg.demigames.impl.lobby.Lobby;
@@ -46,10 +47,11 @@ public class JoinGameCommand extends BaseCommand {
             return CommandResult.INVALID_SYNTAX;
         }
         if (sender instanceof Player) {
+            Player player = (Player) sender;
             // Stop them if they are in a game already
-            Optional<Session> opSession = Demigames.getSessionRegistry().getSession((Player) sender);
+            Optional<Session> opSession = Demigames.getSessionRegistry().getSession(player);
             if (opSession.isPresent() && !(opSession.get() instanceof LobbySession)) {
-                sender.sendMessage(ChatColor.RED + "You are already in a game!");
+                player.sendMessage(ChatColor.RED + "You are already in a game!");
                 return CommandResult.QUIET_ERROR;
             }
 
@@ -57,6 +59,9 @@ public class JoinGameCommand extends BaseCommand {
             Optional<Game> opGame = Demigames.getGameRegistry().getMinigame(args[0]);
             if (opGame.isPresent() && opGame.get() != Lobby.LOBBY) {
                 sender.sendMessage(ChatColor.YELLOW + "Joining " + args[0] + ".");
+                if (opSession.isPresent() && opSession.get() instanceof LobbySession) {
+                    Lobby.LOBBY.quit(player, opSession.get(), PlayerQuitMinigameEvent.QuitReason.LEAVE_SESSION);
+                }
                 opGame.get().join((Player) sender);
                 return CommandResult.SUCCESS;
             } else {
