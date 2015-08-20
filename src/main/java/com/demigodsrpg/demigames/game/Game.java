@@ -26,6 +26,7 @@ import com.demigodsrpg.demigames.event.*;
 import com.demigodsrpg.demigames.impl.Demigames;
 import com.demigodsrpg.demigames.impl.Setting;
 import com.demigodsrpg.demigames.impl.lobby.Lobby;
+import com.demigodsrpg.demigames.impl.registry.LocationRegistry;
 import com.demigodsrpg.demigames.impl.registry.SessionRegistry;
 import com.demigodsrpg.demigames.profile.Profile;
 import com.demigodsrpg.demigames.session.Session;
@@ -61,6 +62,8 @@ public interface Game extends Listener {
     }
 
     int getMinimumPlayers();
+
+    int getMaximumPlayers();
 
     default int getNumberOfTeams() {
         return 0;
@@ -98,20 +101,29 @@ public interface Game extends Listener {
         return Optional.empty();
     }
 
-    default Optional<GameLocation> getConfigLocation(String path) {
-        try {
-            return Optional.of(new GameLocation(getConfig().getString(path)));
-        } catch (Exception ignored) {
+    default Optional<GameLocation> getLocation(String name) {
+        Optional<LocationRegistry> opReg = Demigames.getLocationRegistry(getName());
+        if (opReg.isPresent()) {
+            LocationRegistry reg = opReg.get();
+            return reg.fromKey(name);
         }
         return Optional.empty();
     }
 
-    default GameLocation getConfigLocation(String path, Location fallback) {
-        try {
-            return new GameLocation(getConfig().getString(path));
-        } catch (Exception ignored) {
+    default GameLocation getLocation(String name, Location fallback) {
+        Optional<GameLocation> opLoc = getLocation(name);
+        if (opLoc.isPresent()) {
+            return opLoc.get();
         }
         return new GameLocation(fallback, false);
+    }
+
+    default void setLocation(String name, GameLocation location) {
+        Optional<LocationRegistry> opReg = Demigames.getLocationRegistry(getName());
+        if (opReg.isPresent()) {
+            LocationRegistry reg = opReg.get();
+            reg.put(name, location);
+        }
     }
 
     // -- DEFAULT BEHAVIOR -- //
@@ -193,9 +205,9 @@ public interface Game extends Listener {
 
     // -- REQUIRED EVENT LISTENERS -- //
 
-    @EventHandler(priority = EventPriority.MONITOR)
+    @EventHandler(priority = EventPriority.LOW)
     void onJoin(PlayerJoinMinigameEvent event);
 
-    @EventHandler(priority = EventPriority.MONITOR)
+    @EventHandler(priority = EventPriority.LOW)
     void onLeave(PlayerQuitMinigameEvent event);
 }

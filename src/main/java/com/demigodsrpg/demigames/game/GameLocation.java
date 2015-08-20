@@ -26,9 +26,10 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
 
+import java.io.Serializable;
 import java.util.Optional;
 
-public class GameLocation {
+public class GameLocation implements Serializable {
 
     // -- DATA -- //
 

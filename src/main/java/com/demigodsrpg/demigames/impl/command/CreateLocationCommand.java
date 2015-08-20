@@ -34,16 +34,11 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
-import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 
 import java.util.Optional;
 
 public class CreateLocationCommand extends BaseCommand {
-
-    // -- CONFIG -- //
-
-    private FileConfiguration CONFIG = Demigames.getInstance().getConfig();
 
     // -- COMMAND EXECUTOR -- //
 
@@ -60,9 +55,7 @@ public class CreateLocationCommand extends BaseCommand {
                     String name = args[0];
                     Optional<Game> game = session.get().getGame();
                     if (game.isPresent()) {
-                        CONFIG.set(game.get().getName() + ".loc." + name,
-                                new GameLocation(player.getLocation(), true).toString());
-                        Demigames.getInstance().saveConfig();
+                        game.get().setLocation(name, new GameLocation(player.getLocation(), true));
                         sender.sendMessage(ChatColor.YELLOW + "Location " + name + " has been created!");
                         return CommandResult.SUCCESS;
                     } else {
@@ -72,7 +65,7 @@ public class CreateLocationCommand extends BaseCommand {
                     Optional<Game> game = session.get().getGame();
                     if (game.isPresent()) {
                         Bukkit.getServer().getPluginManager().registerEvents(new LocationSelectListener(args[1],
-                                game.get().getName(), player), Demigames.getInstance());
+                                game.get(), player), Demigames.getInstance());
                         sender.sendMessage(ChatColor.YELLOW + "Right click a block with your bare hands.");
                         return CommandResult.SUCCESS;
                     } else {

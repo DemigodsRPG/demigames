@@ -52,7 +52,7 @@ public class Lobby implements Game {
     private Location spawnPoint;
 
     public Lobby() {
-        GameLocation gameSpawnPoint = getConfigLocation("loc.spawn", WORLD.getSpawnLocation());
+        GameLocation gameSpawnPoint = getLocation("spawn", WORLD.getSpawnLocation());
         Optional<Location> spawnPoint = gameSpawnPoint.toLocation(WORLD);
         if (spawnPoint.isPresent()) {
             this.spawnPoint = spawnPoint.get();
@@ -106,6 +106,11 @@ public class Lobby implements Game {
     @Override
     public int getMinimumPlayers() {
         return 0;
+    }
+
+    @Override
+    public int getMaximumPlayers() {
+        return 200; // TODO Find a better value for this
     }
 
     @Override

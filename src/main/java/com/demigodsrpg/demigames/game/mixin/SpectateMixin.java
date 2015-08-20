@@ -22,6 +22,7 @@
 
 package com.demigodsrpg.demigames.game.mixin;
 
+import com.demigodsrpg.demigames.event.PlayerJoinMinigameEvent;
 import com.demigodsrpg.demigames.event.PlayerSpectateMinigameEvent;
 import com.demigodsrpg.demigames.game.Game;
 import com.demigodsrpg.demigames.profile.Profile;
@@ -33,8 +34,9 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 
 import java.util.List;
+import java.util.Optional;
 
-interface SpectateMixin extends Game {
+public interface SpectateMixin extends Game {
     Location getSpectatorSpawn(Session session);
 
     List<String> getSpectators(Session session);
@@ -55,6 +57,19 @@ interface SpectateMixin extends Game {
         }
     }
 
-    @EventHandler(priority = EventPriority.MONITOR)
+    @EventHandler(priority = EventPriority.HIGH)
+    default void onJoinMinigame(PlayerJoinMinigameEvent event) {
+        Optional<Session> opSession = event.getSession();
+        if (opSession.isPresent() && opSession.get().getGame().isPresent() && opSession.get().getGame().get().
+                equals(this)) {
+            Session session = opSession.get();
+            if (session.getRawProfiles().size() - getSpectators(session).size() >= session.getGame().get().
+                    getMaximumPlayers()) {
+                callSpectate(session, event.getPlayer());
+            }
+        }
+    }
+
+    @EventHandler(priority = EventPriority.HIGH)
     void onSpectate(PlayerSpectateMinigameEvent event);
 }

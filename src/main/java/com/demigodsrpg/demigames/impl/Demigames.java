@@ -48,6 +48,7 @@ public class Demigames extends JavaPlugin {
     private static ProfileRegistry PROFILE_REGISTRY;
     private static SessionRegistry SESSION_REGISTRY;
     private static KitRegistry KIT_REGISTRY;
+    private static ConcurrentMap<String, LocationRegistry> LOC_REGISTRIES;
     private static ConcurrentMap<String, SignRegistry> SIGN_REGISTRIES;
 
     @Override
@@ -101,6 +102,12 @@ public class Demigames extends JavaPlugin {
         SIGN_REGISTRIES = new ConcurrentHashMap<>();
         GAME_REGISTRY.getMinigames().stream().map(SignRegistry::new).forEach(registry -> {
             SIGN_REGISTRIES.put(registry.getGameName(), registry);
+        });
+
+        // Register the locations
+        LOC_REGISTRIES = new ConcurrentHashMap<>();
+        GAME_REGISTRY.getMinigames().stream().map(LocationRegistry::new).forEach(registry -> {
+            LOC_REGISTRIES.put(registry.getGameName(), registry);
         });
 
         // Handle minigame server start methods
@@ -173,6 +180,10 @@ public class Demigames extends JavaPlugin {
 
     public static Optional<SignRegistry> getSignRegistry(String gameName) {
         return Optional.ofNullable(SIGN_REGISTRIES.getOrDefault(gameName, null));
+    }
+
+    public static Optional<LocationRegistry> getLocationRegistry(String gameName) {
+        return Optional.ofNullable(LOC_REGISTRIES.getOrDefault(gameName, null));
     }
 
     public static GameRegistry getGameRegistry() {
