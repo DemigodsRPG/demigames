@@ -220,36 +220,39 @@ public class Session implements Serializable {
     public void endSession() {
         SessionRegistry registry = Demigames.getSessionRegistry();
 
-        // Set this to done to make sure nothing is overwritten
-        setDone();
+        // Make sure this isn't a duplicate
+        if (!done) {
+            // Set this to done to make sure nothing is overwritten
+            setDone();
 
-        // Make all players quit the game
-        getPlayers().forEach(player -> {
-            if (getGame().isPresent()) {
-                getGame().get().quit(player, this, PlayerQuitMinigameEvent.QuitReason.SESSION_END);
-            } else {
-                Profile profile = Demigames.getProfileRegistry().fromPlayer(player);
-                profile.setCurrentSessionId(null);
-                profile.setPreviousSessionId(id);
-            }
-        });
+            // Make all players quit the game
+            getPlayers().forEach(player -> {
+                if (getGame().isPresent()) {
+                    getGame().get().quit(player, this, PlayerQuitMinigameEvent.QuitReason.SESSION_END);
+                } else {
+                    Profile profile = Demigames.getProfileRegistry().fromPlayer(player);
+                    profile.setCurrentSessionId(null);
+                    profile.setPreviousSessionId(id);
+                }
+            });
 
-        // Party mode
-        if ("party".equals(Setting.MODE)) {
-            Optional<Game> opGame = Demigames.getGameRegistry().randomGame();
-            if (opGame.isPresent()) {
-                Session newSession = registry.newSession(opGame.get());
-                newSession.setRawProfiles(profiles);
-                newSession.updateStage(DefaultStage.SETUP, true);
-                getPlayers().forEach(opGame.get()::join);
-            } else {
-                getPlayers().forEach(Lobby.LOBBY::join);
+            // Party mode
+            if ("party".equals(Setting.MODE)) {
+                Optional<Game> opGame = Demigames.getGameRegistry().randomGame();
+                if (opGame.isPresent()) {
+                    Session newSession = registry.newSession(opGame.get());
+                    newSession.setRawProfiles(profiles);
+                    newSession.updateStage(DefaultStage.SETUP, true);
+                    getPlayers().forEach(opGame.get()::join);
+                } else {
+                    getPlayers().forEach(Lobby.LOBBY::join);
+                }
             }
+
+            // Remove the file and unload the world
+            Demigames.getInstance().getLogger().info("Unloading session " + id + ".");
+            registry.remove(id);
+            registry.unloadWorld(this);
         }
-
-        // Remove the file and unload the world
-        Demigames.getInstance().getLogger().info("Unloading session " + id + ".");
-        registry.remove(id);
-        registry.unloadWorld(this);
     }
 }

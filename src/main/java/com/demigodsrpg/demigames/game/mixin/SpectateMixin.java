@@ -32,6 +32,7 @@ import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
+import org.bukkit.event.entity.EntityDamageEvent;
 
 import java.util.List;
 import java.util.Optional;
@@ -66,7 +67,22 @@ public interface SpectateMixin extends Game {
     }
 
     @EventHandler(priority = EventPriority.HIGH)
-    default void onJoinMinigame(PlayerJoinMinigameEvent event) {
+    default void onSpectateDamage(EntityDamageEvent event) {
+        if (event.getEntity() instanceof Player) {
+            Player player = (Player) event.getEntity();
+            Optional<Session> opSession = checkPlayer(player);
+            if (opSession.isPresent() && opSession.get().getGame().isPresent() && opSession.get().getGame().get().
+                    equals(this)) {
+                Session session = opSession.get();
+                if (isSpectator(session, player)) {
+                    event.setCancelled(true);
+                }
+            }
+        }
+    }
+
+    @EventHandler(priority = EventPriority.HIGH)
+    default void onSpectateJoinMinigame(PlayerJoinMinigameEvent event) {
         Optional<Session> opSession = event.getSession();
         if (opSession.isPresent() && opSession.get().getGame().isPresent() && opSession.get().getGame().get().
                 equals(this)) {
@@ -77,7 +93,4 @@ public interface SpectateMixin extends Game {
             }
         }
     }
-
-    @EventHandler(priority = EventPriority.HIGH)
-    void onSpectate(PlayerSpectateMinigameEvent event);
 }

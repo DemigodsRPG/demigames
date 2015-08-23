@@ -32,9 +32,8 @@ import org.bukkit.event.EventPriority;
 import java.util.Optional;
 
 public interface ConfinedSpectateMixin extends SpectateMixin {
-    @Override
     @EventHandler(priority = EventPriority.HIGH)
-    default void onSpectate(PlayerSpectateMinigameEvent event) {
+    default void onConfinedSpectate(PlayerSpectateMinigameEvent event) {
         if (event.getGame().isPresent() && event.getGame().get().equals(this)) {
             Optional<Session> opSession = checkPlayer(event.getPlayer());
 

@@ -39,7 +39,7 @@ public interface FakeDeathMixin extends Game {
     // -- DAMAGE LISTENER -- //
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
-    default void onDamage(EntityDamageEvent event) {
+    default void onFakeDeathDamage(EntityDamageEvent event) {
         // Only do anything if this is a player
         if (event.getEntity() instanceof Player) {
             Player player = (Player) event.getEntity();
@@ -55,9 +55,6 @@ public interface FakeDeathMixin extends Game {
     }
 
     // -- FAKE DEATH -- //
-
-    @EventHandler(priority = EventPriority.LOW)
-    void onDeath(FakeDeathMixin.Event event);
 
     class Event extends PlayerEvent {
         // -- HANDLER LIST -- //

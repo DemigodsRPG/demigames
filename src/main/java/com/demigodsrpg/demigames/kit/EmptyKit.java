@@ -96,7 +96,7 @@ public class EmptyKit implements Kit {
 
     @Override
     public int getFireTicks() {
-        return 0;
+        return -20;
     }
 
     @Override
