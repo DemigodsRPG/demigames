@@ -26,11 +26,14 @@ import com.demigodsrpg.demigames.event.PlayerSpectateMinigameEvent;
 import com.demigodsrpg.demigames.kit.Kit;
 import com.demigodsrpg.demigames.session.Session;
 import org.bukkit.GameMode;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 
 import java.util.Optional;
 
 public interface ConfinedSpectateMixin extends SpectateMixin {
     @Override
+    @EventHandler(priority = EventPriority.HIGH)
     default void onSpectate(PlayerSpectateMinigameEvent event) {
         if (event.getGame().isPresent() && event.getGame().get().equals(this)) {
             Optional<Session> opSession = checkPlayer(event.getPlayer());

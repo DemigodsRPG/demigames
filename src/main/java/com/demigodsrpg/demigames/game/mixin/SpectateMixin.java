@@ -39,7 +39,14 @@ import java.util.Optional;
 public interface SpectateMixin extends Game {
     Location getSpectatorSpawn(Session session);
 
-    List<String> getSpectators(Session session);
+    @SuppressWarnings("unchecked")
+    default List<String> getSpectators(Session session) {
+        return (List<String>) session.getData().get("spectators");
+    }
+
+    default void addSpectator(Session session, Player player) {
+        getSpectators(session).add(player.getUniqueId().toString());
+    }
 
     default boolean isSpectator(Session session, Player player) {
         return getSpectators(session).contains(player.getUniqueId().toString());
@@ -51,6 +58,7 @@ public interface SpectateMixin extends Game {
 
     default void callSpectate(Session session, Player player) {
         try {
+            addSpectator(session, player);
             Bukkit.getPluginManager().callEvent(new PlayerSpectateMinigameEvent(player, session));
         } catch (Exception oops) {
             oops.printStackTrace();

@@ -48,11 +48,25 @@ public interface Kit {
 
     PotionEffect[] getPotionEffects();
 
+    double getHealthScale();
+
     double getMaxHealth();
 
     double getHealth();
 
+    int getMaximumAir();
+
+    int getRemainingAir();
+
+    int getFoodLevel();
+
     float getExhaustion();
+
+    float getSaturation();
+
+    int getFireTicks();
+
+    int getTotalExperience();
 
     default Optional<ItemStack> getItemStack(int index) {
         return Optional.ofNullable(getContents()[index]);
@@ -83,9 +97,17 @@ public interface Kit {
         player.getActivePotionEffects().forEach(potionEffect -> player.removePotionEffect(potionEffect.getType()));
         player.addPotionEffects(Arrays.asList(getPotionEffects()));
         if (health) {
+            player.setHealthScaled(true);
+            player.setHealthScale(getHealthScale());
             player.setMaxHealth(getMaxHealth());
             player.setHealth(getHealth());
+            player.setFoodLevel(getFoodLevel());
             player.setExhaustion(getExhaustion());
+            player.setSaturation(getSaturation());
+            player.setFireTicks(getFireTicks());
+            player.setTotalExperience(getTotalExperience());
+            player.setMaximumAir(getMaximumAir());
+            player.setRemainingAir(getRemainingAir());
         }
         Demigames.getProfileRegistry().fromPlayer(player).setKit(this);
     }

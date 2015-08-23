@@ -66,7 +66,7 @@ public class KitListener implements Listener {
     @EventHandler(priority = EventPriority.LOWEST)
     public void onInventoryClick(InventoryClickEvent event) {
         Profile profile = Demigames.getProfileRegistry().fromPlayer((Player) event.getWhoClicked());
-        if (event.getWhoClicked().getGameMode() != GameMode.CREATIVE && profile.getKit().isPresent() &&
+        if (!GameMode.CREATIVE.equals(event.getWhoClicked().getGameMode()) && profile.getKit().isPresent() &&
                 profile.getKit().get() instanceof ImmutableKit) {
             event.setCancelled(true);
             ((Player) event.getWhoClicked()).updateInventory();

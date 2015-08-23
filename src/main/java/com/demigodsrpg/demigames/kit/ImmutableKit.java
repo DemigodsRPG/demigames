@@ -35,21 +35,36 @@ public class ImmutableKit implements Kit {
     private final ItemStack[] contents;
     private final ItemStack[] armor;
     private final PotionEffect[] effects;
+    private final double healthScale;
     private final double maxHealth;
     private final double health;
+    private final int maximumAir;
+    private final int remainingAir;
+    private final int foodLevel;
     private final double exhaustion;
+    private final double saturation;
+    private final int fireTicks;
+    private final int totalExperience;
 
     // -- PRIVATE CONSTRUCTOR -- //
 
-    private ImmutableKit(String name, ItemStack[] contents, ItemStack[] armor, PotionEffect[] effects, double maxHealth,
-                         double health, float exhaustion) {
+    private ImmutableKit(String name, ItemStack[] contents, ItemStack[] armor, PotionEffect[] effects,
+                         double healthScale, double maxHealth, double health, int maximumAir, int remainingAir,
+                         int foodLevel, float exhaustion, double saturation, int fireTicks, int totalExperience) {
         this.name = name;
         this.contents = contents;
         this.armor = armor;
         this.effects = effects;
+        this.healthScale = healthScale;
         this.maxHealth = maxHealth;
         this.health = health;
+        this.maximumAir = maximumAir;
+        this.remainingAir = remainingAir;
+        this.foodLevel = foodLevel;
         this.exhaustion = exhaustion;
+        this.saturation = saturation;
+        this.fireTicks = fireTicks;
+        this.totalExperience = totalExperience;
     }
 
     // -- GETTERS -- //
@@ -75,6 +90,11 @@ public class ImmutableKit implements Kit {
     }
 
     @Override
+    public double getHealthScale() {
+        return healthScale;
+    }
+
+    @Override
     public double getMaxHealth() {
         return maxHealth;
     }
@@ -85,8 +105,38 @@ public class ImmutableKit implements Kit {
     }
 
     @Override
+    public int getMaximumAir() {
+        return maximumAir;
+    }
+
+    @Override
+    public int getRemainingAir() {
+        return remainingAir;
+    }
+
+    @Override
+    public int getFoodLevel() {
+        return foodLevel;
+    }
+
+    @Override
     public float getExhaustion() {
         return (float) exhaustion;
+    }
+
+    @Override
+    public float getSaturation() {
+        return (float) saturation;
+    }
+
+    @Override
+    public int getFireTicks() {
+        return fireTicks;
+    }
+
+    @Override
+    public int getTotalExperience() {
+        return totalExperience;
     }
 
     // -- STATIC CONSTRUCTOR METHOD -- //
@@ -96,6 +146,8 @@ public class ImmutableKit implements Kit {
             return (ImmutableKit) kit;
         }
         return new ImmutableKit(kit.getName(), kit.getContents(), kit.getArmor(), kit.getPotionEffects(),
-                kit.getMaxHealth(), kit.getHealth(), kit.getExhaustion());
+                kit.getHealthScale(), kit.getMaxHealth(), kit.getHealth(), kit.getMaximumAir(), kit.getRemainingAir(),
+                kit.getFoodLevel(), kit.getExhaustion(), kit.getSaturation(), kit.getFireTicks(),
+                kit.getTotalExperience());
     }
 }

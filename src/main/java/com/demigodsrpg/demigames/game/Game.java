@@ -26,6 +26,7 @@ import com.demigodsrpg.demigames.event.*;
 import com.demigodsrpg.demigames.impl.Demigames;
 import com.demigodsrpg.demigames.impl.Setting;
 import com.demigodsrpg.demigames.impl.lobby.Lobby;
+import com.demigodsrpg.demigames.impl.lobby.LobbySession;
 import com.demigodsrpg.demigames.impl.registry.LocationRegistry;
 import com.demigodsrpg.demigames.impl.registry.SessionRegistry;
 import com.demigodsrpg.demigames.profile.Profile;
@@ -193,7 +194,7 @@ public interface Game extends Listener {
         session.removeProfile(profile);
 
         // Lobby mode
-        if ("lobby".equalsIgnoreCase(Setting.MODE)) {
+        if ("lobby".equalsIgnoreCase(Setting.MODE) && !(session instanceof LobbySession)) {
             Lobby.LOBBY.join(player);
         }
 

@@ -55,6 +55,11 @@ public class EmptyKit implements Kit {
     }
 
     @Override
+    public double getHealthScale() {
+        return 20.0D;
+    }
+
+    @Override
     public double getMaxHealth() {
         return 20.0D;
     }
@@ -65,7 +70,37 @@ public class EmptyKit implements Kit {
     }
 
     @Override
+    public int getMaximumAir() {
+        return 20;
+    }
+
+    @Override
+    public int getRemainingAir() {
+        return 20;
+    }
+
+    @Override
+    public int getFoodLevel() {
+        return 20;
+    }
+
+    @Override
     public float getExhaustion() {
         return 0F;
+    }
+
+    @Override
+    public float getSaturation() {
+        return 20F;
+    }
+
+    @Override
+    public int getFireTicks() {
+        return 0;
+    }
+
+    @Override
+    public int getTotalExperience() {
+        return 0;
     }
 }

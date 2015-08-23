@@ -43,24 +43,39 @@ public class MutableKit implements Kit, Serializable {
     String contents;
     String armor;
     List<Map<String, Object>> effects;
+    double healthScale;
     double maxHealth;
     double health;
+    int maximumAir;
+    int remainingAir;
+    int foodLevel;
     double exhaustion;
+    double saturation;
+    int fireTicks;
+    int totalExperience;
 
     // -- CONSTRUCTORS -- //
 
     public MutableKit() {
     }
 
-    public MutableKit(String name, ItemStack[] contents, ItemStack[] armor, PotionEffect[] effects, double maxHealth,
-                      double health, float exhaustion) {
+    public MutableKit(String name, ItemStack[] contents, ItemStack[] armor, PotionEffect[] effects,
+                      double healthScale, double maxHealth, double health, int maximumAir, int remainingAir,
+                      int foodLevel, float exhaustion, double saturation, int fireTicks, int totalExperience) {
         this.name = name;
         this.contents = ItemUtil.serializeItemStacks(contents);
         this.armor = ItemUtil.serializeItemStacks(armor);
         this.effects = Arrays.asList(effects).stream().map(PotionEffect::serialize).collect(Collectors.toList());
+        this.healthScale = healthScale;
         this.maxHealth = maxHealth;
         this.health = health;
+        this.maximumAir = maximumAir;
+        this.remainingAir = remainingAir;
+        this.foodLevel = foodLevel;
         this.exhaustion = exhaustion;
+        this.saturation = saturation;
+        this.fireTicks = fireTicks;
+        this.totalExperience = totalExperience;
     }
 
     @Override
@@ -90,6 +105,11 @@ public class MutableKit implements Kit, Serializable {
     }
 
     @Override
+    public double getHealthScale() {
+        return healthScale;
+    }
+
+    @Override
     public double getMaxHealth() {
         return maxHealth;
     }
@@ -100,8 +120,38 @@ public class MutableKit implements Kit, Serializable {
     }
 
     @Override
+    public int getMaximumAir() {
+        return maximumAir;
+    }
+
+    @Override
+    public int getRemainingAir() {
+        return remainingAir;
+    }
+
+    @Override
+    public int getFoodLevel() {
+        return foodLevel;
+    }
+
+    @Override
     public float getExhaustion() {
         return (float) exhaustion;
+    }
+
+    @Override
+    public float getSaturation() {
+        return (float) saturation;
+    }
+
+    @Override
+    public int getFireTicks() {
+        return fireTicks;
+    }
+
+    @Override
+    public int getTotalExperience() {
+        return totalExperience;
     }
 
     // -- STATIC CONSTRUCTOR METHODS -- //
@@ -111,7 +161,9 @@ public class MutableKit implements Kit, Serializable {
             return (MutableKit) kit;
         }
         return new MutableKit(kit.getName(), kit.getContents(), kit.getArmor(), kit.getPotionEffects(),
-                kit.getMaxHealth(), kit.getHealth(), kit.getExhaustion());
+                kit.getHealthScale(), kit.getMaxHealth(), kit.getHealth(), kit.getMaximumAir(), kit.getRemainingAir(),
+                kit.getFoodLevel(), kit.getExhaustion(), kit.getSaturation(), kit.getFireTicks(),
+                kit.getTotalExperience());
     }
 
     public static MutableKit of(String name, Player player) {
