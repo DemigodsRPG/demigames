@@ -22,10 +22,13 @@
 
 package com.demigodsrpg.demigames.impl;
 
+import net.md_5.bungee.api.ChatColor;
 import org.bukkit.configuration.Configuration;
 
 public class Setting {
     public static final String MODE = getConfig().getString("mode", "party");
+    public static final String TAG = ChatColor.translateAlternateColorCodes('&', getConfig().getString("tag",
+            "&8[&3MG&8]"));
 
     private static Configuration getConfig() {
         return Demigames.getInstance().getConfig();

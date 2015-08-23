@@ -172,9 +172,16 @@ public class MutableKit implements Kit, Serializable {
         kit.contents = ItemUtil.serializeItemStacks(player.getInventory().getContents());
         kit.armor = ItemUtil.serializeItemStacks(player.getInventory().getArmorContents());
         kit.effects = player.getActivePotionEffects().stream().map(PotionEffect::serialize).collect(Collectors.toList());
+        kit.healthScale = player.getHealthScale();
         kit.maxHealth = player.getMaxHealth();
         kit.health = player.getHealth();
+        kit.maximumAir = player.getMaximumAir();
+        kit.remainingAir = player.getRemainingAir();
+        kit.foodLevel = player.getFoodLevel();
         kit.exhaustion = player.getExhaustion();
+        kit.saturation = player.getSaturation();
+        kit.fireTicks = player.getFireTicks();
+        kit.totalExperience = player.getTotalExperience();
         return kit;
     }
 

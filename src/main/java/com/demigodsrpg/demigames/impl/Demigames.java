@@ -28,6 +28,8 @@ import com.demigodsrpg.demigames.impl.listener.SessionListener;
 import com.demigodsrpg.demigames.impl.lobby.Lobby;
 import com.demigodsrpg.demigames.impl.registry.*;
 import com.demigodsrpg.demigames.impl.util.LibraryHandler;
+import net.md_5.bungee.api.ChatColor;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -198,5 +200,11 @@ public class Demigames extends JavaPlugin {
 
     public static SessionRegistry getSessionRegistry() {
         return SESSION_REGISTRY;
+    }
+
+    // -- PUBLIC HELPER METHODS -- //
+
+    public static void sendTaggedMessage(Player player, String message) {
+        player.sendMessage(Setting.TAG + " " + ChatColor.WHITE + message);
     }
 }

@@ -50,6 +50,7 @@ public class Profile implements Serializable {
 
     public Profile() {
         this.player = Optional.empty();
+        this.kit = Optional.empty();
     }
 
     public Profile(Player player) {
