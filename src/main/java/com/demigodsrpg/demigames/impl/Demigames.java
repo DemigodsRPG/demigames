@@ -52,6 +52,7 @@ public class Demigames extends JavaPlugin {
     private static KitRegistry KIT_REGISTRY;
     private static ConcurrentMap<String, LocationRegistry> LOC_REGISTRIES;
     private static ConcurrentMap<String, SignRegistry> SIGN_REGISTRIES;
+    private static ConcurrentMap<String, ShopRegistry> SHOP_REGISTRIES;
 
     @Override
     public void onEnable() {
@@ -110,6 +111,12 @@ public class Demigames extends JavaPlugin {
         SIGN_REGISTRIES = new ConcurrentHashMap<>();
         GAME_REGISTRY.getMinigames().stream().map(SignRegistry::new).forEach(registry -> {
             SIGN_REGISTRIES.put(registry.getGameName(), registry);
+        });
+
+        // Register the shops
+        SHOP_REGISTRIES = new ConcurrentHashMap<>();
+        GAME_REGISTRY.getMinigames().stream().map(ShopRegistry::new).forEach(registry -> {
+            SHOP_REGISTRIES.put(registry.getGameName(), registry);
         });
 
         // Register the locations
@@ -190,6 +197,10 @@ public class Demigames extends JavaPlugin {
         return Optional.ofNullable(SIGN_REGISTRIES.getOrDefault(gameName, null));
     }
 
+    public static Optional<ShopRegistry> getShopRegistry(String gameName) {
+        return Optional.ofNullable(SHOP_REGISTRIES.getOrDefault(gameName, null));
+    }
+
     public static Optional<LocationRegistry> getLocationRegistry(String gameName) {
         return Optional.ofNullable(LOC_REGISTRIES.getOrDefault(gameName, null));
     }
@@ -206,5 +217,11 @@ public class Demigames extends JavaPlugin {
 
     public static void sendTaggedMessage(Player player, String message) {
         player.sendMessage(Setting.TAG + " " + ChatColor.WHITE + message);
+    }
+
+    public static void sendTaggedMessage(Player player, String... messages) {
+        for (String message : messages) {
+            player.sendMessage(Setting.TAG + " " + ChatColor.WHITE + message);
+        }
     }
 }

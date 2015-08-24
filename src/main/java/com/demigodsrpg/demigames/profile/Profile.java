@@ -24,11 +24,14 @@ package com.demigodsrpg.demigames.profile;
 
 import com.demigodsrpg.demigames.impl.Demigames;
 import com.demigodsrpg.demigames.kit.Kit;
+import com.demigodsrpg.demigames.unlockable.Unlockable;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -43,8 +46,10 @@ public class Profile implements Serializable {
 
     // -- DATA -- //
 
-    private String mojangUniqueId;
-    private String lastKnownName;
+    String mojangUniqueId;
+    String lastKnownName;
+    List<String> unlockables;
+    int tickets;
 
     // -- CONSTRUCTORS -- //
 
@@ -60,6 +65,8 @@ public class Profile implements Serializable {
         this.kit = Optional.empty();
         this.currentSessionId = null;
         this.previousSessionId = null;
+        this.unlockables = new ArrayList<>();
+        this.tickets = 0;
         Demigames.getProfileRegistry().put(mojangUniqueId, this);
     }
 
@@ -70,6 +77,8 @@ public class Profile implements Serializable {
         this.kit = Optional.of(kit);
         this.currentSessionId = null;
         this.previousSessionId = null;
+        this.unlockables = new ArrayList<>();
+        this.tickets = 0;
         Demigames.getProfileRegistry().put(mojangUniqueId, this);
     }
 
@@ -105,6 +114,14 @@ public class Profile implements Serializable {
         return Optional.ofNullable(previousSessionId);
     }
 
+    public boolean hasUnlockable(Unlockable unlockable) {
+        return unlockables.contains(unlockable.getName());
+    }
+
+    public int getTickets() {
+        return tickets;
+    }
+
     // -- MUTATORS -- //
 
     public void setKit(Kit kit) {
@@ -120,5 +137,13 @@ public class Profile implements Serializable {
     public void setPreviousSessionId(String sessionId) {
         this.previousSessionId = sessionId;
         Demigames.getProfileRegistry().put(mojangUniqueId, this);
+    }
+
+    public void addUnlockable(Unlockable unlockable) {
+        unlockables.add(unlockable.getName());
+    }
+
+    public void setTickets(int tickets) {
+        this.tickets = tickets;
     }
 }

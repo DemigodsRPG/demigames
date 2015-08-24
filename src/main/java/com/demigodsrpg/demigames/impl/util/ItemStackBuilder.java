@@ -30,6 +30,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.material.MaterialData;
 
 import java.util.Arrays;
+import java.util.List;
 
 public class ItemStackBuilder {
 
@@ -90,6 +91,13 @@ public class ItemStackBuilder {
 
     public ItemStackBuilder lore(String... lore) {
         meta.setLore(Arrays.asList(lore));
+        return this;
+    }
+
+    public ItemStackBuilder appendLore(String[] additionalLore) {
+        List<String> lore = meta.getLore();
+        lore.addAll(Arrays.asList(additionalLore));
+        meta.setLore(lore);
         return this;
     }
 

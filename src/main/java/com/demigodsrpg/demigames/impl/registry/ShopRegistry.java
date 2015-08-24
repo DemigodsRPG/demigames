@@ -20,22 +20,29 @@
  * SOFTWARE.
  */
 
-package com.demigodsrpg.demigames.perk;
+package com.demigodsrpg.demigames.impl.registry;
 
-import com.demigodsrpg.demigames.profile.Profile;
-import org.bukkit.event.Listener;
+import com.demigodsrpg.demigames.game.Game;
+import com.demigodsrpg.demigames.game.GameLocation;
+import com.demigodsrpg.demigames.unlockable.UnlockableShop;
+import org.bukkit.Location;
 
-public interface Perk extends Listener {
+import java.util.Optional;
 
-    // -- SETTINGS -- //
+public class ShopRegistry extends AbstractRegistry<String, UnlockableShop> {
+    private String gameName;
 
-    String getName();
-
-    // -- OPTIONAL RUNNABLE METHODS -- //
-
-    default void onSync(Profile profile) {
+    public ShopRegistry(Game game) {
+        super("shop", UnlockableShop.class, true, game.getName());
+        this.gameName = game.getName();
     }
 
-    default void onAsync(Profile profile) {
+    public Optional<UnlockableShop> fromLocation(Location location) {
+        String strLoc = new GameLocation(location, true).toString();
+        return fromKey(strLoc);
+    }
+
+    public String getGameName() {
+        return gameName;
     }
 }

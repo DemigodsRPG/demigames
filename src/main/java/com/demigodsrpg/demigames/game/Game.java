@@ -40,6 +40,8 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 public interface Game extends Listener {
@@ -72,6 +74,16 @@ public interface Game extends Listener {
 
     default int getTotalRounds() {
         return 1;
+    }
+
+    List<String> defaultUnlockables();
+
+    default List<String> includeUnlockables() {
+        return new ArrayList<>();
+    }
+
+    default List<String> excludeUnlockables() {
+        return new ArrayList<>();
     }
 
     // -- SERVER START/STOP -- //

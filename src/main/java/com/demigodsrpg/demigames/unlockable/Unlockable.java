@@ -20,23 +20,39 @@
  * SOFTWARE.
  */
 
-package com.demigodsrpg.demigames.impl.registry;
+package com.demigodsrpg.demigames.unlockable;
 
-import com.demigodsrpg.demigames.kit.Kit;
-import com.demigodsrpg.demigames.kit.MutableKit;
+import com.demigodsrpg.demigames.profile.Profile;
+import org.bukkit.event.Listener;
+import org.bukkit.inventory.ItemStack;
 
-import java.util.Optional;
+public interface Unlockable extends Listener {
 
-public class KitRegistry extends AbstractRegistry<String, MutableKit> {
-    public KitRegistry() {
-        super("kit", MutableKit.class, true);
+    // -- SETTINGS -- //
+
+    String getName();
+
+    String[] getLore();
+
+    ItemStack getLockedItem();
+
+    ItemStack getUnlockedItem(boolean isActive);
+
+    int getCost();
+
+    default boolean isExcludedByDefault() {
+        return false;
     }
 
-    public Kit fromKeyOrEmpty(String key) {
-        Optional<MutableKit> opKit = fromKey(key);
-        if (opKit.isPresent()) {
-            return opKit.get();
-        }
-        return Kit.EMPTY;
+    default boolean useRunnable() {
+        return false;
+    }
+
+    // -- OPTIONAL RUNNABLE METHODS -- //
+
+    default void onSync(Profile profile) {
+    }
+
+    default void onAsync(Profile profile) {
     }
 }

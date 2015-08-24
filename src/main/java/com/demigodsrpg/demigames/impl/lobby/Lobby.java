@@ -43,6 +43,8 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 public class Lobby implements Game {
@@ -123,6 +125,11 @@ public class Lobby implements Game {
     @Override
     public int getTotalRounds() {
         return 0;
+    }
+
+    @Override
+    public List<String> defaultUnlockables() {
+        return new ArrayList<>(); // TODO Rainbow armor?
     }
 
     public Location getSpawn() {
