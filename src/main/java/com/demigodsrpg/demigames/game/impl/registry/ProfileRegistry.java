@@ -20,54 +20,24 @@
  * SOFTWARE.
  */
 
-package com.demigodsrpg.demigames.event;
+package com.demigodsrpg.demigames.game.impl.registry;
 
 import com.demigodsrpg.demigames.game.Backend;
-import com.demigodsrpg.demigames.game.Game;
-import com.demigodsrpg.demigames.session.Session;
+import com.demigodsrpg.demigames.profile.Profile;
 import org.bukkit.entity.Player;
-import org.bukkit.event.HandlerList;
-import org.bukkit.event.player.PlayerEvent;
 
 import java.util.Optional;
 
-public class PlayerWinMinigameEvent extends PlayerEvent {
-
-    // -- HANDLER LIST -- //
-
-    private static final HandlerList handlers = new HandlerList();
-
-    // -- DATA -- //
-
-    Backend backend;
-    Optional<Game> game;
-    String sessionId;
-
-    // -- CONSTRUCTOR -- //
-
-    public PlayerWinMinigameEvent(Player player, Session session) {
-        super(player);
-        this.backend = session.getBackend();
-        this.game = session.getGame();
-        this.sessionId = session.getId();
+public class ProfileRegistry extends AbstractRegistry<String, Profile> {
+    public ProfileRegistry(Backend backend) {
+        super(backend, "profile", Profile.class, false);
     }
 
-    // -- GETTERS -- //
-
-    public Optional<Game> getGame() {
-        return game;
-    }
-
-    public Optional<Session> getSession() {
-        return backend.getSessionRegistry().fromKey(sessionId);
-    }
-
-    @Override
-    public HandlerList getHandlers() {
-        return handlers;
-    }
-
-    public static HandlerList getHandlerList() {
-        return handlers;
+    public Profile fromPlayer(Backend backend, Player player) {
+        Optional<Profile> opProfile = fromKey(player.getUniqueId().toString());
+        if (opProfile.isPresent()) {
+            return opProfile.get();
+        }
+        return new Profile(backend, player);
     }
 }

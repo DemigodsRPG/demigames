@@ -1,5 +1,5 @@
 name: demigames
-main: com.demigodsrpg.demigames.impl.Demigames
+main: com.demigodsrpg.demigames.game.Backend
 version: ${project.version}
 description: ${project.description}
 authors: [Asecta, HmmmQuestionMark, janie177]

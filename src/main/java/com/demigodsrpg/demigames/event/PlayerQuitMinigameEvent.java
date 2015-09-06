@@ -22,8 +22,8 @@
 
 package com.demigodsrpg.demigames.event;
 
+import com.demigodsrpg.demigames.game.Backend;
 import com.demigodsrpg.demigames.game.Game;
-import com.demigodsrpg.demigames.impl.Demigames;
 import com.demigodsrpg.demigames.session.Session;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
@@ -39,6 +39,7 @@ public class PlayerQuitMinigameEvent extends PlayerEvent {
 
     // -- DATA -- //
 
+    Backend backend;
     Optional<Game> game;
     String sessionId;
     QuitReason reason;
@@ -47,6 +48,7 @@ public class PlayerQuitMinigameEvent extends PlayerEvent {
 
     public PlayerQuitMinigameEvent(Player player, Session session, QuitReason reason) {
         super(player);
+        this.backend = session.getBackend();
         this.game = session.getGame();
         this.sessionId = session.getId();
         this.reason = reason;
@@ -59,7 +61,7 @@ public class PlayerQuitMinigameEvent extends PlayerEvent {
     }
 
     public Optional<Session> getSession() {
-        return Demigames.getSessionRegistry().fromKey(sessionId);
+        return backend.getSessionRegistry().fromKey(sessionId);
     }
 
     public QuitReason getReason() {

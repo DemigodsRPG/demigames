@@ -22,7 +22,7 @@
 
 package com.demigodsrpg.demigames.unlockable;
 
-import com.demigodsrpg.demigames.impl.util.ItemStackBuilder;
+import com.demigodsrpg.demigames.game.impl.util.ItemStackBuilder;
 import org.bukkit.ChatColor;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.material.MaterialData;

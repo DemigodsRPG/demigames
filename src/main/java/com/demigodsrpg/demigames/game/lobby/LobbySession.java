@@ -20,54 +20,34 @@
  * SOFTWARE.
  */
 
-package com.demigodsrpg.demigames.event;
+package com.demigodsrpg.demigames.game.lobby;
 
-import com.demigodsrpg.demigames.game.Backend;
-import com.demigodsrpg.demigames.game.Game;
 import com.demigodsrpg.demigames.session.Session;
-import org.bukkit.entity.Player;
-import org.bukkit.event.HandlerList;
-import org.bukkit.event.player.PlayerEvent;
 
-import java.util.Optional;
 
-public class PlayerWinMinigameEvent extends PlayerEvent {
+public class LobbySession extends Session {
 
-    // -- HANDLER LIST -- //
+    // -- DEFAULT INSTANCE -- //
 
-    private static final HandlerList handlers = new HandlerList();
-
-    // -- DATA -- //
-
-    Backend backend;
-    Optional<Game> game;
-    String sessionId;
+    public static final LobbySession INST = new LobbySession();
 
     // -- CONSTRUCTOR -- //
 
-    public PlayerWinMinigameEvent(Player player, Session session) {
-        super(player);
-        this.backend = session.getBackend();
-        this.game = session.getGame();
-        this.sessionId = session.getId();
+    private LobbySession() {
+        super(Lobby.LOBBY.WORLD.getName(), Lobby.LOBBY);
     }
 
-    // -- GETTERS -- //
+    // -- IGNORE THE FOLLOWING METHODS -- //
 
-    public Optional<Game> getGame() {
-        return game;
+    public void setStage(String stage) {
     }
 
-    public Optional<Session> getSession() {
-        return backend.getSessionRegistry().fromKey(sessionId);
+    public void updateStage(String stage, boolean process) {
     }
 
-    @Override
-    public HandlerList getHandlers() {
-        return handlers;
+    public void setCurrentRound(int currentRound) {
     }
 
-    public static HandlerList getHandlerList() {
-        return handlers;
+    public void endSession(boolean nextGame) {
     }
 }

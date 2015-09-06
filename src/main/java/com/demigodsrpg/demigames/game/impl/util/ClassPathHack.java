@@ -20,36 +20,34 @@
  * SOFTWARE.
  */
 
-package com.demigodsrpg.demigames.sign;
+package com.demigodsrpg.demigames.game.impl.util;
 
-import com.demigodsrpg.demigames.game.Backend;
-import com.demigodsrpg.demigames.game.Game;
-import com.demigodsrpg.demigames.game.GameLocation;
-import com.demigodsrpg.demigames.session.Session;
-import org.bukkit.Location;
+import java.io.File;
+import java.io.IOException;
+import java.lang.reflect.Method;
+import java.net.URL;
+import java.net.URLClassLoader;
 
-import java.util.List;
-import java.util.Optional;
+public class ClassPathHack {
+    private static final Class[] parameters = new Class[]{URL.class};
 
-public interface MinigameSign {
-
-    // -- GETTERS -- //
-
-    String getName();
-
-    String getGameName();
-
-    Optional<Game> getGame(Backend backend);
-
-    Optional<Location> getLocation(Session session);
-
-    GameLocation getGameLocation();
-
-    String getCommand();
-
-    default String getLine(int index) throws IndexOutOfBoundsException {
-        return getLines().get(index);
+    private ClassPathHack() {
     }
 
-    List<String> getLines();
+    public static void addFile(File f, URLClassLoader cL) throws IOException {
+        addURL(f.toURI().toURL(), cL);
+    }
+
+    @SuppressWarnings({"unchecked", "RedundantArrayCreation"})
+    public static void addURL(URL u, URLClassLoader cL) throws IOException {
+        Class urlClassLoader = URLClassLoader.class;
+        try {
+            Method method = urlClassLoader.getDeclaredMethod("addURL", parameters);
+            method.setAccessible(true);
+            method.invoke(cL, new Object[]{u});
+        } catch (Throwable t) {
+            t.printStackTrace();
+            throw new IOException("Error, could not add URL to system classloader");
+        }
+    }
 }

@@ -42,7 +42,7 @@ public interface ConfinedSpectateMixin extends SpectateMixin {
                 event.getPlayer().teleport(getSpectatorSpawn(opSession.get()));
 
                 // Add the empty kit to the player
-                Kit.EMPTY.apply(event.getPlayer(), true);
+                Kit.EMPTY.apply(getBackend(), event.getPlayer(), true);
 
                 // Set them to adventure so they can't break the box
                 event.getPlayer().setGameMode(GameMode.ADVENTURE);

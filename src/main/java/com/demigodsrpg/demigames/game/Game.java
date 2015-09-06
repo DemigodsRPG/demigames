@@ -23,12 +23,10 @@
 package com.demigodsrpg.demigames.game;
 
 import com.demigodsrpg.demigames.event.*;
-import com.demigodsrpg.demigames.impl.Demigames;
-import com.demigodsrpg.demigames.impl.Setting;
-import com.demigodsrpg.demigames.impl.lobby.Lobby;
-import com.demigodsrpg.demigames.impl.lobby.LobbySession;
-import com.demigodsrpg.demigames.impl.registry.LocationRegistry;
-import com.demigodsrpg.demigames.impl.registry.SessionRegistry;
+import com.demigodsrpg.demigames.game.impl.registry.LocationRegistry;
+import com.demigodsrpg.demigames.game.impl.registry.SessionRegistry;
+import com.demigodsrpg.demigames.game.lobby.Lobby;
+import com.demigodsrpg.demigames.game.lobby.LobbySession;
 import com.demigodsrpg.demigames.profile.Profile;
 import com.demigodsrpg.demigames.session.Session;
 import com.demigodsrpg.demigames.stage.DefaultStage;
@@ -78,10 +76,6 @@ public interface Game extends Listener {
 
     List<String> defaultUnlockables();
 
-    default List<String> includeUnlockables() {
-        return new ArrayList<>();
-    }
-
     default List<String> excludeUnlockables() {
         return new ArrayList<>();
     }
@@ -96,8 +90,12 @@ public interface Game extends Listener {
 
     // -- HELPER METHODS -- //
 
+    default Backend getBackend() {
+        return Backend.INST;
+    }
+
     default ConfigurationSection getConfig() {
-        ConfigurationSection parent = Demigames.getInstance().getConfig();
+        ConfigurationSection parent = Backend.INST.getConfig();
         if (parent.getKeys(false).contains(getName())) {
             return parent.getConfigurationSection(getName());
         }
@@ -105,7 +103,7 @@ public interface Game extends Listener {
     }
 
     default Optional<Session> checkPlayer(Player player) {
-        Optional<Session> opSession = Demigames.getSessionRegistry().getSession(player);
+        Optional<Session> opSession = getBackend().getSessionRegistry().getSession(player);
         if (opSession.isPresent() && opSession.get().getGame().isPresent()) {
             if (opSession.get().getGame().get().equals(this)) {
                 return opSession;
@@ -115,12 +113,12 @@ public interface Game extends Listener {
     }
 
     default Optional<GameLocation> getLocation(String name) {
-        Optional<LocationRegistry> opReg = Demigames.getLocationRegistry(getName());
+        Optional<LocationRegistry> opReg = getBackend().getLocationRegistry(getName());
         if (opReg.isPresent()) {
             LocationRegistry reg = opReg.get();
             return reg.fromKey(name);
         }
-        Demigames.getInstance().getLogger().warning(getName() + " is missing a Location Registry.");
+        Backend.INST.getLogger().warning(getName() + " is missing a Location Registry.");
         return Optional.empty();
     }
 
@@ -133,12 +131,12 @@ public interface Game extends Listener {
     }
 
     default void setLocation(String name, GameLocation location) {
-        Optional<LocationRegistry> opReg = Demigames.getLocationRegistry(getName());
+        Optional<LocationRegistry> opReg = getBackend().getLocationRegistry(getName());
         if (opReg.isPresent()) {
             LocationRegistry reg = opReg.get();
             reg.put(name, location);
         } else {
-            Demigames.getInstance().getLogger().warning(getName() + " is missing a Location Registry.");
+            Backend.INST.getLogger().warning(getName() + " is missing a Location Registry.");
         }
     }
 
@@ -169,7 +167,7 @@ public interface Game extends Listener {
     }
 
     default void join(Player player) {
-        SessionRegistry sessions = Demigames.getSessionRegistry();
+        SessionRegistry sessions = getBackend().getSessionRegistry();
         Session session = null;
         if (sessions.fromGame(this).size() > 0) {
             // TODO The game finding algorithm needs to take into account the distribution of players
@@ -184,14 +182,15 @@ public interface Game extends Listener {
             session.updateStage(DefaultStage.SETUP, true);
         }
         Optional<Session> previous;
-        Optional<String> previousId = Demigames.getProfileRegistry().fromPlayer(player).getPreviousSessionId();
+        Optional<String> previousId = getBackend().getProfileRegistry().fromPlayer(getBackend(), player).
+                getPreviousSessionId();
         if (previousId.isPresent()) {
             previous = sessions.fromKey(previousId.get());
         } else {
             previous = Optional.empty();
         }
         PlayerJoinMinigameEvent event = new PlayerJoinMinigameEvent(player, session, previous);
-        Profile profile = Demigames.getProfileRegistry().fromPlayer(event.getPlayer());
+        Profile profile = getBackend().getProfileRegistry().fromPlayer(getBackend(), event.getPlayer());
         session.addProfile(profile);
         try {
             Bukkit.getPluginManager().callEvent(event);
@@ -202,7 +201,7 @@ public interface Game extends Listener {
 
     default void quit(Player player, Session session, PlayerQuitMinigameEvent.QuitReason reason) {
         // Remove from profile
-        Profile profile = Demigames.getProfileRegistry().fromPlayer(player);
+        Profile profile = getBackend().getProfileRegistry().fromPlayer(getBackend(), player);
         session.removeProfile(profile);
 
         // Lobby mode

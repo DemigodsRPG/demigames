@@ -22,7 +22,7 @@
 
 package com.demigodsrpg.demigames.kit;
 
-import com.demigodsrpg.demigames.impl.Demigames;
+import com.demigodsrpg.demigames.game.Backend;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
@@ -90,7 +90,7 @@ public interface Kit {
 
     // -- DEFAULT BEHAVIOR -- //
 
-    default void apply(Player player, boolean health) {
+    default void apply(Backend backend, Player player, boolean health) {
         PlayerInventory inventory = player.getInventory();
         inventory.setContents(getContents());
         inventory.setArmorContents(getArmor());
@@ -109,7 +109,7 @@ public interface Kit {
             player.setMaximumAir(getMaximumAir());
             player.setRemainingAir(getRemainingAir());
         }
-        Demigames.getProfileRegistry().fromPlayer(player).setKit(this);
+        backend.getProfileRegistry().fromPlayer(backend, player).setKit(backend, this);
     }
 
     default void applyItems(Player player) {

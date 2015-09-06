@@ -23,7 +23,6 @@
 package com.demigodsrpg.demigames.game.mixin;
 
 import com.demigodsrpg.demigames.game.Game;
-import com.demigodsrpg.demigames.impl.Demigames;
 import com.demigodsrpg.demigames.session.Session;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -83,7 +82,10 @@ public interface FakeDeathMixin extends Game {
         }
 
         public Optional<Session> getSession() {
-            return Demigames.getSessionRegistry().fromKey(sessionId);
+            if (getGame().isPresent()) {
+                return getGame().get().getBackend().getSessionRegistry().fromKey(sessionId);
+            }
+            return Optional.empty();
         }
 
         public EntityDamageEvent getDamageEvent() {

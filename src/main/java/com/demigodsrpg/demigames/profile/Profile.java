@@ -22,7 +22,7 @@
 
 package com.demigodsrpg.demigames.profile;
 
-import com.demigodsrpg.demigames.impl.Demigames;
+import com.demigodsrpg.demigames.game.Backend;
 import com.demigodsrpg.demigames.kit.Kit;
 import com.demigodsrpg.demigames.unlockable.Unlockable;
 import org.bukkit.Bukkit;
@@ -58,7 +58,7 @@ public class Profile implements Serializable {
         this.kit = Optional.empty();
     }
 
-    public Profile(Player player) {
+    public Profile(Backend backend, Player player) {
         this.player = Optional.of(player);
         this.mojangUniqueId = player.getUniqueId().toString();
         this.lastKnownName = player.getName();
@@ -67,10 +67,10 @@ public class Profile implements Serializable {
         this.previousSessionId = null;
         this.unlockables = new ArrayList<>();
         this.tickets = 0;
-        Demigames.getProfileRegistry().put(mojangUniqueId, this);
+        backend.getProfileRegistry().put(mojangUniqueId, this);
     }
 
-    public Profile(Player player, Kit kit) {
+    public Profile(Backend backend, Player player, Kit kit) {
         this.player = Optional.of(player);
         this.mojangUniqueId = player.getUniqueId().toString();
         this.lastKnownName = player.getName();
@@ -79,7 +79,7 @@ public class Profile implements Serializable {
         this.previousSessionId = null;
         this.unlockables = new ArrayList<>();
         this.tickets = 0;
-        Demigames.getProfileRegistry().put(mojangUniqueId, this);
+        backend.getProfileRegistry().put(mojangUniqueId, this);
     }
 
     // -- GETTERS -- //
@@ -124,19 +124,19 @@ public class Profile implements Serializable {
 
     // -- MUTATORS -- //
 
-    public void setKit(Kit kit) {
+    public void setKit(Backend backend, Kit kit) {
         this.kit = Optional.ofNullable(kit);
-        Demigames.getProfileRegistry().put(mojangUniqueId, this);
+        backend.getProfileRegistry().put(mojangUniqueId, this);
     }
 
-    public void setCurrentSessionId(String sessionId) {
+    public void setCurrentSessionId(Backend backend, String sessionId) {
         this.currentSessionId = sessionId;
-        Demigames.getProfileRegistry().put(mojangUniqueId, this);
+        backend.getProfileRegistry().put(mojangUniqueId, this);
     }
 
-    public void setPreviousSessionId(String sessionId) {
+    public void setPreviousSessionId(Backend backend, String sessionId) {
         this.previousSessionId = sessionId;
-        Demigames.getProfileRegistry().put(mojangUniqueId, this);
+        backend.getProfileRegistry().put(mojangUniqueId, this);
     }
 
     public void addUnlockable(Unlockable unlockable) {

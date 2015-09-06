@@ -22,8 +22,8 @@
 
 package com.demigodsrpg.demigames.unlockable;
 
-import com.demigodsrpg.demigames.impl.Demigames;
-import com.demigodsrpg.demigames.impl.util.ItemStackBuilder;
+import com.demigodsrpg.demigames.game.Backend;
+import com.demigodsrpg.demigames.game.impl.util.ItemStackBuilder;
 import com.demigodsrpg.demigames.kit.ImmutableKit;
 import com.demigodsrpg.demigames.kit.Kit;
 import org.bukkit.ChatColor;
@@ -46,7 +46,7 @@ public class UnlockableKit implements Unlockable {
     boolean immutable;
     boolean excludedByDefault;
 
-    public UnlockableKit(String kitName, int cost, String[] lore, boolean immutable, boolean excludedByDefault,
+    public UnlockableKit(Backend backend, String kitName, int cost, String[] lore, boolean immutable, boolean excludedByDefault,
                          Material type, byte data) {
         this.kitName = kitName;
         this.cost = cost;
@@ -54,7 +54,7 @@ public class UnlockableKit implements Unlockable {
         this.immutable = immutable;
         this.excludedByDefault = excludedByDefault;
 
-        processKit();
+        processKit(backend);
         processItems(new MaterialData(type, data));
     }
 
@@ -98,8 +98,8 @@ public class UnlockableKit implements Unlockable {
 
     // -- PRIVATE HELPER METHODS -- //
 
-    private void processKit() {
-        Kit kit = Demigames.getKitRegistry().fromKeyOrEmpty(kitName);
+    private void processKit(Backend backend) {
+        Kit kit = backend.getKitRegistry().fromKeyOrEmpty(kitName);
         if (immutable) {
             this.kit = ImmutableKit.of(kit);
         } else {

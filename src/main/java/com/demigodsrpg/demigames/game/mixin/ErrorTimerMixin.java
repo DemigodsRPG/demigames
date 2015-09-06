@@ -23,7 +23,6 @@
 package com.demigodsrpg.demigames.game.mixin;
 
 import com.demigodsrpg.demigames.game.Game;
-import com.demigodsrpg.demigames.impl.Demigames;
 import com.demigodsrpg.demigames.session.Session;
 import com.demigodsrpg.demigames.stage.DefaultStage;
 import com.demigodsrpg.demigames.stage.StageHandler;
@@ -40,7 +39,7 @@ public interface ErrorTimerMixin extends Game {
         // Loop through 5 seconds and end the session
         for (int i = 0; i <= 5; i++) {
             final int k = i;
-            Bukkit.getScheduler().scheduleSyncDelayedTask(Demigames.getInstance(), () -> {
+            Bukkit.getScheduler().scheduleSyncDelayedTask(getBackend(), () -> {
                 if (k == 10) {
                     // End the session
                     session.getPlayers().forEach(player -> {
@@ -48,7 +47,8 @@ public interface ErrorTimerMixin extends Game {
                     });
                     session.endSession();
                 } else {
-                    Demigames.getTitleUtil().broadcastTitle(session, 2, 30, 0, ChatColor.RED + "ERROR!", "Ending in " + (5 - k) + " seconds.");
+                    getBackend().getTitleUtil().broadcastTitle(session, 2, 30, 0, ChatColor.RED + "ERROR!",
+                            "Ending in " + (5 - k) + " seconds.");
                     session.getPlayers().forEach(player -> {
                         player.playSound(player.getLocation(), Sound.NOTE_PIANO, 1f, 0.5f);
                     });

@@ -20,54 +20,24 @@
  * SOFTWARE.
  */
 
-package com.demigodsrpg.demigames.event;
+package com.demigodsrpg.demigames.game.impl.registry;
 
 import com.demigodsrpg.demigames.game.Backend;
-import com.demigodsrpg.demigames.game.Game;
-import com.demigodsrpg.demigames.session.Session;
-import org.bukkit.entity.Player;
-import org.bukkit.event.HandlerList;
-import org.bukkit.event.player.PlayerEvent;
+import com.demigodsrpg.demigames.kit.Kit;
+import com.demigodsrpg.demigames.kit.MutableKit;
 
 import java.util.Optional;
 
-public class PlayerWinMinigameEvent extends PlayerEvent {
-
-    // -- HANDLER LIST -- //
-
-    private static final HandlerList handlers = new HandlerList();
-
-    // -- DATA -- //
-
-    Backend backend;
-    Optional<Game> game;
-    String sessionId;
-
-    // -- CONSTRUCTOR -- //
-
-    public PlayerWinMinigameEvent(Player player, Session session) {
-        super(player);
-        this.backend = session.getBackend();
-        this.game = session.getGame();
-        this.sessionId = session.getId();
+public class KitRegistry extends AbstractRegistry<String, MutableKit> {
+    public KitRegistry(Backend backend) {
+        super(backend, "kit", MutableKit.class, true);
     }
 
-    // -- GETTERS -- //
-
-    public Optional<Game> getGame() {
-        return game;
-    }
-
-    public Optional<Session> getSession() {
-        return backend.getSessionRegistry().fromKey(sessionId);
-    }
-
-    @Override
-    public HandlerList getHandlers() {
-        return handlers;
-    }
-
-    public static HandlerList getHandlerList() {
-        return handlers;
+    public Kit fromKeyOrEmpty(String key) {
+        Optional<MutableKit> opKit = fromKey(key);
+        if (opKit.isPresent()) {
+            return opKit.get();
+        }
+        return Kit.EMPTY;
     }
 }

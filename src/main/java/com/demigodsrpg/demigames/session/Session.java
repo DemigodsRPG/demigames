@@ -23,12 +23,12 @@
 package com.demigodsrpg.demigames.session;
 
 import com.demigodsrpg.demigames.event.PlayerQuitMinigameEvent;
+import com.demigodsrpg.demigames.game.Backend;
 import com.demigodsrpg.demigames.game.Game;
-import com.demigodsrpg.demigames.impl.Demigames;
-import com.demigodsrpg.demigames.impl.Setting;
-import com.demigodsrpg.demigames.impl.lobby.Lobby;
-import com.demigodsrpg.demigames.impl.registry.ProfileRegistry;
-import com.demigodsrpg.demigames.impl.registry.SessionRegistry;
+import com.demigodsrpg.demigames.game.Setting;
+import com.demigodsrpg.demigames.game.impl.registry.ProfileRegistry;
+import com.demigodsrpg.demigames.game.impl.registry.SessionRegistry;
+import com.demigodsrpg.demigames.game.lobby.Lobby;
 import com.demigodsrpg.demigames.profile.Profile;
 import com.demigodsrpg.demigames.stage.DefaultStage;
 import org.bukkit.Bukkit;
@@ -43,6 +43,7 @@ public class Session implements Serializable {
 
     // -- TRANSIENT DATA -- //
 
+    protected transient Backend backend;
     protected transient Optional<Game> game;
     protected transient boolean done = false;
 
@@ -59,6 +60,7 @@ public class Session implements Serializable {
 
     public Session(String id, Game game) {
         this.id = id;
+        this.backend = game.getBackend();
         this.game = Optional.ofNullable(game);
         this.stage = DefaultStage.SETUP;
         this.data = new HashMap<>();
@@ -67,6 +69,7 @@ public class Session implements Serializable {
 
     public Session(String id, Game game, String stage) {
         this.id = id;
+        this.backend = game.getBackend();
         this.game = Optional.of(game);
         this.stage = stage;
         this.data = new HashMap<>();
@@ -88,7 +91,7 @@ public class Session implements Serializable {
     }
 
     public List<Profile> getProfiles() {
-        ProfileRegistry registry = Demigames.getProfileRegistry();
+        ProfileRegistry registry = backend.getProfileRegistry();
         return profiles.stream().map(registry::fromKey).filter(Optional::isPresent).map(Optional::get).collect(Collectors.toList());
     }
 
@@ -106,6 +109,10 @@ public class Session implements Serializable {
         return game;
     }
 
+    public Backend getBackend() {
+        return backend;
+    }
+
     public Optional<World> getWorld() {
         return Optional.ofNullable(Bukkit.getWorld(id));
     }
@@ -120,7 +127,7 @@ public class Session implements Serializable {
 
     public boolean isDone() {
         if (!done) {
-            Optional<Session> found = Demigames.getSessionRegistry().fromKey(id);
+            Optional<Session> found = backend.getSessionRegistry().fromKey(id);
             if (found.isPresent()) {
                 return found.get().done;
             }
@@ -131,36 +138,36 @@ public class Session implements Serializable {
     // -- MUTATORS -- //
 
     public Optional<World> setupWorld() {
-        return Demigames.getSessionRegistry().setupWorld(this);
+        return backend.getSessionRegistry().setupWorld(this);
     }
 
     public void setDone() {
         if (!done) {
             this.done = true;
-            Demigames.getSessionRegistry().put(id, this);
+            backend.getSessionRegistry().put(id, this);
         }
     }
 
     public void setJoinable(boolean joinable) {
         this.joinable = joinable;
         if (!isDone()) {
-            Demigames.getSessionRegistry().put(id, this);
+            backend.getSessionRegistry().put(id, this);
         }
     }
 
     public void addProfile(Profile profile) {
-        profile.setCurrentSessionId(id);
+        profile.setCurrentSessionId(backend, id);
         profiles.add(profile.getMojangUniqueId());
         if (!isDone()) {
-            Demigames.getSessionRegistry().put(id, this);
+            backend.getSessionRegistry().put(id, this);
         }
     }
 
     public void addProfiles(List<Profile> profiles) {
-        profiles.forEach(profile -> profile.setCurrentSessionId(id));
+        profiles.forEach(profile -> profile.setCurrentSessionId(backend, id));
         this.profiles.addAll(profiles.stream().map(Profile::getMojangUniqueId).collect(Collectors.toList()));
         if (!isDone()) {
-            Demigames.getSessionRegistry().put(id, this);
+            backend.getSessionRegistry().put(id, this);
         }
     }
 
@@ -171,54 +178,54 @@ public class Session implements Serializable {
     public void removeProfile(Profile profile) {
         profiles.remove(profile.getMojangUniqueId());
         if (profile.getCurrentSessionId().isPresent() && profile.getCurrentSessionId().get().equals(id)) {
-            profile.setCurrentSessionId(null);
-            profile.setPreviousSessionId(id);
+            profile.setCurrentSessionId(backend, null);
+            profile.setPreviousSessionId(backend, id);
         }
         if (!isDone()) {
-            Demigames.getSessionRegistry().put(id, this);
+            backend.getSessionRegistry().put(id, this);
         }
     }
 
     public void removeProfile(Player player) {
         profiles = profiles.parallelStream().filter(profile -> !profile.equals(player.getUniqueId().toString())).
                 collect(Collectors.toSet());
-        Profile profile = Demigames.getProfileRegistry().fromPlayer(player);
+        Profile profile = backend.getProfileRegistry().fromPlayer(backend, player);
         if (profile.getCurrentSessionId().isPresent() && profile.getCurrentSessionId().get().equals(id)) {
-            profile.setCurrentSessionId(null);
-            profile.setPreviousSessionId(id);
+            profile.setCurrentSessionId(backend, null);
+            profile.setPreviousSessionId(backend, id);
         }
         if (!isDone()) {
-            Demigames.getSessionRegistry().put(id, this);
+            backend.getSessionRegistry().put(id, this);
         }
     }
 
     public void setStage(String stage) {
         this.stage = stage;
         if (!isDone()) {
-            Demigames.getSessionRegistry().put(id, this);
+            backend.getSessionRegistry().put(id, this);
         }
     }
 
     public void updateStage(String stage, boolean process) {
         if (getGame().isPresent()) {
-            Demigames.getGameRegistry().updateStage(getGame().get(), this, stage, process);
+            backend.getGameRegistry().updateStage(getGame().get(), this, stage, process);
         } else {
             throw new NullPointerException("A session is missing its respective game!");
         }
         if (!isDone()) {
-            Demigames.getSessionRegistry().put(id, this);
+            backend.getSessionRegistry().put(id, this);
         }
     }
 
     public void setCurrentRound(int currentRound) {
         this.currentRound = currentRound;
         if (!isDone()) {
-            Demigames.getSessionRegistry().put(id, this);
+            backend.getSessionRegistry().put(id, this);
         }
     }
 
     public void endSession() {
-        SessionRegistry registry = Demigames.getSessionRegistry();
+        SessionRegistry registry = backend.getSessionRegistry();
 
         // Make sure this isn't a duplicate
         if (!done) {
@@ -230,15 +237,15 @@ public class Session implements Serializable {
                 if (getGame().isPresent()) {
                     getGame().get().quit(player, this, PlayerQuitMinigameEvent.QuitReason.SESSION_END);
                 } else {
-                    Profile profile = Demigames.getProfileRegistry().fromPlayer(player);
-                    profile.setCurrentSessionId(null);
-                    profile.setPreviousSessionId(id);
+                    Profile profile = backend.getProfileRegistry().fromPlayer(backend, player);
+                    profile.setCurrentSessionId(backend, null);
+                    profile.setPreviousSessionId(backend, id);
                 }
             });
 
             // Party mode
             if ("party".equals(Setting.MODE)) {
-                Optional<Game> opGame = Demigames.getGameRegistry().randomGame();
+                Optional<Game> opGame = backend.getGameRegistry().randomGame();
                 if (opGame.isPresent()) {
                     Session newSession = registry.newSession(opGame.get());
                     newSession.setRawProfiles(profiles);
@@ -250,7 +257,7 @@ public class Session implements Serializable {
             }
 
             // Remove the file and unload the world
-            Demigames.getInstance().getLogger().info("Unloading session " + id + ".");
+            backend.getLogger().info("Unloading session " + id + ".");
             registry.remove(id);
             registry.unloadWorld(this);
         }

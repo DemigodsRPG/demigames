@@ -20,54 +20,29 @@
  * SOFTWARE.
  */
 
-package com.demigodsrpg.demigames.event;
+package com.demigodsrpg.demigames.game.impl.registry;
 
-import com.demigodsrpg.demigames.game.Backend;
 import com.demigodsrpg.demigames.game.Game;
-import com.demigodsrpg.demigames.session.Session;
-import org.bukkit.entity.Player;
-import org.bukkit.event.HandlerList;
-import org.bukkit.event.player.PlayerEvent;
+import com.demigodsrpg.demigames.game.GameLocation;
+import com.demigodsrpg.demigames.unlockable.UnlockableShop;
+import org.bukkit.Location;
 
 import java.util.Optional;
 
-public class PlayerWinMinigameEvent extends PlayerEvent {
+public class ShopRegistry extends AbstractRegistry<String, UnlockableShop> {
+    private String gameName;
 
-    // -- HANDLER LIST -- //
-
-    private static final HandlerList handlers = new HandlerList();
-
-    // -- DATA -- //
-
-    Backend backend;
-    Optional<Game> game;
-    String sessionId;
-
-    // -- CONSTRUCTOR -- //
-
-    public PlayerWinMinigameEvent(Player player, Session session) {
-        super(player);
-        this.backend = session.getBackend();
-        this.game = session.getGame();
-        this.sessionId = session.getId();
+    public ShopRegistry(Game game) {
+        super(game.getBackend(), "shop", UnlockableShop.class, true, game.getName());
+        this.gameName = game.getName();
     }
 
-    // -- GETTERS -- //
-
-    public Optional<Game> getGame() {
-        return game;
+    public Optional<UnlockableShop> fromLocation(Location location) {
+        String strLoc = new GameLocation(location, true).toString();
+        return fromKey(strLoc);
     }
 
-    public Optional<Session> getSession() {
-        return backend.getSessionRegistry().fromKey(sessionId);
-    }
-
-    @Override
-    public HandlerList getHandlers() {
-        return handlers;
-    }
-
-    public static HandlerList getHandlerList() {
-        return handlers;
+    public String getGameName() {
+        return gameName;
     }
 }

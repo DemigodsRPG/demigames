@@ -22,8 +22,8 @@
 
 package com.demigodsrpg.demigames.event;
 
+import com.demigodsrpg.demigames.game.Backend;
 import com.demigodsrpg.demigames.game.Game;
-import com.demigodsrpg.demigames.impl.Demigames;
 import com.demigodsrpg.demigames.session.Session;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
@@ -39,6 +39,7 @@ public class PlayerLoseMinigameEvent extends PlayerEvent {
 
     // -- DATA -- //
 
+    Backend backend;
     Optional<Game> game;
     String sessionId;
 
@@ -46,6 +47,7 @@ public class PlayerLoseMinigameEvent extends PlayerEvent {
 
     public PlayerLoseMinigameEvent(Player player, Session session) {
         super(player);
+        this.backend = session.getBackend();
         this.game = session.getGame();
         this.sessionId = session.getId();
     }
@@ -57,7 +59,7 @@ public class PlayerLoseMinigameEvent extends PlayerEvent {
     }
 
     public Optional<Session> getSession() {
-        return Demigames.getSessionRegistry().fromKey(sessionId);
+        return backend.getSessionRegistry().fromKey(sessionId);
     }
 
     @Override

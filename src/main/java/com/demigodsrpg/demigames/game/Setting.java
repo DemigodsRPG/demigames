@@ -20,36 +20,17 @@
  * SOFTWARE.
  */
 
-package com.demigodsrpg.demigames.sign;
+package com.demigodsrpg.demigames.game;
 
-import com.demigodsrpg.demigames.game.Backend;
-import com.demigodsrpg.demigames.game.Game;
-import com.demigodsrpg.demigames.game.GameLocation;
-import com.demigodsrpg.demigames.session.Session;
-import org.bukkit.Location;
+import net.md_5.bungee.api.ChatColor;
+import org.bukkit.configuration.Configuration;
 
-import java.util.List;
-import java.util.Optional;
+public class Setting {
+    public static final String MODE = getConfig().getString("mode", "party");
+    public static final String TAG = ChatColor.translateAlternateColorCodes('&', getConfig().getString("tag",
+            "&8[&3MG&8]"));
 
-public interface MinigameSign {
-
-    // -- GETTERS -- //
-
-    String getName();
-
-    String getGameName();
-
-    Optional<Game> getGame(Backend backend);
-
-    Optional<Location> getLocation(Session session);
-
-    GameLocation getGameLocation();
-
-    String getCommand();
-
-    default String getLine(int index) throws IndexOutOfBoundsException {
-        return getLines().get(index);
+    public static Configuration getConfig() {
+        return Backend.INST.getConfig();
     }
-
-    List<String> getLines();
 }

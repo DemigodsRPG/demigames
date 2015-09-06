@@ -22,9 +22,9 @@
 
 package com.demigodsrpg.demigames.sign;
 
+import com.demigodsrpg.demigames.game.Backend;
 import com.demigodsrpg.demigames.game.Game;
 import com.demigodsrpg.demigames.game.GameLocation;
-import com.demigodsrpg.demigames.impl.Demigames;
 import com.demigodsrpg.demigames.session.Session;
 import org.bukkit.Location;
 
@@ -65,8 +65,8 @@ public class MutableMinigameSign implements MinigameSign, Serializable {
     }
 
     @Override
-    public Optional<Game> getGame() {
-        return Demigames.getGameRegistry().getMinigame(gameName);
+    public Optional<Game> getGame(Backend backend) {
+        return backend.getGameRegistry().getMinigame(gameName);
     }
 
     @Override

@@ -22,10 +22,10 @@
 
 package com.demigodsrpg.demigames.unlockable;
 
+import com.demigodsrpg.demigames.game.Backend;
 import com.demigodsrpg.demigames.game.Game;
 import com.demigodsrpg.demigames.game.GameLocation;
-import com.demigodsrpg.demigames.impl.Demigames;
-import com.demigodsrpg.demigames.impl.util.ItemStackBuilder;
+import com.demigodsrpg.demigames.game.impl.util.ItemStackBuilder;
 import com.demigodsrpg.demigames.profile.Profile;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -43,7 +43,6 @@ public class UnlockableShop implements Serializable {
 
     // -- TRANSIENT DATA -- //
 
-    transient Optional<Game> game;
     transient ItemStack kitShopTab;
     transient ItemStack unlockableShopTab;
     transient ItemStack pane;
@@ -55,7 +54,6 @@ public class UnlockableShop implements Serializable {
     String kitGameName;
 
     public UnlockableShop() {
-        processGame();
         processItems();
     }
 
@@ -63,12 +61,11 @@ public class UnlockableShop implements Serializable {
         this.location = location.toString();
         this.name = name;
         this.kitGameName = kitGameName;
-        processGame();
         processItems();
     }
 
-    private void processGame() {
-        this.game = Demigames.getGameRegistry().getMinigame(kitGameName);
+    private Optional<Game> getGame(Backend backend) {
+        return backend.getGameRegistry().getMinigame(kitGameName);
     }
 
     private void processItems() {
@@ -87,7 +84,7 @@ public class UnlockableShop implements Serializable {
         return stack;
     }
 
-    public void openShop(Player p, boolean message) {
+    public void openShop(Backend backend, Player p, boolean message) {
         //Create the inv
         Inventory inv = Bukkit.createInventory(p, 9 * 5, ChatColor.DARK_AQUA + "Minegusta " +
                 ChatColor.LIGHT_PURPLE + "Shop");
@@ -104,7 +101,7 @@ public class UnlockableShop implements Serializable {
             data++;
         }
 
-        Profile profile = Demigames.getProfileRegistry().fromPlayer(p);
+        Profile profile = backend.getProfileRegistry().fromPlayer(backend, p);
 
         int slot = 9;
         for (Unlockable u : Unlockables.valuesSansKits()) {
@@ -119,18 +116,18 @@ public class UnlockableShop implements Serializable {
         //Set the task + open the inv for the player
         p.openInventory(inv);
         if (message)
-            Demigames.sendTaggedMessage(p, ChatColor.LIGHT_PURPLE + "You have " + ChatColor.DARK_PURPLE +
+            backend.sendTaggedMessage(p, ChatColor.LIGHT_PURPLE + "You have " + ChatColor.DARK_PURPLE +
                     profile.getTickets() + ChatColor.LIGHT_PURPLE + " tickets.", ChatColor.GRAY + "Use " +
                     ChatColor.YELLOW + "/Rewards " + ChatColor.GRAY + "to select your active perks.");
         //TODO ShopTask.addInventory(inv);
     }
 
-    public void openKitShop(Player p, boolean message) {
+    public void openKitShop(Backend backend, Player p, boolean message) {
         //Create the inv
         Inventory inv = Bukkit.createInventory(p, 9 * 5, ChatColor.DARK_RED + "DG" + ChatColor.GRAY + "-" +
                 ChatColor.DARK_AQUA + "MG " + ChatColor.LIGHT_PURPLE + "Kits");
 
-        Profile profile = Demigames.getProfileRegistry().fromPlayer(p);
+        Profile profile = backend.getProfileRegistry().fromPlayer(backend, p);
 
         //Fill the inv with unlockables that the player has
 
@@ -145,9 +142,11 @@ public class UnlockableShop implements Serializable {
         }
 
         int slot = 9;
-        if (game.isPresent()) {
+        if (getGame(backend).isPresent()) {
             for (UnlockableKit kit : Unlockables.kits()) {
-                if (profile.hasUnlockable(kit) || game.get().defaultUnlockables().contains(kit.getName())) continue;
+                if (profile.hasUnlockable(kit) || getGame(backend).get().defaultUnlockables().contains(kit.getName())) {
+                    continue;
+                }
                 inv.setItem(slot, getKitItem(kit.getName(), kit.getCost()));
                 slot++;
             }
@@ -158,7 +157,7 @@ public class UnlockableShop implements Serializable {
 
         //Set the task + open the inv for the player
         p.openInventory(inv);
-        if (message) Demigames.sendTaggedMessage(p, ChatColor.LIGHT_PURPLE + "You opened the kit menu.");
+        if (message) backend.sendTaggedMessage(p, ChatColor.LIGHT_PURPLE + "You opened the kit menu.");
         //TODO hopTask.addInventory(inv);
     }
 

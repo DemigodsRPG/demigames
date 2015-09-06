@@ -23,7 +23,6 @@
 package com.demigodsrpg.demigames.game.mixin;
 
 import com.demigodsrpg.demigames.game.Game;
-import com.demigodsrpg.demigames.impl.Demigames;
 import com.demigodsrpg.demigames.session.Session;
 import com.demigodsrpg.demigames.stage.DefaultStage;
 import com.demigodsrpg.demigames.stage.StageHandler;
@@ -55,18 +54,20 @@ public interface WarmupLobbyMixin extends Game {
 
         for (int i = 0; i <= 10; i++) {
             final int k = i;
-            Bukkit.getScheduler().scheduleSyncDelayedTask(Demigames.getInstance(), () -> {
-                Optional<Session> current = Demigames.getSessionRegistry().fromKey(session.getId());
+            Bukkit.getScheduler().scheduleSyncDelayedTask(getBackend(), () -> {
+                Optional<Session> current = getBackend().getSessionRegistry().fromKey(session.getId());
                 if (current.isPresent()) {
                     if (k == 10) {
                         // Update the stage
                         current.get().getPlayers().forEach(player -> {
-                            Demigames.getTitleUtil().broadcastTitle(session, 0, 18, 2, ChatColor.GREEN + "GO!", "Have fun!");
+                            getBackend().getTitleUtil().broadcastTitle(session, 0, 18, 2, ChatColor.GREEN +
+                                    "GO!", "Have fun!");
                             player.playSound(player.getLocation(), Sound.NOTE_PIANO, 1f, 1f);
                         });
                         current.get().updateStage(DefaultStage.BEGIN, true);
                     } else {
-                        Demigames.getTitleUtil().broadcastTitle(session, 2, 30, 0, ChatColor.GOLD + getName() + "!", "In " + (10 - k) + " seconds!");
+                        getBackend().getTitleUtil().broadcastTitle(session, 2, 30, 0, ChatColor.GOLD + getName() + "!",
+                                "In " + (10 - k) + " seconds!");
                         current.get().getPlayers().forEach(player -> {
                             player.playSound(player.getLocation(), Sound.NOTE_PIANO, 1f, 0.5f);
                         });

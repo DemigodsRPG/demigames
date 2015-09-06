@@ -23,7 +23,7 @@
 package com.demigodsrpg.demigames.kit;
 
 import com.censoredsoftware.library.bukkitutil.ItemUtil;
-import com.demigodsrpg.demigames.impl.Demigames;
+import com.demigodsrpg.demigames.game.Backend;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
@@ -187,8 +187,8 @@ public class MutableKit implements Kit, Serializable {
 
     // -- PERSISTENCE METHOD -- //
 
-    public void register() {
-        Demigames.getKitRegistry().put(name, this);
+    public void register(Backend backend) {
+        backend.getKitRegistry().put(name, this);
     }
 
     // -- PRIVATE HELPER METHODS -- //
