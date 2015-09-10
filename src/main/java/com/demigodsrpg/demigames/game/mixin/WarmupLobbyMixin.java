@@ -38,7 +38,7 @@ public interface WarmupLobbyMixin extends Game {
 
     // -- GETTER -- //
 
-    Location getWarmupSpawn(Session session);
+    Location getWarmupSpawn(Session session, Player player);
 
     // -- WARMUP -- //
 
@@ -46,7 +46,7 @@ public interface WarmupLobbyMixin extends Game {
     default void roundWarmup(Session session) {
         // Teleport all players to the warmup point
         for (Player player : session.getPlayers()) {
-            player.teleport(getWarmupSpawn(session));
+            player.teleport(getWarmupSpawn(session, player));
         }
 
         // Iterate the round
