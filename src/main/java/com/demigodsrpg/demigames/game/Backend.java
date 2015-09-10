@@ -30,6 +30,7 @@ import com.demigodsrpg.demigames.game.impl.registry.*;
 import com.demigodsrpg.demigames.game.impl.util.LibraryHandler;
 import com.demigodsrpg.demigames.game.impl.util.TitleUtil;
 import com.demigodsrpg.demigames.game.lobby.Lobby;
+import com.demigodsrpg.demigames.session.Session;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
@@ -222,5 +223,17 @@ public class Backend extends JavaPlugin {
         for (String message : messages) {
             player.sendMessage(Setting.TAG + " " + ChatColor.WHITE + message);
         }
+    }
+
+    public void broadcastTaggedMessage(Session session, String message) {
+        session.getPlayers().forEach(player -> player.sendMessage(Setting.TAG + " " + ChatColor.WHITE + message));
+    }
+
+    public void broadcastTaggedMessage(Session session, String... messages) {
+        session.getPlayers().forEach(player -> {
+            for (String message : messages) {
+                player.sendMessage(Setting.TAG + " " + ChatColor.WHITE + message);
+            }
+        });
     }
 }
