@@ -26,6 +26,7 @@ import com.demigodsrpg.demigames.event.PlayerJoinMinigameEvent;
 import com.demigodsrpg.demigames.event.PlayerQuitMinigameEvent;
 import com.demigodsrpg.demigames.game.Game;
 import com.demigodsrpg.demigames.game.GameLocation;
+import com.demigodsrpg.demigames.game.Minigame;
 import com.demigodsrpg.demigames.game.impl.registry.SignRegistry;
 import com.demigodsrpg.demigames.kit.ImmutableKit;
 import com.demigodsrpg.demigames.kit.Kit;
@@ -43,6 +44,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+@Minigame
 public class Lobby implements Game {
     public static Lobby LOBBY;
     public static Kit LOBBY_KIT;

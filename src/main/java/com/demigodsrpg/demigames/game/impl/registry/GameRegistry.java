@@ -25,6 +25,7 @@ package com.demigodsrpg.demigames.game.impl.registry;
 import com.censoredsoftware.library.util.RandomUtil;
 import com.demigodsrpg.demigames.game.Backend;
 import com.demigodsrpg.demigames.game.Game;
+import com.demigodsrpg.demigames.game.Minigame;
 import com.demigodsrpg.demigames.game.Setting;
 import com.demigodsrpg.demigames.game.impl.util.ClassPathHack;
 import com.demigodsrpg.demigames.session.Session;
@@ -144,7 +145,7 @@ public class GameRegistry {
     }
 
     private boolean isMinigameClass(Class<?> clazz) {
-        return clazz != null && Game.class.isAssignableFrom(clazz);
+        return clazz != null && Game.class.isAssignableFrom(clazz) && clazz.isAnnotationPresent(Minigame.class);
     }
 
     private Optional<Game> getMinigame(Class<? extends Game> clazz) {
