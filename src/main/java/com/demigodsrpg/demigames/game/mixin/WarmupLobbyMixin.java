@@ -31,6 +31,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.Optional;
 
@@ -55,29 +56,44 @@ public interface WarmupLobbyMixin extends Game {
 
         // Iterate the round
         session.setCurrentRound(session.getCurrentRound() + 1);
+        Bukkit.getScheduler().scheduleSyncRepeatingTask(getBackend(), new BukkitRunnable() {
+            int wait = 0;
 
-        for (int i = 0; i <= getWarmupSeconds(); i++) {
-            final int k = i;
-            Bukkit.getScheduler().scheduleSyncDelayedTask(getBackend(), () -> {
-                Optional<Session> current = getBackend().getSessionRegistry().fromKey(session.getId());
-                if (current.isPresent()) {
-                    if (k == getWarmupSeconds()) {
-                        // Update the stage
-                        current.get().getPlayers().forEach(player -> {
-                            getBackend().getTitleUtil().broadcastTitle(session, 0, 18, 2, ChatColor.GREEN +
-                                    "GO!", "Have fun!");
-                            player.playSound(player.getLocation(), Sound.NOTE_PIANO, 1f, 1f);
-                        });
-                        current.get().updateStage(DefaultStage.BEGIN, true);
-                    } else {
-                        getBackend().getTitleUtil().broadcastTitle(session, 2, 30, 0, ChatColor.GOLD + getName() + "!",
-                                "In " + (getWarmupSeconds() - k) + " seconds!");
-                        current.get().getPlayers().forEach(player -> {
-                            player.playSound(player.getLocation(), Sound.NOTE_PIANO, 1f, 0.5f);
-                        });
+            @Override
+            public void run() {
+                if (session.getRawProfiles().size() >= getMinimumPlayers()) {
+                    for (int i = 0; i <= getWarmupSeconds(); i++) {
+                        final int k = i;
+                        Bukkit.getScheduler().scheduleSyncDelayedTask(getBackend(), () -> {
+                            Optional<Session> current = getBackend().getSessionRegistry().fromKey(session.getId());
+                            if (current.isPresent()) {
+                                if (k == getWarmupSeconds()) {
+                                    // Update the stage
+                                    current.get().getPlayers().forEach(player -> {
+                                        getBackend().getTitleUtil().broadcastTitle(session, 0, 18, 2, ChatColor.GREEN +
+                                                "GO!", "Have fun!");
+                                        player.playSound(player.getLocation(), Sound.NOTE_PIANO, 1f, 1f);
+                                    });
+                                    current.get().updateStage(DefaultStage.BEGIN, true);
+                                } else {
+                                    getBackend().getTitleUtil().broadcastTitle(session, 2, 30, 0, ChatColor.GOLD +
+                                            getName() + "!", "In " + (getWarmupSeconds() - k) + " seconds!");
+                                    current.get().getPlayers().forEach(player -> {
+                                        player.playSound(player.getLocation(), Sound.NOTE_PIANO, 1f, 0.5f);
+                                    });
+                                }
+                            }
+                        }, i * 20);
                     }
+                    cancel();
                 }
-            }, i * 20);
-        }
+                if (wait >= 120) { // Wait ~1 minute
+                    getBackend().broadcastTaggedMessage(session, ChatColor.RED + "Not enough players...");
+                    session.endSession();
+                    cancel();
+                }
+                wait++;
+            }
+        }, 10, 10);
     }
 }
