@@ -71,8 +71,7 @@ public interface SpectateMixin extends Game {
         if (event.getEntity() instanceof Player) {
             Player player = (Player) event.getEntity();
             Optional<Session> opSession = checkPlayer(player);
-            if (opSession.isPresent() && opSession.get().getGame().isPresent() && opSession.get().getGame().get().
-                    equals(this)) {
+            if (opSession.isPresent()) {
                 Session session = opSession.get();
                 if (isSpectator(session, player)) {
                     event.setCancelled(true);

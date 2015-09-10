@@ -40,6 +40,10 @@ public interface WarmupLobbyMixin extends Game {
 
     Location getWarmupSpawn(Session session, Player player);
 
+    default int getWarmupSeconds() {
+        return 10;
+    }
+
     // -- WARMUP -- //
 
     @StageHandler(stage = DefaultStage.WARMUP)
@@ -52,12 +56,12 @@ public interface WarmupLobbyMixin extends Game {
         // Iterate the round
         session.setCurrentRound(session.getCurrentRound() + 1);
 
-        for (int i = 0; i <= 10; i++) {
+        for (int i = 0; i <= getWarmupSeconds(); i++) {
             final int k = i;
             Bukkit.getScheduler().scheduleSyncDelayedTask(getBackend(), () -> {
                 Optional<Session> current = getBackend().getSessionRegistry().fromKey(session.getId());
                 if (current.isPresent()) {
-                    if (k == 10) {
+                    if (k == getWarmupSeconds()) {
                         // Update the stage
                         current.get().getPlayers().forEach(player -> {
                             getBackend().getTitleUtil().broadcastTitle(session, 0, 18, 2, ChatColor.GREEN +
@@ -67,7 +71,7 @@ public interface WarmupLobbyMixin extends Game {
                         current.get().updateStage(DefaultStage.BEGIN, true);
                     } else {
                         getBackend().getTitleUtil().broadcastTitle(session, 2, 30, 0, ChatColor.GOLD + getName() + "!",
-                                "In " + (10 - k) + " seconds!");
+                                "In " + (getWarmupSeconds() - k) + " seconds!");
                         current.get().getPlayers().forEach(player -> {
                             player.playSound(player.getLocation(), Sound.NOTE_PIANO, 1f, 0.5f);
                         });
