@@ -32,6 +32,8 @@ import com.demigodsrpg.demigames.game.impl.util.TitleUtil;
 import com.demigodsrpg.demigames.game.lobby.Lobby;
 import com.demigodsrpg.demigames.session.Session;
 import net.md_5.bungee.api.ChatColor;
+import net.md_5.bungee.api.chat.BaseComponent;
+import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -234,6 +236,36 @@ public class Backend extends JavaPlugin {
             for (String message : messages) {
                 player.sendMessage(Setting.TAG + " " + ChatColor.WHITE + message);
             }
+        });
+    }
+
+    public void sendTaggedMessage(Player player, TextComponent message) {
+        TextComponent fullMessage = new TextComponent("");
+
+        for (BaseComponent component : TextComponent.fromLegacyText(Setting.TAG)) {
+            fullMessage.addExtra(component);
+        }
+
+        TextComponent next = new TextComponent(" ");
+        fullMessage.addExtra(next);
+        fullMessage.addExtra(message);
+
+        player.spigot().sendMessage(fullMessage);
+    }
+
+    public void sendTaggedMessage(Player player, TextComponent... messages) {
+        for (TextComponent message : messages) {
+            sendTaggedMessage(player, message);
+        }
+    }
+
+    public void broadcastTaggedMessage(Session session, TextComponent message) {
+        session.getPlayers().forEach(player -> sendTaggedMessage(player, message));
+    }
+
+    public void broadcastTaggedMessage(Session session, TextComponent... messages) {
+        session.getPlayers().forEach(player -> {
+            sendTaggedMessage(player, messages);
         });
     }
 }
