@@ -32,10 +32,7 @@ import com.demigodsrpg.demigames.kit.Kit;
 import com.demigodsrpg.demigames.kit.MutableKit;
 import com.demigodsrpg.demigames.session.Session;
 import com.demigodsrpg.demigames.sign.MinigameSign;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Location;
-import org.bukkit.World;
+import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -82,6 +79,11 @@ public class Lobby implements Game {
     }
 
     @Override
+    public GameMode getDefaultGamemode() {
+        return GameMode.ADVENTURE;
+    }
+
+    @Override
     public boolean canPlace() {
         return false;
     }
@@ -94,11 +96,6 @@ public class Lobby implements Game {
     @Override
     public boolean canDrop() {
         return false;
-    }
-
-    @Override
-    public boolean canLateJoin() {
-        return true;
     }
 
     @Override
@@ -127,7 +124,12 @@ public class Lobby implements Game {
     }
 
     @Override
-    public List<String> defaultUnlockables() {
+    public List<String> getJoinableStages() {
+        return new ArrayList<>();
+    }
+
+    @Override
+    public List<String> getDefaultUnlockables() {
         return new ArrayList<>(); // TODO Rainbow armor?
     }
 

@@ -23,6 +23,7 @@
 package com.demigodsrpg.demigames.game;
 
 import com.demigodsrpg.demigames.game.impl.command.*;
+import com.demigodsrpg.demigames.game.impl.listener.GameListener;
 import com.demigodsrpg.demigames.game.impl.listener.KitListener;
 import com.demigodsrpg.demigames.game.impl.listener.SessionListener;
 import com.demigodsrpg.demigames.game.impl.registry.*;
@@ -88,6 +89,7 @@ public class Backend extends JavaPlugin {
 
         // Handle listeners
         PluginManager manager = getServer().getPluginManager();
+        manager.registerEvents(new GameListener(this), this);
         manager.registerEvents(new SessionListener(this), this);
         manager.registerEvents(new KitListener(this), this);
 

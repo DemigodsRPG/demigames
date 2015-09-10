@@ -31,6 +31,7 @@ import com.demigodsrpg.demigames.profile.Profile;
 import com.demigodsrpg.demigames.session.Session;
 import com.demigodsrpg.demigames.stage.DefaultStage;
 import org.bukkit.Bukkit;
+import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
@@ -39,6 +40,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -50,13 +52,13 @@ public interface Game extends Listener {
 
     String getDirectory();
 
+    GameMode getDefaultGamemode();
+
     boolean canPlace();
 
     boolean canBreak();
 
     boolean canDrop();
-
-    boolean canLateJoin();
 
     default boolean hasSpectateChat() {
         return false;
@@ -74,9 +76,13 @@ public interface Game extends Listener {
         return 1;
     }
 
-    List<String> defaultUnlockables();
+    default List<String> getJoinableStages() {
+        return Arrays.asList(DefaultStage.SETUP, DefaultStage.WARMUP);
+    }
 
-    default List<String> excludeUnlockables() {
+    List<String> getDefaultUnlockables();
+
+    default List<String> getExcludedUnlockables() {
         return new ArrayList<>();
     }
 
@@ -170,10 +176,11 @@ public interface Game extends Listener {
         SessionRegistry sessions = getBackend().getSessionRegistry();
         Session session = null;
         if (sessions.fromGame(this).size() > 0) {
-            // TODO The game finding algorithm needs to take into account the distribution of players
             Optional<Session> maybe = sessions.fromGame(this).stream().filter(Session::isJoinable).findAny();
             if (maybe.isPresent()) {
-                session = maybe.get();
+                if (getJoinableStages().isEmpty() || getJoinableStages().contains(maybe.get().getStage())) {
+                    session = maybe.get();
+                }
             }
         }
         if (session == null) {
@@ -192,6 +199,7 @@ public interface Game extends Listener {
         PlayerJoinMinigameEvent event = new PlayerJoinMinigameEvent(player, session, previous);
         Profile profile = getBackend().getProfileRegistry().fromPlayer(getBackend(), event.getPlayer());
         session.addProfile(profile);
+        player.setGameMode(getDefaultGamemode());
         try {
             Bukkit.getPluginManager().callEvent(event);
         } catch (Exception oops) {

@@ -144,7 +144,8 @@ public class UnlockableShop implements Serializable {
         int slot = 9;
         if (getGame(backend).isPresent()) {
             for (UnlockableKit kit : Unlockables.kits()) {
-                if (profile.hasUnlockable(kit) || getGame(backend).get().defaultUnlockables().contains(kit.getName())) {
+                if (profile.hasUnlockable(kit) || getGame(backend).get().getDefaultUnlockables().
+                        contains(kit.getName())) {
                     continue;
                 }
                 inv.setItem(slot, getKitItem(kit.getName(), kit.getCost()));

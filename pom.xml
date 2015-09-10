@@ -82,11 +82,6 @@
         <!-- CensoredLib -->
         <dependency>
             <groupId>com.censoredsoftware.library</groupId>
-            <artifactId>schematic</artifactId>
-            <version>${censoredlib.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.censoredsoftware.library</groupId>
             <artifactId>command</artifactId>
             <version>${censoredlib.version}</version>
         </dependency>
