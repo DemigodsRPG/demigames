@@ -101,6 +101,10 @@ public class GameRegistry {
         return Optional.ofNullable(MINIGAMES.getOrDefault(name, null));
     }
 
+    public Optional<Game> getMinigameByDirectory(String dir) {
+        return MINIGAMES.values().stream().filter(game -> game.getDirectory().equalsIgnoreCase(dir)).findAny();
+    }
+
     public Optional<Game> randomGame() {
         if (!MINIGAMES.isEmpty()) {
             int index = RandomUtil.generateIntRange(partyMode ? 0 : 1, MINIGAMES.size() - 1);

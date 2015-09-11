@@ -56,12 +56,13 @@ public interface WarmupLobbyMixin extends Game {
 
         // Iterate the round
         session.setCurrentRound(session.getCurrentRound() + 1);
-        Bukkit.getScheduler().scheduleSyncRepeatingTask(getBackend(), new BukkitRunnable() {
+        session.getData().put("warmup.task", Bukkit.getScheduler().scheduleSyncRepeatingTask(getBackend(), new BukkitRunnable() {
             int wait = 0;
 
             @Override
             public void run() {
                 if (session.getRawProfiles().size() >= getMinimumPlayers()) {
+                    Bukkit.getScheduler().cancelTask((int) session.getData().get("warmup.task"));
                     for (int i = 0; i <= getWarmupSeconds(); i++) {
                         final int k = i;
                         Bukkit.getScheduler().scheduleSyncDelayedTask(getBackend(), () -> {
@@ -85,15 +86,13 @@ public interface WarmupLobbyMixin extends Game {
                             }
                         }, i * 20);
                     }
-                    cancel();
-                }
-                if (wait >= 120) { // Wait ~1 minute
+                } else if (wait >= 120) { // Wait ~1 minute
                     getBackend().broadcastTaggedMessage(session, ChatColor.RED + "Not enough players...");
                     session.endSession();
-                    cancel();
+                    Bukkit.getScheduler().cancelTask((int) session.getData().get("warmup.task"));
                 }
                 wait++;
             }
-        }, 10, 10);
+        }, 10, 10));
     }
 }

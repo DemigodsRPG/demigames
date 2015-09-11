@@ -62,7 +62,7 @@ public class JoinGameCommand extends BaseCommand {
             }
 
             // Join a game if possible
-            Optional<Game> opGame = INST.getGameRegistry().getMinigame(args[0]);
+            Optional<Game> opGame = INST.getGameRegistry().getMinigameByDirectory(args[0]);
             if (opGame.isPresent() && opGame.get() != Lobby.LOBBY) {
                 sender.sendMessage(ChatColor.YELLOW + "Joining " + args[0] + ".");
                 if (opSession.isPresent() && opSession.get() instanceof LobbySession) {

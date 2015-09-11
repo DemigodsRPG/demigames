@@ -102,7 +102,7 @@ public class SessionInfoCommand extends BaseCommand implements TabCompleter {
     private void printInfo(Player player, Session session) {
         player.sendMessage(ChatColor.YELLOW + session.getId() + ":");
         if (session.getGame().isPresent()) {
-            player.sendMessage(ChatColor.GREEN + "  Game: " + ChatColor.WHITE + session.getGame().get().getName());
+            player.sendMessage(ChatColor.GREEN + "  Game: " + ChatColor.WHITE + session.getGame().get().getDirectory());
         }
         player.sendMessage(ChatColor.GREEN + "  Stage: " + ChatColor.WHITE + session.getStage());
         player.sendMessage(ChatColor.GREEN + "  # of Players: " + ChatColor.WHITE + session.getRawProfiles().size());

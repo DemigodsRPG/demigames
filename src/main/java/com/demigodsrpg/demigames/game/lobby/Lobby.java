@@ -112,7 +112,7 @@ public class Lobby implements Game {
 
     @Override
     public int getMaximumPlayers() {
-        return 200; // TODO Find a better value for this
+        return getBackend().getServer().getMaxPlayers();
     }
 
     @Override
@@ -145,11 +145,12 @@ public class Lobby implements Game {
             Player player = event.getPlayer();
             LOBBY_KIT.apply(getBackend(), player, true);
             player.teleport(SPAWN);
-            player.sendMessage(ChatColor.GOLD + "Welcome to the Minigames Lobby.");
+            getBackend().sendTaggedMessage(player, ChatColor.GOLD + "Welcome to the Minigames Lobby.");
             if (event.getPreviusSession().isPresent() && event.getPreviusSession().get().getGame().isPresent()) {
                 Game previousGame = event.getPreviusSession().get().getGame().get();
                 if (!(previousGame instanceof Lobby)) {
-                    player.sendMessage(ChatColor.GREEN + "Did you have fun playing " + previousGame.getName() + "?");
+                    getBackend().sendTaggedMessage(player, ChatColor.GREEN + "Did you have fun playing " +
+                            previousGame.getName() + "?");
                 }
             }
         }
@@ -158,7 +159,7 @@ public class Lobby implements Game {
     @EventHandler(priority = EventPriority.LOWEST)
     public void onLeave(PlayerQuitMinigameEvent event) {
         if (event.getGame().isPresent() && event.getGame().get().equals(this)) {
-            event.getPlayer().sendMessage("THE LOBBY MISSES YOU :C");
+            //event.getPlayer().sendMessage("THE LOBBY MISSES YOU :C");
         }
     }
 
