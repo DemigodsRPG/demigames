@@ -61,37 +61,41 @@ public interface WarmupLobbyMixin extends Game {
 
             @Override
             public void run() {
-                if (session.getRawProfiles().size() >= getMinimumPlayers()) {
+                if (session.isDone()) {
                     Bukkit.getScheduler().cancelTask((int) session.getData().get("warmup.task"));
-                    for (int i = 0; i <= getWarmupSeconds(); i++) {
-                        final int k = i;
-                        Bukkit.getScheduler().scheduleSyncDelayedTask(getBackend(), () -> {
-                            Optional<Session> current = getBackend().getSessionRegistry().fromKey(session.getId());
-                            if (current.isPresent()) {
-                                if (k == getWarmupSeconds()) {
-                                    // Update the stage
-                                    current.get().getPlayers().forEach(player -> {
-                                        getBackend().getTitleUtil().broadcastTitle(session, 0, 18, 2, ChatColor.GREEN +
-                                                "GO!", "Have fun!");
-                                        player.playSound(player.getLocation(), Sound.NOTE_PIANO, 1f, 1f);
-                                    });
-                                    current.get().updateStage(DefaultStage.BEGIN, true);
-                                } else {
-                                    getBackend().getTitleUtil().broadcastTitle(session, 2, 30, 0, ChatColor.GOLD +
-                                            getName() + "!", "In " + (getWarmupSeconds() - k) + " seconds!");
-                                    current.get().getPlayers().forEach(player -> {
-                                        player.playSound(player.getLocation(), Sound.NOTE_PIANO, 1f, 0.5f);
-                                    });
+                } else {
+                    if (session.getRawProfiles().size() >= getMinimumPlayers()) {
+                        Bukkit.getScheduler().cancelTask((int) session.getData().get("warmup.task"));
+                        for (int i = 0; i <= getWarmupSeconds(); i++) {
+                            final int k = i;
+                            Bukkit.getScheduler().scheduleSyncDelayedTask(getBackend(), () -> {
+                                Optional<Session> current = getBackend().getSessionRegistry().fromKey(session.getId());
+                                if (current.isPresent()) {
+                                    if (k == getWarmupSeconds()) {
+                                        // Update the stage
+                                        current.get().getPlayers().forEach(player -> {
+                                            getBackend().getTitleUtil().broadcastTitle(session, 0, 18, 2, ChatColor.GREEN +
+                                                    "GO!", "Have fun!");
+                                            player.playSound(player.getLocation(), Sound.NOTE_PIANO, 1f, 1f);
+                                        });
+                                        current.get().updateStage(DefaultStage.BEGIN, true);
+                                    } else {
+                                        getBackend().getTitleUtil().broadcastTitle(session, 2, 30, 0, ChatColor.GOLD +
+                                                getName() + "!", "In " + (getWarmupSeconds() - k) + " seconds!");
+                                        current.get().getPlayers().forEach(player -> {
+                                            player.playSound(player.getLocation(), Sound.NOTE_PIANO, 1f, 0.5f);
+                                        });
+                                    }
                                 }
-                            }
-                        }, i * 20);
+                            }, i * 20);
+                        }
+                    } else if (wait >= 120) { // Wait ~1 minute
+                        getBackend().broadcastTaggedMessage(session, ChatColor.RED + "Not enough players...");
+                        session.endSession();
+                        Bukkit.getScheduler().cancelTask((int) session.getData().get("warmup.task"));
                     }
-                } else if (wait >= 120) { // Wait ~1 minute
-                    getBackend().broadcastTaggedMessage(session, ChatColor.RED + "Not enough players...");
-                    session.endSession();
-                    Bukkit.getScheduler().cancelTask((int) session.getData().get("warmup.task"));
+                    wait++;
                 }
-                wait++;
             }
         }, 10, 10));
     }
