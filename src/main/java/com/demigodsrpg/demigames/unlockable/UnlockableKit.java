@@ -46,6 +46,18 @@ public class UnlockableKit implements Unlockable {
     boolean immutable;
     boolean excludedByDefault;
 
+    public UnlockableKit(Kit kit, int cost, String[] lore, boolean immutable,
+                         boolean excludedByDefault, Material type, byte data) {
+        this.kitName = kit.getName();
+        this.cost = cost;
+        this.lore = lore;
+        this.immutable = immutable;
+        this.excludedByDefault = excludedByDefault;
+
+        this.kit = kit;
+        processItems(new MaterialData(type, data));
+    }
+
     public UnlockableKit(Backend backend, String kitName, int cost, String[] lore, boolean immutable,
                          boolean excludedByDefault, Material type, byte data) {
         this.kitName = kitName;
